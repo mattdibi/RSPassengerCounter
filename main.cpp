@@ -19,6 +19,7 @@
 using namespace cv;
 using namespace std;
 using namespace rs;
+using namespace std::chrono;
 
 // The XCOMPILER uses a different OpenCV version from my main machine
 // so I ended up splitting the code using this constant
@@ -74,6 +75,10 @@ int main(int argc, char * argv[])
     vector<vector<Point> > contours;
     vector<Vec4i> hierarchy;
 
+    // Execution time
+    duration<double> loopTime;
+    bool firstLoop = true;
+
     // --INITIALIZE VIDEOCAPTURE
     if(argc >= 2)
     {
@@ -85,12 +90,12 @@ int main(int argc, char * argv[])
             displayHelp();
             return 0;
         }
-    }
-    else
-    {
-        // --HELP
-        displayHelp();
-        return 0;
+        else
+        {
+            // --HELP
+            displayHelp();
+            return 0;
+        }
     }
 
     // Get first realsense device
@@ -120,6 +125,9 @@ int main(int argc, char * argv[])
         // Get frame data
         Mat color(Size(640, 480), CV_8UC3, (void*)dev->get_frame_data(rs::stream::color), Mat::AUTO_STEP);
         Mat depth(Size(640, 480), CV_16U , (void*)dev->get_frame_data(rs::stream::depth), Mat::AUTO_STEP);
+
+        //-- PERFORMANCE ESTMATION
+        high_resolution_clock::time_point t1 = high_resolution_clock::now(); //START
 
         // frame = conversion(depth);
         depth.convertTo( frame, CV_8UC1, 255.0/1000 );
@@ -270,13 +278,29 @@ int main(int argc, char * argv[])
         imshow("Frame",frame);
         imshow("Color", color);
 
+        // --PERFORMANCE ESTMATION
+        high_resolution_clock::time_point t2 = high_resolution_clock::now(); //STOP
+
+        if(firstLoop)
+            loopTime = duration_cast<duration<double>>(t2 - t1);
+        else
+        {
+            loopTime += duration_cast<duration<double>>(t2 - t1);
+            loopTime = loopTime/2;
+        }
+
         if(waitKey(30) == 27) //wait for 'esc' key press for 30 ms. If 'esc' key is pressed, break loop
         {
             cout << "esc key is pressed by user" << endl; 
             break;
         }
 
+        firstLoop = false;
+
     }
+
+    cout << "Execution time:\n";
+    cout << "Loop: " << loopTime.count() << " seconds\n";
 
     destroyAllWindows(); 
     return 0;
