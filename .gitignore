@@ -9,8 +9,8 @@
 cmake*
 CMake*
 Makefile
-PCN
-PCN20-25
+RSPCN
+RSPCN20-25
 
 # Unignore MakeList
 !CMakeLists.txt
