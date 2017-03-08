@@ -1,0 +1,17 @@
+# Object files
+*.o
+
+#Others
+*.vscode
+*.mpg
+
+# Ignore cmake related files
+cmake*
+CMake*
+Makefile
+PCN
+PCN20-25
+
+# Unignore MakeList
+!CMakeLists.txt
+
