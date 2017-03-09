@@ -26,11 +26,13 @@ using namespace std::chrono;
 
 // Constants
 #define MAXRGBVAL 255
+#define NODATA 0
 
 #define RED   Scalar(0,0,255)
 #define BLUE  Scalar(255,0,0)
 #define GREEN Scalar(0,255,0)
 #define WHITE Scalar(255,255,255)
+#define BLACK Scalar(0,0,0)
 
 // Calibration starting values
 #define BLUR_KSIZE 10
@@ -136,9 +138,24 @@ int main(int argc, char * argv[])
         Mat tmp = depth;
 
         // Finding current max value in depth frame
+        float scale = dev->get_depth_scale();
+
         double min;
         double max;
-        cv::minMaxIdx(tmp, &min, &max);
+        Point tmpMinLoc;
+        Point tmpMaxLoc;
+
+        int nearestVal;
+        Point nearestLoc;
+
+        int farthestVal;
+        Point farthestLoc;
+
+        minMaxLoc(tmp, &min, &max, &tmpMinLoc, &tmpMaxLoc);
+
+        // Saving farthest point
+        farthestVal = max;
+        farthestLoc = tmpMaxLoc;
 
         // Converts CV_16U to CV_8U using a scale factor of 255.0/ current max value
         // It means pixelVal(0-65535)*255/max
@@ -146,15 +163,28 @@ int main(int argc, char * argv[])
         tmp.convertTo(tmp, CV_8UC1, 255.0 / max);
 
         // If pixelValue == 0 set it to 255
-        tmp.setTo(255, tmp == 0);
+        tmp.setTo(255, tmp == NODATA);
 
         // Current situation: Nearest object => Black, Farthest object => White
         // We want to have  : Nearest object => White, Farthest object => Black
         tmp =  cv::Scalar::all(255) - tmp;
 
+        minMaxLoc(tmp, &min, &max, &tmpMinLoc, &tmpMaxLoc);
+
+        // Saving nearest point
+        nearestVal = max;
+        nearestLoc = tmpMaxLoc;
+
         // Color map: Nearest object => Red, Farthest object => Blue
         equalizeHist( tmp, tmp );
         applyColorMap(tmp, tmp, COLORMAP_JET);
+
+        // Highlight nearest and farthest pixel
+        circle( tmp, nearestLoc, 5, WHITE, 2, 8, 0 );
+        putText(tmp, "Nearest: " + to_string(nearestVal) + " meters", nearestLoc, FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
+
+        circle( tmp, farthestLoc, 5, WHITE, 2, 8, 0 );
+        putText(tmp, "Farthest: " + to_string(farthestVal*scale) + " meters", farthestLoc, FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
 
         // Display result
         namedWindow("Sperimentazione", WINDOW_AUTOSIZE);
