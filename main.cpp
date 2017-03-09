@@ -34,6 +34,11 @@ using namespace std::chrono;
 #define WHITE Scalar(255,255,255)
 #define BLACK Scalar(0,0,0)
 
+// Camera settings
+#define IMAGE_WIDTH     640
+#define IMAGE_HEIGHT    480
+#define FRAMERATE       60
+
 // Calibration starting values
 #define BLUR_KSIZE 10
 #define AREA_MIN 10000     // This depends on the camera distance from the passengers
@@ -107,12 +112,23 @@ int main(int argc, char * argv[])
     context ctx;
     device * dev = ctx.get_device(0);
 
-    // Configure Infrared stream to run at VGA resolution at 30 frames per second
-    dev->enable_stream(rs::stream::color, 640, 480, rs::format::bgr8, 60);
-    dev->enable_stream(rs::stream::depth, 640, 480, rs::format::z16, 60);
+    // Display device INFORMATION
+    cout << "Device: " << dev->get_name() << "\n";
+    cout << "Serial number: " << dev->get_serial() << "\n";
+    cout << "Firmware version: " << dev->get_firmware_version() << "\n";
 
-    cout << dev->get_stream_height(rs::stream::depth) << endl;
-    cout << dev->get_stream_width(rs::stream::depth) << endl;
+    // R200 camera settings
+    string test = dev->get_name();
+    if(test.compare("Intel RealSense R200") == 0)
+    {
+        apply_depth_control_preset(dev, 5);
+        dev->set_option(rs::option::r200_lr_auto_exposure_enabled, 1);
+        // ...
+    }
+
+    // Configure stream
+    dev->enable_stream(rs::stream::color, IMAGE_WIDTH, IMAGE_HEIGHT, rs::format::bgr8, FRAMERATE);
+    dev->enable_stream(rs::stream::depth, IMAGE_WIDTH, IMAGE_HEIGHT, rs::format::z16, FRAMERATE);
 
     // Start streaming
     dev->start();
@@ -131,8 +147,8 @@ int main(int argc, char * argv[])
             dev->wait_for_frames( );
 
         // Get frame data
-        Mat color(Size(640, 480), CV_8UC3, (void*)dev->get_frame_data(rs::stream::color), Mat::AUTO_STEP);
-        Mat depth(Size(640, 480), CV_16U , (void*)dev->get_frame_data(rs::stream::depth_aligned_to_color), Mat::AUTO_STEP);
+        Mat color(Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_8UC3, (void*)dev->get_frame_data(rs::stream::color), Mat::AUTO_STEP);
+        Mat depth(Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_16U , (void*)dev->get_frame_data(rs::stream::depth_aligned_to_color), Mat::AUTO_STEP);
 
         /* ********************** EXPERIMENT *************************** */
         Mat tmp = depth.clone(); //Deep copy (tmp has its own copy of the pixels of depth)
