@@ -135,7 +135,7 @@ int main(int argc, char * argv[])
         Mat depth(Size(640, 480), CV_16U , (void*)dev->get_frame_data(rs::stream::depth_aligned_to_color), Mat::AUTO_STEP);
 
         /* ********************** EXPERIMENT *************************** */
-        Mat tmp = depth;
+        Mat tmp = depth.clone();
 
         // Finding current max value in depth frame
         float scale = dev->get_depth_scale();
@@ -157,23 +157,21 @@ int main(int argc, char * argv[])
         farthestVal = max;
         farthestLoc = tmpMaxLoc;
 
-        // Converts CV_16U to CV_8U using a scale factor of 255.0/ current max value
-        // It means pixelVal(0-65535)*255/max
-        // Note: it should have been 255.0/65535 but it never reaches such values
-        tmp.convertTo(tmp, CV_8UC1, 255.0 / max);
-
         // If pixelValue == 0 set it to 255
-        tmp.setTo(255, tmp == NODATA);
+        tmp.setTo(65535, tmp == NODATA);
+
+        minMaxLoc(tmp, &min, &max, &tmpMinLoc, &tmpMaxLoc);
+
+        // Saving farthest point
+        nearestVal = min;
+        nearestLoc = tmpMinLoc;
+
+        // Converts CV_16U to CV_8U using a scale factor of 255.0/ 65535
+        tmp.convertTo(tmp, CV_8UC1, 255.0 / 65535);
 
         // Current situation: Nearest object => Black, Farthest object => White
         // We want to have  : Nearest object => White, Farthest object => Black
         tmp =  cv::Scalar::all(255) - tmp;
-
-        minMaxLoc(tmp, &min, &max, &tmpMinLoc, &tmpMaxLoc);
-
-        // Saving nearest point
-        nearestVal = max;
-        nearestLoc = tmpMaxLoc;
 
         // Color map: Nearest object => Red, Farthest object => Blue
         equalizeHist( tmp, tmp );
@@ -181,7 +179,7 @@ int main(int argc, char * argv[])
 
         // Highlight nearest and farthest pixel
         circle( tmp, nearestLoc, 5, WHITE, 2, 8, 0 );
-        putText(tmp, "Nearest: " + to_string(nearestVal) + " meters", nearestLoc, FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
+        putText(tmp, "Nearest: " + to_string(nearestVal*scale) + " meters", nearestLoc, FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
 
         circle( tmp, farthestLoc, 5, WHITE, 2, 8, 0 );
         putText(tmp, "Farthest: " + to_string(farthestVal*scale) + " meters", farthestLoc, FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
@@ -195,7 +193,7 @@ int main(int argc, char * argv[])
         high_resolution_clock::time_point t1 = high_resolution_clock::now(); //START
 
         // frame = conversion(depth);
-        depth.convertTo( frame, CV_8UC1);
+        depth.convertTo( frame, CV_8UC1, 255.0/ 1000);
         
         // Horizontal line     
         line( color,
