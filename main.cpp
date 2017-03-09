@@ -133,26 +133,39 @@ int main(int argc, char * argv[])
         Mat depth(Size(640, 480), CV_16U , (void*)dev->get_frame_data(rs::stream::depth_aligned_to_color), Mat::AUTO_STEP);
 
         /* ********************** EXPERIMENT *************************** */
-        // double min;
-        // double max;
-        // cv::minMaxIdx(depth, &min, &max);
+        Mat tmp = depth;
 
-        // Mat tmp = depth;
+        // Finding current max value in depth frame
+        double min;
+        double max;
+        cv::minMaxIdx(tmp, &min, &max);
 
-        // tmp.convertTo(tmp, CV_8UC1, 255.0 / max);
+        // Converts CV_16U to CV_8U using a scale factor of 255.0/ current max value
+        // It means pixelVal(0-65535)*255/max
+        // Note: it should have been 255.0/65535 but it never reaches such values
+        tmp.convertTo(tmp, CV_8UC1, 255.0 / max);
 
-        // //equalizeHist( tmp, tmp );
-        // //applyColorMap(tmp, tmp, COLORMAP_JET);
+        // If pixelValue == 0 set it to 255
+        tmp.setTo(255, tmp == 0);
 
-        // namedWindow("Sperimentazione", WINDOW_AUTOSIZE);
-        // imshow("Sperimentazione",tmp);
+        // Current situation: Nearest object => Black, Farthest object => White
+        // We want to have  : Nearest object => White, Farthest object => Black
+        tmp =  cv::Scalar::all(255) - tmp;
+
+        // Color map: Nearest object => Red, Farthest object => Blue
+        equalizeHist( tmp, tmp );
+        applyColorMap(tmp, tmp, COLORMAP_JET);
+
+        // Display result
+        namedWindow("Sperimentazione", WINDOW_AUTOSIZE);
+        imshow("Sperimentazione",tmp);
         /* ********************** EXPERIMENT *************************** */
 
         //-- PERFORMANCE ESTMATION
         high_resolution_clock::time_point t1 = high_resolution_clock::now(); //START
 
         // frame = conversion(depth);
-        depth.convertTo( frame, CV_8UC1, 255.0/1000 );
+        depth.convertTo( frame, CV_8UC1);
         
         // Horizontal line     
         line( color,
