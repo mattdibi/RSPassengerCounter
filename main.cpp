@@ -35,8 +35,8 @@ using namespace std::chrono;
 // Calibration starting values
 #define BLUR_KSIZE 10
 #define AREA_MIN 10000     // This depends on the camera distance from the passengers
-#define X_NEAR 100
-#define Y_NEAR 100
+#define X_NEAR 40
+#define Y_NEAR 75
 #define MAX_PASSENGER_AGE 60 // 60 FPS * 1 seconds (HP: 60fps camera)
 
 #define MAX_1PASS_AREA 30000
@@ -108,7 +108,6 @@ int main(int argc, char * argv[])
     // Configure Infrared stream to run at VGA resolution at 30 frames per second
     dev->enable_stream(rs::stream::color, 640, 480, rs::format::bgr8, 60);
     dev->enable_stream(rs::stream::depth, 640, 480, rs::format::z16, 60);
-    dev->enable_stream(rs::stream::infrared, 640, 480, rs::format::y8, 60);
 
     cout << dev->get_stream_height(rs::stream::depth) << endl;
     cout << dev->get_stream_width(rs::stream::depth) << endl;
