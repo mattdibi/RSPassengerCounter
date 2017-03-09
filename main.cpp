@@ -106,6 +106,9 @@ int main(int argc, char * argv[])
     dev->enable_stream(rs::stream::color, 640, 480, rs::format::bgr8, 60);
     dev->enable_stream(rs::stream::depth, 640, 480, rs::format::z16, 60);
 
+    cout << dev->get_stream_height(rs::stream::depth) << endl;
+    cout << dev->get_stream_width(rs::stream::depth) << endl;
+
     // Start streaming
     dev->start();
 
@@ -124,7 +127,21 @@ int main(int argc, char * argv[])
 
         // Get frame data
         Mat color(Size(640, 480), CV_8UC3, (void*)dev->get_frame_data(rs::stream::color), Mat::AUTO_STEP);
-        Mat depth(Size(640, 480), CV_16U , (void*)dev->get_frame_data(rs::stream::depth), Mat::AUTO_STEP);
+        Mat depth(Size(640, 480), CV_16U , (void*)dev->get_frame_data(rs::stream::depth_aligned_to_color), Mat::AUTO_STEP);
+
+        // SPERIMENTANDO
+        double min;
+        double max;
+        cv::minMaxIdx(depth, &min, &max);
+
+        Mat tmp = depth;
+
+        tmp.convertTo(tmp, CV_8UC1, 255.0 / max);
+
+        //applyColorMap(tmp, tmp, COLORMAP_JET);
+
+        namedWindow("Sperimentazione", WINDOW_AUTOSIZE);
+        imshow("Sperimentazione",tmp);
 
         //-- PERFORMANCE ESTMATION
         high_resolution_clock::time_point t1 = high_resolution_clock::now(); //START
