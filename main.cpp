@@ -40,7 +40,7 @@ using namespace std::chrono;
 #define FRAMERATE       30
 
 // Calibration starting values
-#define MAX_RANGE_METER 2
+#define MAX_RANGE_METER 20
 #define BLUR_KSIZE 10
 #define AREA_MIN 30000     // This depends on the camera distance from the passengers
 #define X_NEAR 40
@@ -65,6 +65,7 @@ int main(int argc, char * argv[])
     bool calibrationOn = false;
 
     // Calibration
+    int thresholdCentimeters = MAX_RANGE_METER;
     int blur_ksize = BLUR_KSIZE;
     int areaMin = AREA_MIN;
     int xNear = X_NEAR;
@@ -111,8 +112,8 @@ int main(int argc, char * argv[])
 
             Size S(IMAGE_WIDTH,IMAGE_HEIGHT);
 
-            outputVideoColor.open(fileName + "-color.avi", CV_FOURCC('M','J','P','G'), 30, S);
-            outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('M','J','P','G'), 30, S);
+            outputVideoColor.open(fileName + "-color.avi", CV_FOURCC('M','J','P','G'), FRAMERATE, S);
+            //outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('M','J','P','G'), FRAMERATE, S);
             //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('M','J','P','G'), FRAMERATE, S);
 
             if (!outputVideoColor.isOpened())
@@ -149,8 +150,8 @@ int main(int argc, char * argv[])
     string devName = dev->get_name();
     if(devName.compare("Intel RealSense R200") == 0)
     {
-        apply_depth_control_preset(dev, 5);
-        dev->set_option(rs::option::r200_lr_auto_exposure_enabled, 1);
+        // apply_depth_control_preset(dev, 5);
+        // dev->set_option(rs::option::r200_lr_auto_exposure_enabled, 1);
         // ...
     }
 
@@ -175,7 +176,10 @@ int main(int argc, char * argv[])
     {
         // Synchronization
         if( dev->is_streaming( ) )
-            dev->wait_for_frames( );
+        {
+            //dev->wait_for_frames( );
+            dev->poll_for_frames(); // Non blocking option
+        }
 
         // Get frame data
         Mat color(Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_8UC3, (void*)dev->get_frame_data(rs::stream::color), Mat::AUTO_STEP);
@@ -254,8 +258,21 @@ int main(int argc, char * argv[])
         high_resolution_clock::time_point t1 = high_resolution_clock::now(); //START
 
         // frame = conversion(depth);
-        depth.convertTo( frame, CV_8UC1);
         
+        // OLDVER: Without thresholding
+        //depth.convertTo( frame, CV_8UC1);
+        
+        // NEWVER: With threshold
+        depth.setTo(65535, depth == NODATA);
+        depth.convertTo(depth, CV_8UC1, 255.0 / 65535);
+
+        int threshPixel = ((thresholdCentimeters / (100*scale))* 255.0) / 65535;
+        threshold(depth, depth, threshPixel, 255, THRESH_BINARY);
+
+        depth =  cv::Scalar::all(255) - depth;
+
+        frame = depth;
+
         // Horizontal line     
         line( color,
               // Vertical line
@@ -413,10 +430,11 @@ int main(int argc, char * argv[])
         // --CALIBRATION TRACKBARS
         if(calibrationOn)
         {
+            createTrackbar("Threshold", "Color", &thresholdCentimeters, 400);
             createTrackbar("Blur", "Color", &blur_ksize, 100);
             createTrackbar("xNear", "Color", &xNear, 250);
             createTrackbar("yNear", "Color", &yNear, 250);
-            createTrackbar("Area min", "Color", &areaMin, 10000);
+            createTrackbar("Area min", "Color", &areaMin, 100000);
             createTrackbar("Passenger age", "Color", &maxPassengerAge, 300);
         }
 
@@ -431,7 +449,7 @@ int main(int argc, char * argv[])
         if(saveVideo)
         {
             //outputVideoFrame.write(frame);
-            outputVideoDepth.write(tmp);
+            //outputVideoDepth.write(tmp);
             outputVideoColor.write(color);
         }
 
