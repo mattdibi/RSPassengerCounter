@@ -40,7 +40,7 @@ using namespace std::chrono;
 #define FRAMERATE       30
 
 // Calibration starting values
-#define MAX_RANGE_METER 20
+#define MAX_RANGE_METER 45
 #define BLUR_KSIZE 10
 #define AREA_MIN 30000     // This depends on the camera distance from the passengers
 #define X_NEAR 40
@@ -256,10 +256,9 @@ int main(int argc, char * argv[])
 
         //-- PERFORMANCE ESTMATION
         high_resolution_clock::time_point t1 = high_resolution_clock::now(); //START
-
-        // frame = conversion(depth);
         
         // OLDVER: Without thresholding
+        // frame = conversion(depth);
         //depth.convertTo( frame, CV_8UC1);
         
         // NEWVER: With threshold
