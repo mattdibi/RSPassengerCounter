@@ -37,14 +37,14 @@ using namespace std::chrono;
 // Camera settings
 #define IMAGE_WIDTH     640
 #define IMAGE_HEIGHT    480
-#define FRAMERATE       30
+#define FRAMERATE       60
 
 // Calibration starting values
 #define MAX_RANGE_METER 47
 #define BLUR_KSIZE 10
 #define AREA_MIN 30000     // This depends on the camera distance from the passengers
 #define X_NEAR 40
-#define Y_NEAR 125
+#define Y_NEAR 100
 #define MAX_PASSENGER_AGE 60 // 60 FPS * 1 seconds (HP: 60fps camera)
 
 #define MAX_1PASS_AREA 60000
@@ -177,8 +177,8 @@ int main(int argc, char * argv[])
         // Synchronization
         if( dev->is_streaming( ) )
         {
-            //dev->wait_for_frames( );
-            dev->poll_for_frames(); // Non blocking option
+            dev->wait_for_frames( );
+            //dev->poll_for_frames(); // Non blocking option
         }
 
         // Get frame data
@@ -259,7 +259,7 @@ int main(int argc, char * argv[])
         
         // OLDVER: Without thresholding
         // frame = conversion(depth);
-        //depth.convertTo( frame, CV_8UC1);
+        // depth.convertTo( frame, CV_8UC1);
         
         // NEWVER: With threshold
         depth.setTo(65535, depth == NODATA);
@@ -433,8 +433,8 @@ int main(int argc, char * argv[])
         {
             createTrackbar("Threshold", "Color", &thresholdCentimeters, 400);
             createTrackbar("Blur", "Color", &blur_ksize, 100);
-            createTrackbar("xNear", "Color", &xNear, 250);
-            createTrackbar("yNear", "Color", &yNear, 250);
+            createTrackbar("xNear", "Color", &xNear, IMAGE_WIDTH);
+            createTrackbar("yNear", "Color", &yNear, IMAGE_HEIGHT);
             createTrackbar("Area min", "Color", &areaMin, 100000);
             createTrackbar("Passenger age", "Color", &maxPassengerAge, 300);
         }
