@@ -202,14 +202,16 @@ int main(int argc, char * argv[])
         int farthestVal;
         Point farthestLoc;
 
-        // NOTE:
-        // The depth matrix has a strange standard:
-        //      0 = No depth data
-        //      1 - 65535 = Depth where 1 is the nearest and 65535 is the farthest
-        // I want to have 65535 as the new No depth data values
-        // 
-        // Furthermore, while displaying the depth data, I want to have the farthest object in black and the nearest in white
-        // this took some mental gimnastic to be implemented
+        /* ****************************************************************************************************************
+        NOTE:
+        The depth matrix has a strange standard:
+             0 = No depth data
+             1 - 65535 = Depth where 1 is the nearest and 65535 is the farthest
+        I want to have 65535 as the new No depth data values
+        
+        Furthermore, while displaying the depth data, I want to have the farthest object in black and the nearest in white
+        this took some mental gymnastic to be implemented
+        **************************************************************************************************************** */
 
         // Saving farthest point
         minMaxLoc(tmp, &min, &max, &tmpMinLoc, &tmpMaxLoc);
@@ -226,10 +228,6 @@ int main(int argc, char * argv[])
 
         // Converts CV_16U to CV_8U using a scale factor of 255.0/ 65535
         tmp.convertTo(tmp, CV_8UC1, 255.0 / 65535);
-
-        // -- THRESHOLDING (FIXME)
-        // int threshPixel = ((MAX_RANGE_METER / scale)* 255.0) / 65535;
-        // threshold(tmp, tmp, threshPixel, 255, THRESH_TOZERO_INV);
 
         // Current situation: Nearest object => Black, Farthest object => White
         // We want to have  : Nearest object => White, Farthest object => Black
@@ -317,7 +315,7 @@ int main(int argc, char * argv[])
                 rectangle( color, br.tl(), br.br(), GREEN, 2, 8, 0 );
                 circle( color, mc, 5, RED, 2, 8, 0 );
 
-                // Debugging multiple passenger count
+                // Debugging multiple passenger count + calibration
                 // if(areaCurrentObject > MAX_1PASS_AREA && areaCurrentObject < MAX_2PASS_AREA)
                 //     putText(color, "Area: " + to_string(areaCurrentObject) + " = 2 PASSENGERS", mc, FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
                 // else if(areaCurrentObject > MAX_2PASS_AREA)
@@ -424,8 +422,8 @@ int main(int argc, char * argv[])
             }
         }
 
-        if(passengers.size() == 0)
-            putText(color, "No passengers tracked", Point(15,  15) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
+        // Debugging
+        putText(color, "Tracked passengers: " + to_string(passengers.size()), Point(15,  15) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
 
         // --PRINTING INFORMATION
         putText(color, "Count IN: " + to_string(cnt_in), Point(0,color.rows - 10) , FONT_HERSHEY_SIMPLEX, 1, WHITE, 2);
