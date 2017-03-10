@@ -274,10 +274,6 @@ int main(int argc, char * argv[])
 
         // Horizontal line     
         line( color,
-              // Vertical line
-              //Point(frame.cols/2,0),            //Starting point of the line
-              //Point(frame.cols/2,frame.rows),   //Ending point of the line  
-              // Horizontal line
               Point(0,color.rows/2),            //Starting point of the line
               Point(color.cols,color.rows/2),   //Ending point of the line
               RED,                              //Color
@@ -336,12 +332,8 @@ int main(int argc, char * argv[])
                         passengers[i].updateCoords(mc);
 
                         // --COUNTER
-                        if(passengers[i].getTracks().size() > 2)
+                        if(passengers[i].getTracks().size() > 1)
                         {
-                            // Left to right
-                            // if(passengers[i].getLastPoint().x < frame.cols/2 &&
-                            //    passengers[i].getCurrentPoint().x > frame.cols/2)
-
                             // Up to down
                             if( (passengers[i].getLastPoint().y < frame.rows/2 && passengers[i].getCurrentPoint().y >= frame.rows/2) ||
                                 (passengers[i].getLastPoint().y <= frame.rows/2 && passengers[i].getCurrentPoint().y > frame.rows/2) )
@@ -360,10 +352,6 @@ int main(int argc, char * argv[])
                                 // Visual feedback
                                 circle(color, Point(color.cols - 20, 20), 8, RED, CV_FILLED);
                             }
-
-                            // Right to left
-                            // if(passengers[i].getLastPoint().x > frame.cols/2 &&
-                            //    passengers[i].getCurrentPoint().x < frame.cols/2)
 
                             // Down to up
                             if( (passengers[i].getLastPoint().y > frame.rows/2 && passengers[i].getCurrentPoint().y <= frame.rows/2) ||
@@ -404,10 +392,10 @@ int main(int argc, char * argv[])
         for(unsigned int i = 0; i < passengers.size(); i++)
         {
             // -- DRAWING PASSENGER TRAJECTORIES
-            if(passengers[i].getTracks().size() > 2)
+            if(passengers[i].getTracks().size() > 0)
             {
                 polylines(color, passengers[i].getTracks(), false, passengers[i].getTrackColor(),2);
-                putText(color, "Pid: " + to_string(passengers[i].getPid()), passengers[i].getCenter(), FONT_HERSHEY_SIMPLEX, 0.5, passengers[i].getTrackColor(), 2);
+                //putText(color, "Pid: " + to_string(passengers[i].getPid()), passengers[i].getCenter(), FONT_HERSHEY_SIMPLEX, 0.5, passengers[i].getTrackColor(), 2);
             }
 
             // --UPDATE PASSENGER STATS
