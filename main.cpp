@@ -40,6 +40,7 @@ using namespace std::chrono;
 #define FRAMERATE       60
 
 // Calibration starting values
+#define MAX_RANGE_METER 2
 #define BLUR_KSIZE 10
 #define AREA_MIN 10000     // This depends on the camera distance from the passengers
 #define X_NEAR 40
@@ -192,6 +193,10 @@ int main(int argc, char * argv[])
         // Converts CV_16U to CV_8U using a scale factor of 255.0/ 65535
         tmp.convertTo(tmp, CV_8UC1, 255.0 / 65535);
 
+        // -- THRESHOLDING
+        // int threshPixel = ((MAX_RANGE_METER / scale)* 255.0) / 65535;
+        // threshold(tmp, tmp, threshPixel, 255, THRESH_TOZERO_INV);
+
         // Current situation: Nearest object => Black, Farthest object => White
         // We want to have  : Nearest object => White, Farthest object => Black
         tmp =  cv::Scalar::all(255) - tmp;
@@ -202,10 +207,10 @@ int main(int argc, char * argv[])
 
         // Highlight nearest and farthest pixel
         circle( tmp, nearestLoc, 5, WHITE, 2, 8, 0 );
-        putText(tmp, "Nearest: " + to_string(nearestVal*scale) + " m", nearestLoc, FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
+        putText(tmp, "Nearest: " + to_string(nearestVal*scale) + " m", Point(0,tmp.rows - 10), FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
 
         circle( tmp, farthestLoc, 5, WHITE, 2, 8, 0 );
-        putText(tmp, "Farthest: " + to_string(farthestVal*scale) + " m", farthestLoc, FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
+        putText(tmp, "Farthest: " + to_string(farthestVal*scale) + " m", Point(color.cols - 310, color.rows - 10), FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
 
         // Display result
         namedWindow("Distance", WINDOW_AUTOSIZE);
@@ -237,7 +242,7 @@ int main(int argc, char * argv[])
         findContours(morphTrans, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 
         // For every detected object
-        for(int idx = 0 ; idx >= 0; idx = hierarchy[idx][0] )
+        for(int idx = 0; idx < hierarchy.size(); idx++)
         {
             // Draw contours for every detected object
             // drawContours( color, contours, idx, Scalar(0,255,0), 2, 8, hierarchy, 0, Point(0,0) );
