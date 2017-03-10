@@ -40,7 +40,7 @@ using namespace std::chrono;
 #define FRAMERATE       30
 
 // Calibration starting values
-#define MAX_RANGE_METER 45
+#define MAX_RANGE_METER 47
 #define BLUR_KSIZE 10
 #define AREA_MIN 30000     // This depends on the camera distance from the passengers
 #define X_NEAR 40
