@@ -54,6 +54,7 @@ void displayHelp()
 {
     cout << "HELP Avalable modes:\n";
     cout << "              - Without arguments: it opens the default webcam and captures the input stream.\n";
+    cout << "-s <filename> - Capture mode: it saves all the stream on file.\n";
     cout << "-c            - Calibration mode: it opens the default webcam and display calibration trackbars.\n";
     cout << "-h            - Display help.\n";
     return;
@@ -90,11 +91,37 @@ int main(int argc, char * argv[])
     duration<double> loopTime;
     bool firstLoop = true;
 
+    // Saving videos
+    bool saveVideo = false;
+    string fileName;
+
+    VideoWriter outputVideoColor;
+    VideoWriter outputVideoDepth;
+    VideoWriter outputVideoFrame;
+
     // --INITIALIZE VIDEOCAPTURE
     if(argc >= 2)
     {
         if(!strcmp(argv[1], "-c"))
             calibrationOn = true;
+        else if(!strcmp(argv[1], "-s"))
+        {
+            saveVideo = true;
+            fileName = argv[2];
+
+            Size S(IMAGE_WIDTH,IMAGE_HEIGHT);
+
+            outputVideoColor.open(fileName + "-color.avi", CV_FOURCC('M','J','P','G'), 30, S);
+            outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('M','J','P','G'), 30, S);
+            //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('M','J','P','G'), FRAMERATE, S);
+
+            if (!outputVideoColor.isOpened())
+            {
+                cout  << "Could not open the output video for write\n ";
+                return -1;
+            }
+
+        }
         else if(!strcmp(argv[1], "-h"))
         {
             // --HELP
@@ -242,7 +269,7 @@ int main(int argc, char * argv[])
         findContours(morphTrans, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 
         // For every detected object
-        for(int idx = 0; idx < hierarchy.size(); idx++)
+        for(unsigned int idx = 0; idx < hierarchy.size(); idx++)
         {
             // Draw contours for every detected object
             // drawContours( color, contours, idx, Scalar(0,255,0), 2, 8, hierarchy, 0, Point(0,0) );
@@ -390,6 +417,14 @@ int main(int argc, char * argv[])
         // Show videos
         imshow("Frame",frame);
         imshow("Color", color);
+
+        // -- SAVING VIDEOS
+        if(saveVideo)
+        {
+            //outputVideoFrame.write(frame);
+            outputVideoDepth.write(tmp);
+            outputVideoColor.write(color);
+        }
 
         // --PERFORMANCE ESTMATION
         high_resolution_clock::time_point t2 = high_resolution_clock::now(); //STOP
