@@ -146,8 +146,8 @@ int main(int argc, char * argv[])
     cout << "Firmware version: " << dev->get_firmware_version() << "\n";
 
     // R200 camera settings
-    string test = dev->get_name();
-    if(test.compare("Intel RealSense R200") == 0)
+    string devName = dev->get_name();
+    if(devName.compare("Intel RealSense R200") == 0)
     {
         apply_depth_control_preset(dev, 5);
         dev->set_option(rs::option::r200_lr_auto_exposure_enabled, 1);
@@ -220,7 +220,7 @@ int main(int argc, char * argv[])
         // Converts CV_16U to CV_8U using a scale factor of 255.0/ 65535
         tmp.convertTo(tmp, CV_8UC1, 255.0 / 65535);
 
-        // -- THRESHOLDING
+        // -- THRESHOLDING (FIXME)
         // int threshPixel = ((MAX_RANGE_METER / scale)* 255.0) / 65535;
         // threshold(tmp, tmp, threshPixel, 255, THRESH_TOZERO_INV);
 
