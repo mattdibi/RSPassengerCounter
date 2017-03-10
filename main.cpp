@@ -42,7 +42,7 @@ using namespace std::chrono;
 // Calibration starting values
 #define MAX_RANGE_METER 47
 #define BLUR_KSIZE 10
-#define AREA_MIN 30000     // This depends on the camera distance from the passengers
+#define AREA_MIN 10000     // This depends on the camera distance from the passengers
 #define X_NEAR 40
 #define Y_NEAR 100
 #define MAX_PASSENGER_AGE 60 // 60 FPS * 1 seconds (HP: 60fps camera)
@@ -272,7 +272,7 @@ int main(int argc, char * argv[])
 
         depth =  cv::Scalar::all(255) - depth;
 
-        frame = depth;
+        frame = depth.clone();
 
         // Horizontal line     
         line( color,
@@ -318,12 +318,12 @@ int main(int argc, char * argv[])
                 circle( color, mc, 5, RED, 2, 8, 0 );
 
                 // Debugging multiple passenger count
-                if(areaCurrentObject > MAX_1PASS_AREA && areaCurrentObject < MAX_2PASS_AREA)
-                    putText(color, "Area: " + to_string(areaCurrentObject) + " = 2 PASSENGERS", mc, FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
-                else if(areaCurrentObject > MAX_2PASS_AREA)
-                    putText(color, "Area: " + to_string(areaCurrentObject) + " = 3 PASSENGERS", mc, FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
-                else
-                    putText(color, "Area: " + to_string(areaCurrentObject) + " = 1 PASSENGERS", mc, FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
+                // if(areaCurrentObject > MAX_1PASS_AREA && areaCurrentObject < MAX_2PASS_AREA)
+                //     putText(color, "Area: " + to_string(areaCurrentObject) + " = 2 PASSENGERS", mc, FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
+                // else if(areaCurrentObject > MAX_2PASS_AREA)
+                //     putText(color, "Area: " + to_string(areaCurrentObject) + " = 3 PASSENGERS", mc, FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
+                // else
+                //     putText(color, "Area: " + to_string(areaCurrentObject) + " = 1 PASSENGERS", mc, FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
 
                 // --PASSENGERS DB UPDATE
                 bool newPassenger = true;
@@ -409,7 +409,7 @@ int main(int argc, char * argv[])
             if(passengers[i].getTracks().size() > 2)
             {
                 polylines(color, passengers[i].getTracks(), false, passengers[i].getTrackColor(),2);
-                //putText(frame, "Pid: " + to_string(passengers[i].getPid()), passengers[i].getCenter(), FONT_HERSHEY_SIMPLEX, 0.5, passengers[i].getTrackColor(), 2);
+                putText(color, "Pid: " + to_string(passengers[i].getPid()), passengers[i].getCenter(), FONT_HERSHEY_SIMPLEX, 0.5, passengers[i].getTrackColor(), 2);
             }
 
             // --UPDATE PASSENGER STATS
@@ -423,6 +423,9 @@ int main(int argc, char * argv[])
                 passengers.erase(passengers.begin() +i);
             }
         }
+
+        if(passengers.size() == 0)
+            putText(color, "No passengers tracked", Point(15,  15) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
 
         // --PRINTING INFORMATION
         putText(color, "Count IN: " + to_string(cnt_in), Point(0,color.rows - 10) , FONT_HERSHEY_SIMPLEX, 1, WHITE, 2);
