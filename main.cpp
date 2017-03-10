@@ -37,18 +37,18 @@ using namespace std::chrono;
 // Camera settings
 #define IMAGE_WIDTH     640
 #define IMAGE_HEIGHT    480
-#define FRAMERATE       60
+#define FRAMERATE       30
 
 // Calibration starting values
 #define MAX_RANGE_METER 2
 #define BLUR_KSIZE 10
-#define AREA_MIN 10000     // This depends on the camera distance from the passengers
+#define AREA_MIN 30000     // This depends on the camera distance from the passengers
 #define X_NEAR 40
-#define Y_NEAR 75
+#define Y_NEAR 125
 #define MAX_PASSENGER_AGE 60 // 60 FPS * 1 seconds (HP: 60fps camera)
 
-#define MAX_1PASS_AREA 30000
-#define MAX_2PASS_AREA 60000
+#define MAX_1PASS_AREA 60000
+#define MAX_2PASS_AREA 90000
 
 void displayHelp()
 {
@@ -162,8 +162,11 @@ int main(int argc, char * argv[])
     dev->start();
 
     // --SETUP WINDOWS
-    namedWindow("Frame",WINDOW_AUTOSIZE);
-    namedWindow("Color",WINDOW_AUTOSIZE);
+    if(!saveVideo)
+    {
+        namedWindow("Frame",WINDOW_AUTOSIZE);
+        namedWindow("Color",WINDOW_AUTOSIZE);
+    }
 
     // --GRAB AND WRITE LOOP
     cout << "Start grabbing loop\n";
@@ -240,8 +243,11 @@ int main(int argc, char * argv[])
         putText(tmp, "Farthest: " + to_string(farthestVal*scale) + " m", Point(color.cols - 310, color.rows - 10), FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
 
         // Display result
-        namedWindow("Distance", WINDOW_AUTOSIZE);
-        imshow("Distance",tmp);
+        if(!saveVideo)
+        {
+            namedWindow("Distance", WINDOW_AUTOSIZE);
+            imshow("Distance",tmp);
+        }
         /* ********************** EXPERIMENT *************************** */
 
         //-- PERFORMANCE ESTMATION
@@ -415,8 +421,11 @@ int main(int argc, char * argv[])
         }
 
         // Show videos
-        imshow("Frame",frame);
-        imshow("Color", color);
+        if(!saveVideo)
+        {
+            imshow("Frame",frame);
+            imshow("Color", color);
+        }
 
         // -- SAVING VIDEOS
         if(saveVideo)
