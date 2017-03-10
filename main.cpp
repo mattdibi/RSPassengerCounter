@@ -263,10 +263,12 @@ int main(int argc, char * argv[])
         
         // NEWVER: With threshold
         depth.setTo(65535, depth == NODATA);
-        depth.convertTo(depth, CV_8UC1, 255.0 / 65535);
+        depth.convertTo(depth, CV_32FC1); // Threshold only accepts CV_8U or CV_32F types
 
-        int threshPixel = ((thresholdCentimeters / (100*scale))* 255.0) / 65535;
-        threshold(depth, depth, threshPixel, 255, THRESH_BINARY);
+        int threshPixel = thresholdCentimeters / (100*scale);
+        threshold(depth, depth, threshPixel, 65535, THRESH_BINARY);
+
+        depth.convertTo(depth, CV_8UC1, 255.0 / 65535); // Convert to CV_8U
 
         depth =  cv::Scalar::all(255) - depth;
 
