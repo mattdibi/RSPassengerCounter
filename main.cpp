@@ -151,9 +151,12 @@ int main(int argc, char * argv[])
     if(devName.compare("Intel RealSense R200") == 0)
     {
         // apply_depth_control_preset(dev, 5);
-        // dev->set_option(rs::option::r200_lr_auto_exposure_enabled, 1);
+        // dev->set_option(rs::option::r200_lr_auto_exposure_enabled, 0);
         // ...
     }
+
+    // Global camera settings
+    //dev->set_option(rs::option::color_exposure, 500);
 
     // Configure stream
     dev->enable_stream(rs::stream::color, IMAGE_WIDTH, IMAGE_HEIGHT, rs::format::bgr8, FRAMERATE);
@@ -172,6 +175,11 @@ int main(int argc, char * argv[])
     // --GRAB AND WRITE LOOP
     cout << "Start grabbing loop\n";
 
+    // Framerate calculation variables
+    int frames = 0; 
+    float time = 0, fps = 0;
+    auto tf0 = std::chrono::high_resolution_clock::now();
+
     while(1)
     {
         // Synchronization
@@ -179,6 +187,18 @@ int main(int argc, char * argv[])
         {
             dev->wait_for_frames( );
             //dev->poll_for_frames(); // Non blocking option
+        }
+
+        // Framerate
+        auto tf1 = std::chrono::high_resolution_clock::now();
+        time += std::chrono::duration<float>(tf1-tf0).count();
+        tf0 = tf1;
+        ++frames;
+        if(time > 0.5f)
+        {
+            fps = frames / time;
+            frames = 0;
+            time = 0;
         }
 
         // Get frame data
@@ -259,7 +279,7 @@ int main(int argc, char * argv[])
         // frame = conversion(depth);
         // depth.convertTo( frame, CV_8UC1);
         
-        // NEWVER: With threshold
+        // NEWVER: With variable threshold
         depth.setTo(65535, depth == NODATA);
         depth.convertTo(depth, CV_32FC1); // Threshold only accepts CV_8U or CV_32F types
 
@@ -411,7 +431,8 @@ int main(int argc, char * argv[])
         }
 
         // Debugging
-        putText(color, "Tracked passengers: " + to_string(passengers.size()), Point(15,  15) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
+        // putText(color, "Tracked passengers: " + to_string(passengers.size()), Point(15,  15) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
+        putText(color, "FPS: " + to_string(fps), Point(15,  15) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
 
         // --PRINTING INFORMATION
         putText(color, "Count IN: " + to_string(cnt_in), Point(0,color.rows - 10) , FONT_HERSHEY_SIMPLEX, 1, WHITE, 2);
