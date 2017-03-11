@@ -40,11 +40,11 @@ using namespace std::chrono;
 #define FRAMERATE       60
 
 // Calibration starting values
-#define MAX_RANGE_METER 47
+#define MAX_RANGE_METER 43
 #define BLUR_KSIZE 10
 #define AREA_MIN 10000     // This depends on the camera distance from the passengers
 #define X_NEAR 40
-#define Y_NEAR 100
+#define Y_NEAR 90
 #define MAX_PASSENGER_AGE 60 // 60 FPS * 1 seconds (HP: 60fps camera)
 
 #define MAX_1PASS_AREA 60000
@@ -112,9 +112,10 @@ int main(int argc, char * argv[])
 
             Size S(IMAGE_WIDTH,IMAGE_HEIGHT);
 
-            outputVideoColor.open(fileName + "-color.avi", CV_FOURCC('M','J','P','G'), FRAMERATE, S);
-            //outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('M','J','P','G'), FRAMERATE, S);
-            //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('M','J','P','G'), FRAMERATE, S);
+            // IMPORTANT: 30 FPS was found after experimenting
+            outputVideoColor.open(fileName + "-color.avi", CV_FOURCC('M','J','P','G'), 30, S);
+            outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('M','J','P','G'), 30, S);
+            //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('M','J','P','G'), 30, S);
 
             if (!outputVideoColor.isOpened())
             {
@@ -462,7 +463,7 @@ int main(int argc, char * argv[])
         if(saveVideo)
         {
             //outputVideoFrame.write(frame);
-            //outputVideoDepth.write(tmp);
+            outputVideoDepth.write(tmp);
             outputVideoColor.write(color);
         }
 
