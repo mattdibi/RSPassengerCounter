@@ -182,11 +182,14 @@ int main(int argc, char * argv[])
 
     while(1)
     {
+        //-- PERFORMANCE ESTMATION
+        high_resolution_clock::time_point t1 = high_resolution_clock::now(); //START
+
         // Synchronization
         if( dev->is_streaming( ) )
         {
-            dev->wait_for_frames( );
-            //dev->poll_for_frames(); // Non blocking option
+            //dev->wait_for_frames( );
+            dev->poll_for_frames(); // Non blocking option
         }
 
         // Framerate
@@ -272,8 +275,7 @@ int main(int argc, char * argv[])
         }
         /* ********************** EXPERIMENT *************************** */
 
-        //-- PERFORMANCE ESTMATION
-        high_resolution_clock::time_point t1 = high_resolution_clock::now(); //START
+        
         
         // OLDVER: Without thresholding
         // frame = conversion(depth);
@@ -475,11 +477,7 @@ int main(int argc, char * argv[])
             loopTime = loopTime/2;
         }
 
-        if(waitKey(30) == 27) //wait for 'esc' key press for 30 ms. If 'esc' key is pressed, break loop
-        {
-            cout << "esc key is pressed by user" << endl; 
-            break;
-        }
+        waitKey(1);
 
         firstLoop = false;
 
