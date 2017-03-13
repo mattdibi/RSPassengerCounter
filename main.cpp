@@ -35,8 +35,8 @@ using namespace std::chrono;
 #define BLACK Scalar(0,0,0)
 
 // Camera settings
-#define IMAGE_WIDTH     640
-#define IMAGE_HEIGHT    480
+#define IMAGE_WIDTH     320
+#define IMAGE_HEIGHT    240
 #define FRAMERATE       60
 
 // Calibration starting values
@@ -171,6 +171,8 @@ int main(int argc, char * argv[])
     {
         namedWindow("Frame",WINDOW_AUTOSIZE);
         namedWindow("Color",WINDOW_AUTOSIZE);
+
+        namedWindow("Distance", WINDOW_AUTOSIZE);
     }
 
     // --GRAB AND WRITE LOOP
@@ -207,7 +209,7 @@ int main(int argc, char * argv[])
 
         // Get frame data
         Mat color(Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_8UC3, (void*)dev->get_frame_data(rs::stream::color), Mat::AUTO_STEP);
-        Mat depth(Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_16U , (void*)dev->get_frame_data(rs::stream::depth_aligned_to_color), Mat::AUTO_STEP);
+        Mat depth(Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_16U , (void*)dev->get_frame_data(rs::stream::depth), Mat::AUTO_STEP);
 
         /* ********************** EXPERIMENT *************************** */
         Mat tmp = depth.clone(); //Deep copy (tmp has its own copy of the pixels of depth)
@@ -270,13 +272,8 @@ int main(int argc, char * argv[])
 
         // Display result
         if(!saveVideo)
-        {
-            namedWindow("Distance", WINDOW_AUTOSIZE);
             imshow("Distance",tmp);
-        }
         /* ********************** EXPERIMENT *************************** */
-
-        
         
         // OLDVER: Without thresholding
         // frame = conversion(depth);
@@ -302,7 +299,7 @@ int main(int argc, char * argv[])
               RED,                              //Color
               2,                                //Thickness
               8);                               //Linetype
-
+        
         // Blurring the image
         blur(frame, morphTrans, Size(blur_ksize,blur_ksize));
 
