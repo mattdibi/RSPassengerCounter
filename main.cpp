@@ -40,12 +40,12 @@ using namespace std::chrono;
 #define FRAMERATE       30
 
 // Calibration starting values
-#define MAX_RANGE_METER 43
-#define BLUR_KSIZE 10
-#define AREA_MIN 10000     // This depends on the camera distance from the passengers
-#define X_NEAR 40
-#define Y_NEAR 90
-#define MAX_PASSENGER_AGE 60 // 60 FPS * 1 seconds (HP: 60fps camera)
+#define MAX_RANGE_CM 43         // [centimeters]
+#define BLUR_KSIZE 10           // [matrix size]
+#define AREA_MIN 10000          // [pixels^2]: This depends on the camera distance from the passengers
+#define X_NEAR 40               // [pixels]
+#define Y_NEAR 90               // [pixels]
+#define MAX_PASSENGER_AGE 2     // [seconds]
 
 #define MAX_1PASS_AREA 60000
 #define MAX_2PASS_AREA 90000
@@ -67,7 +67,7 @@ int main(int argc, char * argv[])
     bool depthColorMapOn = false;
 
     // Calibration
-    int thresholdCentimeters = MAX_RANGE_METER;
+    int thresholdCentimeters = MAX_RANGE_CM;
     int blur_ksize = BLUR_KSIZE;
     int areaMin = AREA_MIN;
     int xNear = X_NEAR;
@@ -427,7 +427,7 @@ int main(int argc, char * argv[])
 
             // Removing older passengers
             // NB: The age depends on the FPS that the camera is capturing!
-            if(passengers[i].getAge() > maxPassengerAge)
+            if(passengers[i].getAge() > (maxPassengerAge * fps) )
             {
                 passengers.erase(passengers.begin() +i);
             }
@@ -444,12 +444,12 @@ int main(int argc, char * argv[])
         // --CALIBRATION TRACKBARS
         if(calibrationOn)
         {
-            createTrackbar("Threshold", "Color", &thresholdCentimeters, 400);
-            createTrackbar("Blur", "Color", &blur_ksize, 100);
-            createTrackbar("xNear", "Color", &xNear, IMAGE_WIDTH);
-            createTrackbar("yNear", "Color", &yNear, IMAGE_HEIGHT);
-            createTrackbar("Area min", "Color", &areaMin, 100000);
-            createTrackbar("Passenger age", "Color", &maxPassengerAge, 300);
+            createTrackbar("Threshold [centimeters]", "Color", &thresholdCentimeters, 400);
+            createTrackbar("Blur [matrix size]", "Color", &blur_ksize, 100);
+            createTrackbar("xNear [pixels]", "Color", &xNear, IMAGE_WIDTH);
+            createTrackbar("yNear [pixels]", "Color", &yNear, IMAGE_HEIGHT);
+            createTrackbar("Area min [pixels^2]", "Color", &areaMin, 100000);
+            createTrackbar("Passenger age [seconds]", "Color", &maxPassengerAge, 30);
         }
 
         // Show videos
