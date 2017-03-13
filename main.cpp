@@ -35,8 +35,8 @@ using namespace std::chrono;
 #define BLACK Scalar(0,0,0)
 
 // Camera settings
-#define IMAGE_WIDTH     320
-#define IMAGE_HEIGHT    240
+#define IMAGE_WIDTH     640
+#define IMAGE_HEIGHT    480
 #define FRAMERATE       60
 
 // Calibration starting values
@@ -152,7 +152,6 @@ int main(int argc, char * argv[])
     if(devName.compare("Intel RealSense R200") == 0)
     {
         // apply_depth_control_preset(dev, 5);
-        // dev->set_option(rs::option::r200_lr_auto_exposure_enabled, 0);
         // ...
     }
 
@@ -165,6 +164,9 @@ int main(int argc, char * argv[])
 
     // Start streaming
     dev->start();
+
+    // Get device depth scale
+    float scale = dev->get_depth_scale();
 
     // --SETUP WINDOWS
     if(!saveVideo)
@@ -213,9 +215,6 @@ int main(int argc, char * argv[])
 
         /* ********************** EXPERIMENT *************************** */
         Mat tmp = depth.clone(); //Deep copy (tmp has its own copy of the pixels of depth)
-
-        // Finding current scale
-        float scale = dev->get_depth_scale();
 
         double min;
         double max;
