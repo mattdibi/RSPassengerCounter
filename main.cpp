@@ -37,7 +37,7 @@ using namespace std::chrono;
 // Camera settings
 #define IMAGE_WIDTH     640
 #define IMAGE_HEIGHT    480
-#define FRAMERATE       60
+#define FRAMERATE       30
 
 // Calibration starting values
 #define MAX_RANGE_METER 43
@@ -54,7 +54,7 @@ void displayHelp()
 {
     cout << "HELP Avalable modes:\n";
     cout << "              - Without arguments: it opens the default webcam and captures the input stream.\n";
-    cout << "-d            - Depth mode: it display the depth color map.\n";
+    cout << "-d            - Depth mode: it display the depth color map. WARNING: may decrese performance\n";
     cout << "-s <filename> - Capture mode: it saves all the stream on file.\n";
     cout << "-c            - Calibration mode: it opens the default webcam and display calibration trackbars.\n";
     cout << "-h            - Display help.\n";
@@ -118,7 +118,7 @@ int main(int argc, char * argv[])
             Size S(IMAGE_WIDTH,IMAGE_HEIGHT);
 
             // IMPORTANT: 30 FPS was found after experimenting
-            outputVideoColor.open(fileName + "-color.avi", CV_FOURCC('M','J','P','G'), 60, S);
+            outputVideoColor.open(fileName + "-color.avi", CV_FOURCC('M','J','P','G'), FRAMERATE, S);
             //outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('M','J','P','G'), 30, S);
             //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('M','J','P','G'), 60, S);
 
@@ -199,8 +199,8 @@ int main(int argc, char * argv[])
         // Synchronization
         if( dev->is_streaming( ) )
         {
-            //dev->wait_for_frames( );
-            dev->poll_for_frames(); // Non blocking option
+            dev->wait_for_frames( );
+            //dev->poll_for_frames(); // Non blocking option
         }
 
         // Framerate
