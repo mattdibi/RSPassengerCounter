@@ -63,6 +63,7 @@ void displayHelp()
 int main(int argc, char * argv[])
 {
     bool calibrationOn = false;
+    bool depthColorMapOn = false;
 
     // Calibration
     int thresholdCentimeters = MAX_RANGE_METER;
@@ -83,6 +84,7 @@ int main(int argc, char * argv[])
     // Streams
     Mat frame;
     Mat morphTrans;
+    Mat depthColorMap;
 
     // Contours variables
     vector<vector<Point> > contours;
@@ -105,6 +107,8 @@ int main(int argc, char * argv[])
     {
         if(!strcmp(argv[1], "-c"))
             calibrationOn = true;
+        else if(!strcmp(argv[1], "-d"))
+            depthColorMapOn = true;
         else if(!strcmp(argv[1], "-s"))
         {
             saveVideo = true;
@@ -113,8 +117,8 @@ int main(int argc, char * argv[])
             Size S(IMAGE_WIDTH,IMAGE_HEIGHT);
 
             // IMPORTANT: 30 FPS was found after experimenting
-            outputVideoColor.open(fileName + "-color.avi", CV_FOURCC('M','J','P','G'), 30, S);
-            outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('M','J','P','G'), 30, S);
+            outputVideoColor.open(fileName + "-color.avi", CV_FOURCC('M','J','P','G'), 60, S);
+            //outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('M','J','P','G'), 30, S);
             //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('M','J','P','G'), 30, S);
 
             if (!outputVideoColor.isOpened())
@@ -174,7 +178,8 @@ int main(int argc, char * argv[])
         namedWindow("Frame",WINDOW_AUTOSIZE);
         namedWindow("Color",WINDOW_AUTOSIZE);
 
-        namedWindow("Distance", WINDOW_AUTOSIZE);
+        if(depthColorMapOn)
+            namedWindow("Distance", WINDOW_AUTOSIZE);
     }
 
     // --GRAB AND WRITE LOOP
@@ -213,66 +218,64 @@ int main(int argc, char * argv[])
         Mat color(Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_8UC3, (void*)dev->get_frame_data(rs::stream::color), Mat::AUTO_STEP);
         Mat depth(Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_16U , (void*)dev->get_frame_data(rs::stream::depth), Mat::AUTO_STEP);
 
-        /* ********************** EXPERIMENT *************************** */
-        Mat tmp = depth.clone(); //Deep copy (tmp has its own copy of the pixels of depth)
+        // -- DEPTH COLOR STREAM DISPLAY
+        if(depthColorMapOn)
+        {
+            depthColorMap = depth.clone(); //Deep copy (depthColorMap has its own copy of the pixels of depth)
 
-        double min;
-        double max;
-        Point tmpMinLoc;
-        Point tmpMaxLoc;
+            double min;
+            double max;
+            Point tmpMinLoc;
+            Point tmpMaxLoc;
 
-        int nearestVal;
-        Point nearestLoc;
+            int nearestVal;
+            Point nearestLoc;
 
-        int farthestVal;
-        Point farthestLoc;
+            int farthestVal;
+            Point farthestLoc;
 
-        /* ****************************************************************************************************************
-        NOTE:
-        The depth matrix has a strange standard:
-             0 = No depth data
-             1 - 65535 = Depth where 1 is the nearest and 65535 is the farthest
-        I want to have 65535 as the new No depth data values
-        
-        Furthermore, while displaying the depth data, I want to have the farthest object in black and the nearest in white
-        this took some mental gymnastic to be implemented
-        **************************************************************************************************************** */
+            /* ****************************************************************************************************************
+            NOTE:
+            The depth matrix has a strange standard:
+                0 = No depth data
+                1 - 65535 = Depth where 1 is the nearest and 65535 is the farthest
+            I want to have 65535 as the new No depth data values
+            
+            Furthermore, while displaying the depth data, I want to have the farthest object in black and the nearest in white
+            this took some mental gymnastic to be implemented
+            **************************************************************************************************************** */
 
-        // Saving farthest point
-        minMaxLoc(tmp, &min, &max, &tmpMinLoc, &tmpMaxLoc);
-        farthestVal = max;
-        farthestLoc = tmpMaxLoc;
+            // Saving farthest point
+            minMaxLoc(depthColorMap, &min, &max, &tmpMinLoc, &tmpMaxLoc);
+            farthestVal = max;
+            farthestLoc = tmpMaxLoc;
 
-        // If pixelValue == 0 set it to 65535( = 2^16 - 1)
-        tmp.setTo(65535, tmp == NODATA);
+            // If pixelValue == 0 set it to 65535( = 2^16 - 1)
+            depthColorMap.setTo(65535, depthColorMap == NODATA);
 
-        // Saving nearest point
-        minMaxLoc(tmp, &min, &max, &tmpMinLoc, &tmpMaxLoc);
-        nearestVal = min;
-        nearestLoc = tmpMinLoc;
+            // Saving nearest point
+            minMaxLoc(depthColorMap, &min, &max, &tmpMinLoc, &tmpMaxLoc);
+            nearestVal = min;
+            nearestLoc = tmpMinLoc;
 
-        // Converts CV_16U to CV_8U using a scale factor of 255.0/ 65535
-        tmp.convertTo(tmp, CV_8UC1, 255.0 / 65535);
+            // Converts CV_16U to CV_8U using a scale factor of 255.0/ 65535
+            depthColorMap.convertTo(depthColorMap, CV_8UC1, 255.0 / 65535);
 
-        // Current situation: Nearest object => Black, Farthest object => White
-        // We want to have  : Nearest object => White, Farthest object => Black
-        tmp =  cv::Scalar::all(255) - tmp;
+            // Current situation: Nearest object => Black, Farthest object => White
+            // We want to have  : Nearest object => White, Farthest object => Black
+            depthColorMap =  cv::Scalar::all(255) - depthColorMap;
 
-        // Color map: Nearest object => Red, Farthest object => Blue
-        equalizeHist( tmp, tmp );
-        applyColorMap(tmp, tmp, COLORMAP_JET);
+            // Color map: Nearest object => Red, Farthest object => Blue
+            equalizeHist( depthColorMap, depthColorMap );
+            applyColorMap(depthColorMap, depthColorMap, COLORMAP_JET);
 
-        // Highlight nearest and farthest pixel
-        circle( tmp, nearestLoc, 5, WHITE, 2, 8, 0 );
-        putText(tmp, "Nearest: " + to_string(nearestVal*scale) + " m", Point(0, tmp.rows - 30), FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
+            // Highlight nearest and farthest pixel
+            circle( depthColorMap, nearestLoc, 5, WHITE, 2, 8, 0 );
+            putText(depthColorMap, "Nearest: " + to_string(nearestVal*scale) + " m", Point(0, depthColorMap.rows - 30), FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
 
-        circle( tmp, farthestLoc, 5, WHITE, 2, 8, 0 );
-        putText(tmp, "Farthest: " + to_string(farthestVal*scale) + " m", Point(0, tmp.rows - 10), FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
-
-        // Display result
-        if(!saveVideo)
-            imshow("Distance",tmp);
-        /* ********************** EXPERIMENT *************************** */
+            circle( depthColorMap, farthestLoc, 5, WHITE, 2, 8, 0 );
+            putText(depthColorMap, "Farthest: " + to_string(farthestVal*scale) + " m", Point(0, depthColorMap.rows - 10), FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
+        }
         
         // OLDVER: Without thresholding
         // frame = conversion(depth);
@@ -453,13 +456,16 @@ int main(int argc, char * argv[])
         {
             imshow("Frame",frame);
             imshow("Color", color);
+
+            if(depthColorMapOn)
+                imshow("Distance",depthColorMap);
         }
 
         // -- SAVING VIDEOS
         if(saveVideo)
         {
             //outputVideoFrame.write(frame);
-            outputVideoDepth.write(tmp);
+            //outputVideoDepth.write(depthColorMap);
             outputVideoColor.write(color);
         }
 
