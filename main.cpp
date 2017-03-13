@@ -35,9 +35,9 @@ using namespace std::chrono;
 #define BLACK Scalar(0,0,0)
 
 // Camera settings
-#define IMAGE_WIDTH     640
-#define IMAGE_HEIGHT    480
-#define FRAMERATE       30
+#define IMAGE_WIDTH     320
+#define IMAGE_HEIGHT    240
+#define FRAMERATE       60
 
 // Calibration starting values
 #define MAX_RANGE_CM 43         // [centimeters]
@@ -117,10 +117,9 @@ int main(int argc, char * argv[])
 
             Size S(IMAGE_WIDTH,IMAGE_HEIGHT);
 
-            // IMPORTANT: 30 FPS was found after experimenting
-            outputVideoColor.open(fileName + "-color.avi", CV_FOURCC('M','J','P','G'), FRAMERATE, S);
-            //outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('M','J','P','G'), 30, S);
-            //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('M','J','P','G'), 60, S);
+            outputVideoColor.open(fileName + "-color.avi", CV_FOURCC('D', 'I', 'V', 'X'), FRAMERATE, S);
+            //outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('D', 'I', 'V', 'X'), FRAMERATE, S);
+            //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('D', 'I', 'V', 'X'), FRAMERATE, S);
 
             if (!outputVideoColor.isOpened())
             {
