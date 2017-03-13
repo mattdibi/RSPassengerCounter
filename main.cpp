@@ -263,10 +263,10 @@ int main(int argc, char * argv[])
 
         // Highlight nearest and farthest pixel
         circle( tmp, nearestLoc, 5, WHITE, 2, 8, 0 );
-        putText(tmp, "Nearest: " + to_string(nearestVal*scale) + " m", Point(0,tmp.rows - 10), FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
+        putText(tmp, "Nearest: " + to_string(nearestVal*scale) + " m", Point(0, tmp.rows - 30), FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
 
         circle( tmp, farthestLoc, 5, WHITE, 2, 8, 0 );
-        putText(tmp, "Farthest: " + to_string(farthestVal*scale) + " m", Point(color.cols - 310, color.rows - 10), FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
+        putText(tmp, "Farthest: " + to_string(farthestVal*scale) + " m", Point(0, tmp.rows - 10), FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
 
         // Display result
         if(!saveVideo)
@@ -435,11 +435,11 @@ int main(int argc, char * argv[])
 
         // Debugging
         // putText(color, "Tracked passengers: " + to_string(passengers.size()), Point(15,  15) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
-        putText(color, "FPS: " + to_string(fps), Point(15,  15) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
+        putText(color, "FPS: " + to_string(fps), Point(0,  15) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
 
         // --PRINTING INFORMATION
-        putText(color, "Count IN: " + to_string(cnt_in), Point(0,color.rows - 10) , FONT_HERSHEY_SIMPLEX, 1, WHITE, 2);
-        putText(color, "Count OUT: " + to_string(cnt_out), Point(color.cols - 310, color.rows - 10) , FONT_HERSHEY_SIMPLEX, 1, WHITE, 2);
+        putText(color, "Count IN: "  + to_string(cnt_in), Point(0,color.rows - 30) , FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
+        putText(color, "Count OUT: " + to_string(cnt_out), Point(0, color.rows - 10) , FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
 
         // --CALIBRATION TRACKBARS
         if(calibrationOn)
@@ -478,7 +478,8 @@ int main(int argc, char * argv[])
             loopTime = loopTime/2;
         }
 
-        waitKey(1);
+        // Wait for ESC to be pressed for 1ms to exit program
+        if (waitKey(1) == 27) break;
 
         firstLoop = false;
 
