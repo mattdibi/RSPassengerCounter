@@ -1,9 +1,14 @@
 /**
-    PCN (Passenger CouNter)
+    RSPCN (RealSense Passenger CouNter)
     Purpose: Creating a computer vision system that counts passengers entering/exiting a door in a transportation environment
+             using Intel RealSense cameras.
+
+    Range:
+        Intel RealSense SR300 @640x480 30FPS = [30; 400] cm
+        Intel RealSense R200  @320x240 60FPS = [10; 150] cm
 
     @author Mattia Dal Ben
-    @version 1.0 23/02/2017
+    @version 1.0 14/03/2017
 
 */
 
