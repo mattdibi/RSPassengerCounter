@@ -7,6 +7,8 @@
         Intel RealSense SR300 @640x480 30FPS = [30; 400] cm
         Intel RealSense R200  @320x240 60FPS = [10; 150] cm
 
+    Note: it should be possible to achive 90FPS on the R200 but only with the depth stream
+
     @author Mattia Dal Ben
     @version 1.0 14/03/2017
 
