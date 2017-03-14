@@ -22,3 +22,13 @@ For the development I'm going to use:
 Performance achived on Eurotech platform:
 * Intel RealSense SR300 @640x480 30FPS = [30; 400] cm range
 * Intel RealSense R200  @320x240 60FPS = [10; 150] cm range
+
+### Options
+```sh
+              - Without arguments: it opens the default webcam and captures the input stream.
+-d            - Depth mode: it display the depth color map. WARNING: may decrese performance
+-s <filename> - Capture mode: it saves all the stream on file.
+-c            - Calibration mode: it opens the default webcam and display calibration trackbars.
+-x            - Disable framerate stabilization. The program will run at max FPS possible.
+-h            - Display help.
+```
