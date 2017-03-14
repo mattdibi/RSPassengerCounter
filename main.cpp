@@ -35,9 +35,14 @@ using namespace std::chrono;
 #define BLACK Scalar(0,0,0)
 
 // Camera settings
-#define IMAGE_WIDTH     320
-#define IMAGE_HEIGHT    240
-#define FRAMERATE       60
+#define IMAGE_WIDTH_R200     320
+#define IMAGE_HEIGHT_R200    240
+#define FRAMERATE_R200       60
+
+#define IMAGE_WIDTH_SR300     640
+#define IMAGE_HEIGHT_SR300    480
+#define FRAMERATE_SR300       30
+
 
 // Calibration starting values
 #define MAX_RANGE_CM 43         // [centimeters]
@@ -47,8 +52,8 @@ using namespace std::chrono;
 #define Y_NEAR 90               // [pixels]
 #define MAX_PASSENGER_AGE 2     // [seconds]
 
-#define MAX_1PASS_AREA 60000
-#define MAX_2PASS_AREA 90000
+#define MAX_1PASS_AREA 60000    // [pixels^2]
+#define MAX_2PASS_AREA 90000    // [pixels^2]
 
 void displayHelp()
 {
@@ -65,6 +70,11 @@ int main(int argc, char * argv[])
 {
     bool calibrationOn = false;
     bool depthColorMapOn = false;
+
+    // Camera options
+    int ImageWidth;
+    int ImageHeight;
+    int CameraFramerate;
 
     // Calibration
     int thresholdCentimeters = MAX_RANGE_CM;
@@ -104,6 +114,37 @@ int main(int argc, char * argv[])
     VideoWriter outputVideoFrame;
 
     // --INITIALIZE VIDEOCAPTURE
+    // Get first realsense device
+    context ctx;
+    device * dev = ctx.get_device(0);
+
+    // Display device INFORMATION
+    string devName = dev->get_name();
+    cout << "Device: " << devName << "\n";
+    cout << "Serial number: " << dev->get_serial() << "\n";
+    cout << "Firmware version: " << dev->get_firmware_version() << "\n";
+
+    // Camera settings
+    if(devName.compare("Intel RealSense R200") == 0)
+    {
+        // apply_depth_control_preset(dev, 5);
+        // ...
+
+        ImageWidth = IMAGE_WIDTH_R200;
+        ImageHeight = IMAGE_HEIGHT_R200;
+        CameraFramerate = FRAMERATE_R200;
+    }
+    else if(devName.compare("Intel RealSense SR300") == 0)
+    {
+        ImageWidth = IMAGE_WIDTH_SR300;
+        ImageHeight = IMAGE_HEIGHT_SR300;
+        CameraFramerate = FRAMERATE_SR300;
+    }
+
+    // Global camera settings
+    //dev->set_option(rs::option::color_exposure, 500);
+
+    // --SETTING PCN MODE
     if(argc >= 2)
     {
         if(!strcmp(argv[1], "-c"))
@@ -115,11 +156,11 @@ int main(int argc, char * argv[])
             saveVideo = true;
             fileName = argv[2];
 
-            Size S(IMAGE_WIDTH,IMAGE_HEIGHT);
+            Size S(ImageWidth,ImageHeight);
 
-            outputVideoColor.open(fileName + "-color.avi", CV_FOURCC('D', 'I', 'V', 'X'), FRAMERATE, S);
-            //outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('D', 'I', 'V', 'X'), FRAMERATE, S);
-            //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('D', 'I', 'V', 'X'), FRAMERATE, S);
+            outputVideoColor.open(fileName + "-color.avi", CV_FOURCC('D', 'I', 'V', 'X'), CameraFramerate, S);
+            //outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('D', 'I', 'V', 'X'), CameraFramerate, S);
+            //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('D', 'I', 'V', 'X'), CameraFramerate, S);
 
             if (!outputVideoColor.isOpened())
             {
@@ -142,29 +183,9 @@ int main(int argc, char * argv[])
         }
     }
 
-    // Get first realsense device
-    context ctx;
-    device * dev = ctx.get_device(0);
-
-    // Display device INFORMATION
-    cout << "Device: " << dev->get_name() << "\n";
-    cout << "Serial number: " << dev->get_serial() << "\n";
-    cout << "Firmware version: " << dev->get_firmware_version() << "\n";
-
-    // R200 camera settings
-    string devName = dev->get_name();
-    if(devName.compare("Intel RealSense R200") == 0)
-    {
-        // apply_depth_control_preset(dev, 5);
-        // ...
-    }
-
-    // Global camera settings
-    //dev->set_option(rs::option::color_exposure, 500);
-
     // Configure stream
-    dev->enable_stream(rs::stream::color, IMAGE_WIDTH, IMAGE_HEIGHT, rs::format::bgr8, FRAMERATE);
-    dev->enable_stream(rs::stream::depth, IMAGE_WIDTH, IMAGE_HEIGHT, rs::format::z16, FRAMERATE);
+    dev->enable_stream(rs::stream::color, ImageWidth, ImageHeight, rs::format::bgr8, CameraFramerate);
+    dev->enable_stream(rs::stream::depth, ImageWidth, ImageHeight, rs::format::z16, CameraFramerate);
 
     // Start streaming
     dev->start();
@@ -215,8 +236,8 @@ int main(int argc, char * argv[])
         }
 
         // Get frame data
-        Mat color(Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_8UC3, (void*)dev->get_frame_data(rs::stream::color), Mat::AUTO_STEP);
-        Mat depth(Size(IMAGE_WIDTH, IMAGE_HEIGHT), CV_16U , (void*)dev->get_frame_data(rs::stream::depth), Mat::AUTO_STEP);
+        Mat color(Size(ImageWidth, ImageHeight), CV_8UC3, (void*)dev->get_frame_data(rs::stream::color), Mat::AUTO_STEP);
+        Mat depth(Size(ImageWidth, ImageHeight), CV_16U , (void*)dev->get_frame_data(rs::stream::depth), Mat::AUTO_STEP);
 
         // -- DEPTH COLOR STREAM DISPLAY
         if(depthColorMapOn)
@@ -445,8 +466,8 @@ int main(int argc, char * argv[])
         {
             createTrackbar("Threshold [centimeters]", "Color", &thresholdCentimeters, 400);
             createTrackbar("Blur [matrix size]", "Color", &blur_ksize, 100);
-            createTrackbar("xNear [pixels]", "Color", &xNear, IMAGE_WIDTH);
-            createTrackbar("yNear [pixels]", "Color", &yNear, IMAGE_HEIGHT);
+            createTrackbar("xNear [pixels]", "Color", &xNear, ImageWidth);
+            createTrackbar("yNear [pixels]", "Color", &yNear, ImageHeight);
             createTrackbar("Area min [pixels^2]", "Color", &areaMin, 100000);
             createTrackbar("Passenger age [seconds]", "Color", &maxPassengerAge, 30);
         }
