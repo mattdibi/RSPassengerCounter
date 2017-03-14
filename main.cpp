@@ -67,6 +67,7 @@ void displayHelp()
     cout << "-d            - Depth mode: it display the depth color map. WARNING: may decrese performance\n";
     cout << "-s <filename> - Capture mode: it saves all the stream on file.\n";
     cout << "-c            - Calibration mode: it opens the default webcam and display calibration trackbars.\n";
+    cout << "-x            - Disable framerate stabilization. The program will run at max FPS possible.\n";
     cout << "-h            - Display help.\n";
     return;
 }
@@ -75,6 +76,7 @@ int main(int argc, char * argv[])
 {
     bool calibrationOn = false;
     bool depthColorMapOn = false;
+    bool framerateStabilizationOn = true;
 
     // Camera options
     int ImageWidth;
@@ -156,6 +158,8 @@ int main(int argc, char * argv[])
             calibrationOn = true;
         else if(!strcmp(argv[1], "-d"))
             depthColorMapOn = true;
+        else if(!strcmp(argv[1], "-x"))
+            framerateStabilizationOn = false;
         else if(!strcmp(argv[1], "-s"))
         {
             saveVideo = true;
@@ -224,8 +228,10 @@ int main(int argc, char * argv[])
         // Synchronization
         if( dev->is_streaming( ) )
         {
-            dev->wait_for_frames( );
-            //dev->poll_for_frames(); // Non blocking option
+            if(framerateStabilizationOn)
+                dev->wait_for_frames( );
+            else
+                dev->poll_for_frames(); // Non blocking option
         }
 
         // Framerate
