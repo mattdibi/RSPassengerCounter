@@ -169,9 +169,9 @@ int main(int argc, char * argv[])
 
             Size S(ImageWidth,ImageHeight);
 
-            outputVideoColor.open(fileName + "-color.avi", CV_FOURCC('D', 'I', 'V', 'X'), CameraFramerate, S);
-            //outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('D', 'I', 'V', 'X'), CameraFramerate, S);
-            //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('D', 'I', 'V', 'X'), CameraFramerate, S);
+            outputVideoColor.open(fileName + "-color.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
+            //outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
+            //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
 
             if (!outputVideoColor.isOpened())
             {
