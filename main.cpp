@@ -41,6 +41,10 @@ using namespace std::chrono;
 #define WHITE Scalar(255,255,255)
 #define BLACK Scalar(0,0,0)
 
+// Cameras
+#define SR300 0
+#define R200  1
+
 // Camera settings
 #define IMAGE_WIDTH_R200     320
 #define IMAGE_HEIGHT_R200    240
@@ -49,7 +53,6 @@ using namespace std::chrono;
 #define IMAGE_WIDTH_SR300     640
 #define IMAGE_HEIGHT_SR300    480
 #define FRAMERATE_SR300       30
-
 
 // Calibration starting values
 #define MAX_RANGE_CM 43         // [centimeters]
@@ -77,7 +80,7 @@ void displayHelp()
 int main(int argc, char * argv[])
 {
     bool calibrationOn = false;
-    bool depthColorMapOn = false;
+    bool depthColorMapOn = true;
     bool framerateStabilizationOn = true;
 
     // Camera options
@@ -114,6 +117,11 @@ int main(int argc, char * argv[])
     duration<double> loopTime;
     bool firstLoop = true;
 
+    // Camera control
+    bool cameraDevice;
+    int controlPreset = 0;
+    int ivcamPreset = 0;
+
     // Saving videos
     bool saveVideo = false;
     string fileName;
@@ -136,8 +144,7 @@ int main(int argc, char * argv[])
     // Camera settings
     if(devName.compare("Intel RealSense R200") == 0)
     {
-        // apply_depth_control_preset(dev, 5);
-        // ...
+        cameraDevice = R200;
 
         ImageWidth = IMAGE_WIDTH_R200;
         ImageHeight = IMAGE_HEIGHT_R200;
@@ -145,6 +152,8 @@ int main(int argc, char * argv[])
     }
     else if(devName.compare("Intel RealSense SR300") == 0)
     {
+        cameraDevice = SR300;
+
         ImageWidth = IMAGE_WIDTH_SR300;
         ImageHeight = IMAGE_HEIGHT_SR300;
         CameraFramerate = FRAMERATE_SR300;
@@ -224,6 +233,12 @@ int main(int argc, char * argv[])
 
     while(1)
     {
+        //-- CAMERA CONTROL
+        if(cameraDevice == R200)
+            apply_depth_control_preset(dev, controlPreset);
+        else
+            apply_ivcam_preset(dev, ivcamPreset);
+
         //-- PERFORMANCE ESTMATION
         high_resolution_clock::time_point t1 = high_resolution_clock::now(); //START
 
@@ -483,6 +498,11 @@ int main(int argc, char * argv[])
             createTrackbar("yNear [pixels]", "Color", &yNear, ImageHeight);
             createTrackbar("Area min [pixels^2]", "Color", &areaMin, 100000);
             createTrackbar("Passenger age [seconds]", "Color", &maxPassengerAge, 30);
+
+            if(cameraDevice == R200)
+                createTrackbar("Camera Presets", "Color", &controlPreset, 5);
+            else
+                createTrackbar("Ivcam Presets", "Color", &ivcamPreset, 3);
         }
 
         // Show videos
