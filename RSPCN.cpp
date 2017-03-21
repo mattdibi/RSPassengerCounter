@@ -32,7 +32,44 @@ RSPCN::RSPCN()
     scale = dev->get_depth_scale();
 }
 
+RSPCN::RSPCN(int deviceIdx) 
+{
+    dev = ctx.get_device(deviceIdx);
+
+    string devName = dev->get_name();
+
+    // Camera settings
+    if(devName.compare("Intel RealSense R200") == 0)
+    {
+        cameraDevice = R200;
+
+        ImageWidth = IMAGE_WIDTH_R200;
+        ImageHeight = IMAGE_HEIGHT_R200;
+        CameraFramerate = FRAMERATE_R200;
+    }
+    else if(devName.compare("Intel RealSense SR300") == 0)
+    {
+        cameraDevice = SR300;
+
+        ImageWidth = IMAGE_WIDTH_SR300;
+        ImageHeight = IMAGE_HEIGHT_SR300;
+        CameraFramerate = FRAMERATE_SR300;
+    }
+
+    // Configure stream
+    dev->enable_stream(rs::stream::color, ImageWidth, ImageHeight, rs::format::bgr8, CameraFramerate);
+    dev->enable_stream(rs::stream::depth, ImageWidth, ImageHeight, rs::format::z16, CameraFramerate);
+
+    // Get device depth scale
+    scale = dev->get_depth_scale();
+}
+
 void RSPCN::start()
+{
+    thread_ = std::thread(&RSPCN::execute, this);
+}
+
+void RSPCN::execute()
 {
     // Streams
     Mat frame;
@@ -70,8 +107,8 @@ void RSPCN::start()
     // --SETUP WINDOWS
     if(!saveVideo)
     {
-        namedWindow("Frame",WINDOW_AUTOSIZE);
-        namedWindow("Color",WINDOW_AUTOSIZE);
+        namedWindow("Frame" + to_string(cameraDevice),WINDOW_AUTOSIZE);
+        namedWindow("Color" + to_string(cameraDevice),WINDOW_AUTOSIZE);
 
         if(displayRawDepth)
             namedWindow("RawDepth", WINDOW_AUTOSIZE);
@@ -376,8 +413,8 @@ void RSPCN::start()
         // Show videos
         if(!saveVideo)
         {
-            imshow("Frame",frame);
-            imshow("Color", color);
+            imshow("Frame"+ to_string(cameraDevice),frame);
+            imshow("Color"+ to_string(cameraDevice), color);
 
             if(displayRawDepth)
                 imshow("RawDepth",rawDepth);

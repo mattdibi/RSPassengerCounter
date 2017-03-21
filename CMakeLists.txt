@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project( RSPCN )
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=gnu++0x")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pthread -std=gnu++0x")
 find_package( OpenCV REQUIRED )
 find_package( OpenGL REQUIRED )
 set(DEPENDENCIES realsense ${OPENGL_LIBRARIES})

@@ -15,6 +15,7 @@
 #include <iostream>
 #include <string>
 #include <chrono>
+#include <thread>
 
 #include <librealsense/rs.hpp>
 #include <opencv2/opencv.hpp>
@@ -66,6 +67,8 @@ class RSPCN {
 
     // Constructor
     RSPCN();
+    RSPCN(int deviceIdx);
+    ~RSPCN() { thread_.join(); }
 
     // Selectors
     float getDeviceScale(){return scale;};
@@ -85,12 +88,15 @@ class RSPCN {
 
     // Methods
     void start();
+    void execute();
     void resetCounters(){cnt_in = 0; cnt_out = 0; return;};
 
 
   private:
     context ctx;
     device * dev;
+
+    std::thread thread_; 
 
     // Camera type
     bool cameraDevice;
