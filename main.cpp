@@ -6,10 +6,12 @@ using namespace std;
 
 void displayHelp()
 {
-    cout << "\n* Command help: *\n";
-    cout << "reset: reset counters\n";
-    cout << "calib: activate calibration mode\n";
-    cout << "exit: exit program\n";
+    cout << "*****************************************\n";
+    cout << "* COMMAND HELP: *\n";
+    cout << "* reset: reset counters\n";
+    cout << "* calib: activate calibration mode\n";
+    cout << "* exit: exit program\n";
+    cout << "*****************************************\n";
 
     return;
 }
