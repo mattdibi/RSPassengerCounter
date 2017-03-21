@@ -107,6 +107,8 @@ void RSPCN::execute()
     // --SETUP WINDOWS
     if(!saveVideo)
     {
+        // NOTE: we are using the device name as an identifier. This is not good!
+        // TODO: Find a better suited identifier for windows
         namedWindow("Color " + (string)dev->get_name(),WINDOW_AUTOSIZE);
 
         if(displayFrame)
@@ -451,7 +453,7 @@ void RSPCN::execute()
 
     }
 
-    cout << "Execution time: " << loopTime.count() << " seconds\n";
+    cout << "Loop execution time for " + (string)dev->get_name() + ": " << loopTime.count() << " seconds\n";
 
     destroyAllWindows(); 
     return;

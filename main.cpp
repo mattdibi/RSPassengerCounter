@@ -22,10 +22,10 @@ int main()
     string input = "";
 
     RSPCN myRSPCN_0(0);
-    // RSPCN myRSPCN_1(1);
+    RSPCN myRSPCN_1(1);
 
     myRSPCN_0.start();
-    // myRSPCN_1.start();
+    myRSPCN_1.start();
 
     while(!stop)
     {
@@ -53,7 +53,7 @@ int main()
             cout << "Exiting program!\n";
 
             myRSPCN_0.stop();
-            // myRSPCN_1.stop();
+            myRSPCN_1.stop();
 
             cout << "Capture closed.\n";
 
