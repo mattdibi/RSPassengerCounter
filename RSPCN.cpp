@@ -445,8 +445,7 @@ void RSPCN::execute()
             loopTime = loopTime/2;
         }
 
-        // Wait for ESC to be pressed for 1ms to exit program
-        if (waitKey(1) == 27) break;
+        waitKey(1);
 
         firstLoop = false;
 
