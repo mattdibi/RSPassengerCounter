@@ -66,12 +66,11 @@ class RSPCN {
   public:
 
     // Constructor
-    RSPCN();
     RSPCN(int deviceIdx);
     ~RSPCN() { thread_.join(); }
 
     // Selectors
-    thread::id getThreadID(){return thread_.get_id();};
+    string getThreadID(){return threadID;};
 
     float getDeviceScale(){return scale;};
     string getDeviceName(){return dev->get_name();};

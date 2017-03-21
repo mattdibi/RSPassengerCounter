@@ -1,37 +1,5 @@
 #include "RSPCN.h"
 
-RSPCN::RSPCN() 
-{
-    dev = ctx.get_device(0);
-
-    string devName = dev->get_name();
-
-    // Camera settings
-    if(devName.compare("Intel RealSense R200") == 0)
-    {
-        cameraDevice = R200;
-
-        ImageWidth = IMAGE_WIDTH_R200;
-        ImageHeight = IMAGE_HEIGHT_R200;
-        CameraFramerate = FRAMERATE_R200;
-    }
-    else if(devName.compare("Intel RealSense SR300") == 0)
-    {
-        cameraDevice = SR300;
-
-        ImageWidth = IMAGE_WIDTH_SR300;
-        ImageHeight = IMAGE_HEIGHT_SR300;
-        CameraFramerate = FRAMERATE_SR300;
-    }
-
-    // Configure stream
-    dev->enable_stream(rs::stream::color, ImageWidth, ImageHeight, rs::format::bgr8, CameraFramerate);
-    dev->enable_stream(rs::stream::depth, ImageWidth, ImageHeight, rs::format::z16, CameraFramerate);
-
-    // Get device depth scale
-    scale = dev->get_depth_scale();
-}
-
 RSPCN::RSPCN(int deviceIdx) 
 {
     dev = ctx.get_device(deviceIdx);
