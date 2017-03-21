@@ -8,8 +8,11 @@ int main()
 {
     RSPCN myRSPCN;
 
-    myRSPCN.setCalibration(false);
-    myRSPCN.setDisplayDepth(true);
+    cout << myRSPCN.getDeviceName() << endl;
+
+    myRSPCN.setCalibration(true);
+    myRSPCN.setDisplayDepth(false);
+    myRSPCN.setDisplayRawDepth(false);
     myRSPCN.setFramerateStabilization(true);
     myRSPCN.setSaveVideo(false);
 

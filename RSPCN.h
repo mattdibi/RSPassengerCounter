@@ -69,6 +69,9 @@ class RSPCN {
 
     // Selectors
     float getDeviceScale(){return scale;};
+    string getDeviceName(){return dev->get_name();};
+    string getDeviceSerial(){return dev->get_serial();};
+    string getDeviceFirmware(){return dev->get_firmware_version();};
 
     int getCountIn(){return cnt_in;};
     int getCountOut(){return cnt_out;};
@@ -76,6 +79,7 @@ class RSPCN {
     // Setters
     void setCalibration(bool value) {calibrationOn = value; return;};
     void setDisplayDepth(bool value) {displayDepth = value; return;};
+    void setDisplayRawDepth(bool value) {displayRawDepth = value; return;};
     void setFramerateStabilization(bool value) {framerateStabilizationOn = value; return;};
     void setSaveVideo(bool value) {saveVideo = value; return;};
 
@@ -109,6 +113,7 @@ class RSPCN {
 
     // Options
     bool calibrationOn = false;
+    bool displayRawDepth = false;
     bool displayDepth = true;
     bool framerateStabilizationOn = true;
     bool saveVideo = false;

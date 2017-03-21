@@ -36,6 +36,7 @@ void RSPCN::start()
 {
     // Streams
     Mat frame;
+    Mat rawDepth;
     Mat morphTrans;
     Mat depthColorMap;
 
@@ -71,6 +72,9 @@ void RSPCN::start()
     {
         namedWindow("Frame",WINDOW_AUTOSIZE);
         namedWindow("Color",WINDOW_AUTOSIZE);
+
+        if(displayRawDepth)
+            namedWindow("RawDepth", WINDOW_AUTOSIZE);
 
         if(displayDepth)
             namedWindow("Distance", WINDOW_AUTOSIZE);
@@ -127,6 +131,9 @@ void RSPCN::start()
         // Get frame data
         Mat color(Size(ImageWidth, ImageHeight), CV_8UC3, (void*)dev->get_frame_data(rs::stream::color), Mat::AUTO_STEP);
         Mat depth(Size(ImageWidth, ImageHeight), CV_16U , (void*)dev->get_frame_data(rs::stream::depth), Mat::AUTO_STEP);
+
+        if(displayRawDepth)
+            rawDepth = depth.clone();
 
         // -- DEPTH COLOR STREAM DISPLAY
         if(displayDepth)
@@ -371,6 +378,9 @@ void RSPCN::start()
         {
             imshow("Frame",frame);
             imshow("Color", color);
+
+            if(displayRawDepth)
+                imshow("RawDepth",rawDepth);
 
             if(displayDepth)
                 imshow("Distance",depthColorMap);
