@@ -1,0 +1,108 @@
+/**
+    RSPCN (RealSense Passenger CouNter)
+    Purpose: Creating a computer vision system that counts passengers entering/exiting a door in a transportation environment
+             using Intel RealSense cameras.
+
+    Range:
+        Intel RealSense SR300 @640x480 30FPS = [30; 400] cm
+        Intel RealSense R200  @320x240 60FPS = [10; 150] cm
+    
+    @author Mattia Dal Ben
+    @version 1.0 21/03/2017
+
+*/
+
+#include <iostream>
+#include <string>
+#include <chrono>
+
+#include <librealsense/rs.hpp>
+#include <opencv2/opencv.hpp>
+
+#include "passenger.cpp"
+
+using namespace std;
+using namespace cv;
+using namespace rs;
+using namespace std::chrono;
+
+// Camera type
+#define R200 0
+#define SR300 1
+
+// Camera settings
+#define IMAGE_WIDTH_R200     320
+#define IMAGE_HEIGHT_R200    240
+#define FRAMERATE_R200       60
+
+#define IMAGE_WIDTH_SR300     640
+#define IMAGE_HEIGHT_SR300    480
+#define FRAMERATE_SR300       30
+
+// Constants
+#define MAXRGBVAL 255
+#define NODATA 0
+
+#define RED   Scalar(0,0,255)
+#define BLUE  Scalar(255,0,0)
+#define GREEN Scalar(0,255,0)
+#define WHITE Scalar(255,255,255)
+#define BLACK Scalar(0,0,0)
+
+// Calibration starting values
+#define MAX_RANGE_CM 43         // [centimeters]
+#define BLUR_KSIZE 10           // [matrix size]
+#define AREA_MIN 10000          // [pixels^2]: This depends on the camera distance from the passengers
+#define X_NEAR 40               // [pixels]
+#define Y_NEAR 90               // [pixels]
+#define MAX_PASSENGER_AGE 2     // [seconds]
+
+#define MAX_1PASS_AREA 60000    // [pixels^2]
+#define MAX_2PASS_AREA 90000    // [pixels^2]
+
+class RSPCN {
+
+  public:
+
+    // Constructor
+    RSPCN();
+
+    // Selectors
+    // ...
+
+    // Setters
+    // ...
+
+    // Methods
+    void start();
+
+
+  private:
+    context ctx;
+    device * dev;
+
+    // Camera type
+    bool cameraDevice;
+
+    // Camera options
+    int ImageWidth;
+    int ImageHeight;
+    int CameraFramerate;
+
+    // Camera scale
+    float scale;
+
+    // Passenger counters
+    int cnt_in  = 0;
+    int cnt_out = 0;
+
+    // Passengers tracker
+    int pid = 0;
+    vector<Passenger> passengers;
+
+    // Options
+    bool calibrationOn = false;
+    bool depthColorMapOn = true;
+    bool framerateStabilizationOn = true;
+};
+
