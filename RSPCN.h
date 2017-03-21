@@ -74,6 +74,7 @@ class RSPCN {
     void setCalibration(bool value) {calibrationOn = value; return;};
     void setDisplayDepth(bool value) {displayDepth = value; return;};
     void setFramerateStabilization(bool value) {framerateStabilizationOn = value; return;};
+    void setSaveVideo(bool value) {saveVideo = value; return;};
 
     // Methods
     void start();

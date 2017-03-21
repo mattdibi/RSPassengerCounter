@@ -11,6 +11,7 @@ int main()
     myRSPCN.setCalibration(false);
     myRSPCN.setDisplayDepth(true);
     myRSPCN.setFramerateStabilization(true);
+    myRSPCN.setSaveVideo(true);
 
     myRSPCN.start();
 
