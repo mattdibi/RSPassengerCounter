@@ -101,6 +101,7 @@ class RSPCN {
     device * dev;
 
     std::thread thread_;
+    string threadID;
 
     bool halt = false;
 

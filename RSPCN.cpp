@@ -67,6 +67,11 @@ RSPCN::RSPCN(int deviceIdx)
 void RSPCN::start()
 {
     thread_ = std::thread(&RSPCN::execute, this);
+    
+    auto myid = thread_.get_id();
+    stringstream ss;
+    ss << myid;
+    threadID = ss.str();
 }
 
 void RSPCN::execute()
@@ -107,24 +112,22 @@ void RSPCN::execute()
     // --SETUP WINDOWS
     if(!saveVideo)
     {
-        // NOTE: we are using the device name as an identifier. This is not good!
-        // TODO: Find a better suited identifier for windows
-        namedWindow("Color " + (string)dev->get_name(),WINDOW_AUTOSIZE);
+        namedWindow("Color threadID: " + threadID,WINDOW_AUTOSIZE);
 
         if(displayFrame)
-            namedWindow("Frame " + (string)dev->get_name(),WINDOW_AUTOSIZE);
+            namedWindow("Frame threadID: " + threadID,WINDOW_AUTOSIZE);
 
         if(displayRawDepth)
-            namedWindow("RawDepth " + (string)dev->get_name(), WINDOW_AUTOSIZE);
+            namedWindow("RawDepth threadID: " + threadID, WINDOW_AUTOSIZE);
 
         if(displayDepth)
-            namedWindow("Distance " + (string)dev->get_name(), WINDOW_AUTOSIZE);
+            namedWindow("Distance threadID: " + threadID, WINDOW_AUTOSIZE);
     }
     else
     {
         Size S(ImageWidth,ImageHeight);
 
-        outputVideoColor.open((string)dev->get_name() + "-color.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
+        outputVideoColor.open((string)dev->get_name() +  threadID + "-color.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
         //outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
         //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
     }
@@ -400,12 +403,12 @@ void RSPCN::execute()
         // --CALIBRATION TRACKBARS
         if(calibrationOn)
         {
-            createTrackbar("Threshold [centimeters]", "Color " + (string)dev->get_name(), &thresholdCentimeters, 400);
-            createTrackbar("Blur [matrix size]", "Color " + (string)dev->get_name(), &blur_ksize, 100);
-            createTrackbar("xNear [pixels]", "Color " + (string)dev->get_name(), &xNear, ImageWidth);
-            createTrackbar("yNear [pixels]", "Color " + (string)dev->get_name(), &yNear, ImageHeight);
-            createTrackbar("Area min [pixels^2]", "Color " + (string)dev->get_name(), &areaMin, 100000);
-            createTrackbar("Passenger age [seconds]", "Color " + (string)dev->get_name(), &maxPassengerAge, 30);
+            createTrackbar("Threshold [centimeters]", "Color threadID: " + threadID, &thresholdCentimeters, 400);
+            createTrackbar("Blur [matrix size]", "Color threadID: " + threadID, &blur_ksize, 100);
+            createTrackbar("xNear [pixels]", "Color threadID: " + threadID, &xNear, ImageWidth);
+            createTrackbar("yNear [pixels]", "Color threadID: " + threadID, &yNear, ImageHeight);
+            createTrackbar("Area min [pixels^2]", "Color threadID: " + threadID, &areaMin, 100000);
+            createTrackbar("Passenger age [seconds]", "Color threadID: " + threadID, &maxPassengerAge, 30);
 
             if(cameraDevice == R200)
                 createTrackbar("Camera Presets", "Color", &controlPreset, 5);
@@ -416,16 +419,16 @@ void RSPCN::execute()
         // Show videos
         if(!saveVideo)
         {
-            imshow("Color " + (string)dev->get_name(), color);
+            imshow("Color threadID: " + threadID, color);
 
             if(displayFrame)
-                imshow("Frame " + (string)dev->get_name(),frame);
+                imshow("Frame threadID: " + threadID,frame);
                 
             if(displayRawDepth)
-                imshow("RawDepth " + (string)dev->get_name(),rawDepth);
+                imshow("RawDepth threadID: " + threadID,rawDepth);
 
             if(displayDepth)
-                imshow("Distance " + (string)dev->get_name(),depthColorMap);
+                imshow("Distance threadID: " + threadID,depthColorMap);
         }
 
         // -- SAVING VIDEOS
