@@ -8,6 +8,10 @@ int main()
 {
     RSPCN myRSPCN;
 
+    myRSPCN.setCalibration(false);
+    myRSPCN.setDisplayDepth(true);
+    myRSPCN.setFramerateStabilization(true);
+
     myRSPCN.start();
 
     return 0;

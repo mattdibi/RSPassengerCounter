@@ -71,7 +71,9 @@ class RSPCN {
     // ...
 
     // Setters
-    // ...
+    void setCalibration(bool value) {calibrationOn = value; return;};
+    void setDisplayDepth(bool value) {displayDepth = value; return;};
+    void setFramerateStabilization(bool value) {framerateStabilizationOn = value; return;};
 
     // Methods
     void start();
@@ -102,7 +104,8 @@ class RSPCN {
 
     // Options
     bool calibrationOn = false;
-    bool depthColorMapOn = true;
+    bool displayDepth = true;
     bool framerateStabilizationOn = true;
+    bool saveVideo = false;
 };
 

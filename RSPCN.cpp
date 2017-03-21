@@ -39,6 +39,11 @@ void RSPCN::start()
     Mat morphTrans;
     Mat depthColorMap;
 
+    // Videos
+    VideoWriter outputVideoColor;
+    // VideoWriter outputVideoDepth;
+    // VideoWriter outputVideoFrame;
+
     // Contours variables
     vector<vector<Point> > contours;
     vector<Vec4i> hierarchy;
@@ -62,9 +67,22 @@ void RSPCN::start()
     dev->start();
 
     // --SETUP WINDOWS
-    namedWindow("Frame",WINDOW_AUTOSIZE);
-    namedWindow("Color",WINDOW_AUTOSIZE);
-    namedWindow("Distance", WINDOW_AUTOSIZE);
+    if(!saveVideo)
+    {
+        namedWindow("Frame",WINDOW_AUTOSIZE);
+        namedWindow("Color",WINDOW_AUTOSIZE);
+
+        if(displayDepth)
+            namedWindow("Distance", WINDOW_AUTOSIZE);
+    }
+    else
+    {
+        Size S(ImageWidth,ImageHeight);
+
+        outputVideoColor.open("color.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
+        //outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
+        //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
+    }
 
     // --GRAB AND WRITE LOOP
     cout << "Start grabbing loop\n";
@@ -111,7 +129,7 @@ void RSPCN::start()
         Mat depth(Size(ImageWidth, ImageHeight), CV_16U , (void*)dev->get_frame_data(rs::stream::depth), Mat::AUTO_STEP);
 
         // -- DEPTH COLOR STREAM DISPLAY
-        if(depthColorMapOn)
+        if(displayDepth)
         {
             depthColorMap = depth.clone(); //Deep copy (depthColorMap has its own copy of the pixels of depth)
 
@@ -349,17 +367,22 @@ void RSPCN::start()
         }
 
         // Show videos
-        imshow("Frame",frame);
-        imshow("Color", color);
-        imshow("Distance",depthColorMap);
+        if(!saveVideo)
+        {
+            imshow("Frame",frame);
+            imshow("Color", color);
+
+            if(displayDepth)
+                imshow("Distance",depthColorMap);
+        }
 
         // -- SAVING VIDEOS
-        // if(saveVideo)
-        // {
-        //     //outputVideoFrame.write(frame);
-        //     //outputVideoDepth.write(depthColorMap);
-        //     outputVideoColor.write(color);
-        // }
+        if(saveVideo)
+        {
+            //outputVideoFrame.write(frame);
+            //outputVideoDepth.write(depthColorMap);
+            outputVideoColor.write(color);
+        }
 
         // --PERFORMANCE ESTMATION
         high_resolution_clock::time_point t2 = high_resolution_clock::now(); //STOP
