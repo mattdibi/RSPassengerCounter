@@ -68,7 +68,10 @@ class RSPCN {
     RSPCN();
 
     // Selectors
-    // ...
+    float getDeviceScale(){return scale;};
+
+    int getCountIn(){return cnt_in;};
+    int getCountOut(){return cnt_out;};
 
     // Setters
     void setCalibration(bool value) {calibrationOn = value; return;};
@@ -78,6 +81,7 @@ class RSPCN {
 
     // Methods
     void start();
+    void resetCounters(){cnt_in = 0; cnt_out = 0; return;};
 
 
   private:
