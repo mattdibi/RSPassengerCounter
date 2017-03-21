@@ -71,6 +71,8 @@ class RSPCN {
     ~RSPCN() { thread_.join(); }
 
     // Selectors
+    thread::id getThreadID(){return thread_.get_id();};
+
     float getDeviceScale(){return scale;};
     string getDeviceName(){return dev->get_name();};
     string getDeviceSerial(){return dev->get_serial();};
@@ -83,6 +85,7 @@ class RSPCN {
     void setCalibration(bool value) {calibrationOn = value; return;};
     void setDisplayDepth(bool value) {displayDepth = value; return;};
     void setDisplayRawDepth(bool value) {displayRawDepth = value; return;};
+    void setDisplayFrame(bool value) {displayFrame = value; return;};
     void setFramerateStabilization(bool value) {framerateStabilizationOn = value; return;};
     void setSaveVideo(bool value) {saveVideo = value; return;};
 
@@ -90,13 +93,16 @@ class RSPCN {
     void start();
     void execute();
     void resetCounters(){cnt_in = 0; cnt_out = 0; return;};
+    void stop(){halt = true;};
 
 
   private:
     context ctx;
     device * dev;
 
-    std::thread thread_; 
+    std::thread thread_;
+
+    bool halt = false;
 
     // Camera type
     bool cameraDevice;
@@ -120,7 +126,8 @@ class RSPCN {
     // Options
     bool calibrationOn = false;
     bool displayRawDepth = false;
-    bool displayDepth = true;
+    bool displayDepth = false;
+    bool displayFrame = false;
     bool framerateStabilizationOn = true;
     bool saveVideo = false;
 };

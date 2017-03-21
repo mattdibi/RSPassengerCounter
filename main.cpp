@@ -4,33 +4,28 @@
 
 using namespace std;
 
+void displayHelp()
+{
+    cout << "\n* Command help: *\n";
+    cout << "reset: reset counters\n";
+    cout << "calib: activate calibration mode\n";
+    cout << "exit: exit program\n";
+
+    return;
+}
+
 int main()
 {
-    RSPCN myRSPCN(0);
-    RSPCN myRSPCN1(1);
-
-    cout << myRSPCN.getDeviceName() << endl;
-
-    myRSPCN.setCalibration(true);
-    myRSPCN.setDisplayDepth(false);
-    myRSPCN.setDisplayRawDepth(false);
-    myRSPCN.setFramerateStabilization(true);
-    myRSPCN.setSaveVideo(false);
-
-    myRSPCN1.setCalibration(true);
-    myRSPCN1.setDisplayDepth(false);
-    myRSPCN1.setDisplayRawDepth(false);
-    myRSPCN1.setFramerateStabilization(true);
-    myRSPCN1.setSaveVideo(false);
-
-    myRSPCN.start();
-    myRSPCN1.start();
-    
-
+    bool stop = false;
     string input = "";
 
-    // How to get a string/sentence with spaces
-    while(1)
+    RSPCN myRSPCN_0(0);
+    RSPCN myRSPCN_1(1);
+
+    myRSPCN_0.start();
+    myRSPCN_1.start();
+
+    while(!stop)
     {
         cout << "Please enter a valid command:\n>";
         getline(cin, input);
@@ -39,7 +34,27 @@ int main()
         if(input.compare("reset") == 0)
         {
             cout << "Resetting counters!\n";
-            myRSPCN.resetCounters();
+            myRSPCN_0.resetCounters();
+        }
+        else if(input.compare("calib") == 0)
+        {
+            cout << "Setting calibration on!\n";
+            myRSPCN_0.setCalibration(true);
+        }
+        else if(input.compare("exit") == 0)
+        {
+            cout << "Exiting program!\n";
+
+            myRSPCN_0.stop();
+            myRSPCN_1.stop();
+
+            cout << "Capture closed.\n";
+
+            stop = true;
+        }
+        else
+        {
+            displayHelp();
         }
     }
 

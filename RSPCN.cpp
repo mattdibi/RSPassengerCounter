@@ -107,14 +107,16 @@ void RSPCN::execute()
     // --SETUP WINDOWS
     if(!saveVideo)
     {
-        namedWindow("Frame" + to_string(cameraDevice),WINDOW_AUTOSIZE);
-        namedWindow("Color" + to_string(cameraDevice),WINDOW_AUTOSIZE);
+        namedWindow("Color " + (string)dev->get_name(),WINDOW_AUTOSIZE);
+
+        if(displayFrame)
+            namedWindow("Frame " + (string)dev->get_name(),WINDOW_AUTOSIZE);
 
         if(displayRawDepth)
-            namedWindow("RawDepth", WINDOW_AUTOSIZE);
+            namedWindow("RawDepth " + (string)dev->get_name(), WINDOW_AUTOSIZE);
 
         if(displayDepth)
-            namedWindow("Distance", WINDOW_AUTOSIZE);
+            namedWindow("Distance " + (string)dev->get_name(), WINDOW_AUTOSIZE);
     }
     else
     {
@@ -126,14 +128,13 @@ void RSPCN::execute()
     }
 
     // --GRAB AND WRITE LOOP
-    cout << "Start grabbing loop\n";
 
     // Framerate calculation variables
     int frames = 0; 
     float time = 0, fps = 0;
     auto tf0 = std::chrono::high_resolution_clock::now();
 
-    while(1)
+    while(!halt)
     {
         //-- CAMERA CONTROL
         if(cameraDevice == R200)
@@ -323,7 +324,7 @@ void RSPCN::execute()
                                     cnt_out++;
 
                                 // Logging count
-                                cout << "ID: " << passengers[i].getPid() << " crossed going U to D.\n";
+                                // cout << "ID: " << passengers[i].getPid() << " crossed going U to D.\n";
 
                                 // Visual feedback
                                 circle(color, Point(color.cols - 20, 20), 8, RED, CV_FILLED);
@@ -342,7 +343,7 @@ void RSPCN::execute()
                                     cnt_in++;
 
                                 // Logging count
-                                cout << "ID: " << passengers[i].getPid() << " crossed going D to U.\n";
+                                // cout << "ID: " << passengers[i].getPid() << " crossed going D to U.\n";
 
                                 // Visual feedback
                                 circle(color, Point(color.cols - 20, 20), 8, GREEN, CV_FILLED);
@@ -397,12 +398,12 @@ void RSPCN::execute()
         // --CALIBRATION TRACKBARS
         if(calibrationOn)
         {
-            createTrackbar("Threshold [centimeters]", "Color", &thresholdCentimeters, 400);
-            createTrackbar("Blur [matrix size]", "Color", &blur_ksize, 100);
-            createTrackbar("xNear [pixels]", "Color", &xNear, ImageWidth);
-            createTrackbar("yNear [pixels]", "Color", &yNear, ImageHeight);
-            createTrackbar("Area min [pixels^2]", "Color", &areaMin, 100000);
-            createTrackbar("Passenger age [seconds]", "Color", &maxPassengerAge, 30);
+            createTrackbar("Threshold [centimeters]", "Color " + (string)dev->get_name(), &thresholdCentimeters, 400);
+            createTrackbar("Blur [matrix size]", "Color " + (string)dev->get_name(), &blur_ksize, 100);
+            createTrackbar("xNear [pixels]", "Color " + (string)dev->get_name(), &xNear, ImageWidth);
+            createTrackbar("yNear [pixels]", "Color " + (string)dev->get_name(), &yNear, ImageHeight);
+            createTrackbar("Area min [pixels^2]", "Color " + (string)dev->get_name(), &areaMin, 100000);
+            createTrackbar("Passenger age [seconds]", "Color " + (string)dev->get_name(), &maxPassengerAge, 30);
 
             if(cameraDevice == R200)
                 createTrackbar("Camera Presets", "Color", &controlPreset, 5);
@@ -413,14 +414,16 @@ void RSPCN::execute()
         // Show videos
         if(!saveVideo)
         {
-            imshow("Frame"+ to_string(cameraDevice),frame);
-            imshow("Color"+ to_string(cameraDevice), color);
+            imshow("Color " + (string)dev->get_name(), color);
 
+            if(displayFrame)
+                imshow("Frame " + (string)dev->get_name(),frame);
+                
             if(displayRawDepth)
-                imshow("RawDepth",rawDepth);
+                imshow("RawDepth " + (string)dev->get_name(),rawDepth);
 
             if(displayDepth)
-                imshow("Distance",depthColorMap);
+                imshow("Distance " + (string)dev->get_name(),depthColorMap);
         }
 
         // -- SAVING VIDEOS
