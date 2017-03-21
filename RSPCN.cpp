@@ -113,7 +113,10 @@ void RSPCN::execute()
         if(cameraDevice == R200)
             apply_depth_control_preset(dev, controlPreset);
         else
-            apply_ivcam_preset(dev, ivcamPreset);
+        {
+            // Commented out because of some performance issues!
+            //apply_ivcam_preset(dev, ivcamPreset);
+        }
 
         //-- PERFORMANCE ESTMATION
         high_resolution_clock::time_point t1 = high_resolution_clock::now(); //START
@@ -379,9 +382,9 @@ void RSPCN::execute()
             createTrackbar("Passenger age [seconds]", "Color threadID: " + threadID, &maxPassengerAge, 30);
 
             if(cameraDevice == R200)
-                createTrackbar("Camera Presets", "Color", &controlPreset, 5);
+                createTrackbar("Camera Presets", "Color threadID: " + threadID, &controlPreset, 5);
             else
-                createTrackbar("Ivcam Presets", "Color", &ivcamPreset, 3);
+                createTrackbar("Ivcam Presets", "Color threadID: " + threadID, &ivcamPreset, 3);
         }
 
         // Show videos
