@@ -122,7 +122,7 @@ void RSPCN::execute()
     {
         Size S(ImageWidth,ImageHeight);
 
-        outputVideoColor.open("color.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
+        outputVideoColor.open((string)dev->get_name() + "-color.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
         //outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
         //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
     }

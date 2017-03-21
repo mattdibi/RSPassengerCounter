@@ -43,6 +43,11 @@ int main()
             cout << "Setting calibration on!\n";
             myRSPCN_0.setCalibration(true);
         }
+        else if(input.compare("depth") == 0)
+        {
+            cout << "Display depth on!\n";
+            myRSPCN_0.setDisplayDepth(true);
+        }
         else if(input.compare("exit") == 0)
         {
             cout << "Exiting program!\n";
