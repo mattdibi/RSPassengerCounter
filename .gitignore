@@ -16,3 +16,5 @@ RSPCN20-25
 # Unignore MakeList
 !CMakeLists.txt
 
+# Ignore swig_output folder
+swig_output/
