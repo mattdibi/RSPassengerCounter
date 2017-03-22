@@ -18,3 +18,4 @@ RSPCN20-25
 
 # Ignore swig_output folder
 swig_output/
+RSPCN_wrap*

@@ -5,7 +5,7 @@ fi
 
 mkdir swig_output
 cp Main.java swig_output/
-swig -c++ -java -outdir swig_output/ -o swig_output/RSPCN_wrap.cpp RSPCN.i
+swig -c++ -java -outdir swig_output/ -o RSPCN_wrap.cpp RSPCN.i
 cd swig_output/
 
 g++ -c -fpic -std=c++11 -pthread ../RSPCN.cpp \
@@ -18,7 +18,7 @@ g++ -c -fpic -std=c++11 -pthread ../RSPCN.cpp \
 -lopencv_video \
 -lrealsense
 
-g++ -c -fpic -std=c++11  RSPCN_wrap.cpp -I/usr/lib/jvm/java-8-openjdk-amd64/include -I/usr/lib/jvm/java-8-openjdk-amd64/include/linux
+g++ -c -fpic -std=c++11  ../RSPCN_wrap.cpp -I/usr/lib/jvm/java-8-openjdk-amd64/include -I/usr/lib/jvm/java-8-openjdk-amd64/include/linux
 
 g++ -std=c++11 -shared RSPCN.o RSPCN_wrap.o -o libRSPCN.so
 
