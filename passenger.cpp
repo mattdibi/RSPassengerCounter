@@ -1,3 +1,6 @@
+#ifndef PASSENGER_CPP
+#define PASSENGER_CPP
+
 #include "passenger.h"
 
 Passenger::Passenger(int id, Point2f center, int newAge = 0)
@@ -28,3 +31,5 @@ void Passenger::updateCoords(Point2f newCenter)
 
     return;
 }
+
+#endif

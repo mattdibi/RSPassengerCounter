@@ -12,6 +12,9 @@
 
 */
 
+#ifndef RSPCN_H
+#define RSPCN_H
+
 #include <iostream>
 #include <string>
 #include <chrono>
@@ -133,3 +136,4 @@ class RSPCN {
     bool saveVideo = false;
 };
 
+#endif

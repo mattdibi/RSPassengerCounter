@@ -1,3 +1,6 @@
+#ifndef RSPCN_CPP
+#define RSPCN_CPP
+
 #include "RSPCN.h"
 
 RSPCN::RSPCN(int deviceIdx) 
@@ -429,3 +432,4 @@ void RSPCN::execute()
     return;
 }
 
+#endif
