@@ -8,7 +8,7 @@ cp Main.java swig_output/
 swig -c++ -java -outdir swig_output/ -o swig_output/RSPCN_wrap.cpp RSPCN.i
 cd swig_output/
 
-g++ -c -fpic -std=c++11 -pthread ../RSPCN.cpp -I/home/mattia/Scrivania/opencv-3.2.0/include \
+g++ -c -fpic -std=c++11 -pthread ../RSPCN.cpp \
 -lopencv_core \
 -lopencv_highgui \
 -lopencv_imgproc \
