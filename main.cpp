@@ -10,10 +10,10 @@ void displayHelp()
     cout << "* COMMAND HELP: \n";
     cout << "* 0 - 4: selecting camera presets\n";
     cout << "* 5: resetting counters\n";
-    cout << "* 6: display calibration\n";
-    cout << "* 7: display depth view\n";
-    cout << "* 8: display raw depth view\n";
-    cout << "* 9: displat frame view\n";
+    cout << "* 6: toggle display calibration\n";
+    cout << "* 7: toggle display depth view\n";
+    cout << "* 8: toggle display raw depth view\n";
+    cout << "* 9: toggle display frame view\n";
     cout << "* 0: exit program\n";
     cout << "*****************************************\n";
 
@@ -40,6 +40,11 @@ int main()
     bool stop = false;
     int choice;
 
+    bool calibration = false;
+    bool depth = false;
+    bool rawDepth = false;
+    bool frame = false;
+
     RSPCN myRSPCN_0(0);
     // RSPCN myRSPCN_1(1);
 
@@ -65,23 +70,39 @@ int main()
         }
         else if(choice == 6)
         {
-            cout << "Display calibration\n";
-            myRSPCN_0.setCalibration(true);
+            cout << "Toggle calibration\n";
+
+            calibration = !calibration;
+            myRSPCN_0.setCalibration(calibration);
+
+            destroyAllWindows(); 
         }
         else if(choice == 7)
         {
-            cout << "Display depth view\n";
-            myRSPCN_0.setDisplayDepth(true);
+            cout << "Toggle depth view\n";
+
+            depth = !depth;
+            myRSPCN_0.setDisplayDepth(depth);
+
+            destroyAllWindows(); 
         }
         else if(choice == 8)
         {
-            cout << "Display raw depth view\n";
-            myRSPCN_0.setDisplayRawDepth(true);
+            cout << "Toggle raw depth view\n";
+
+            rawDepth = !rawDepth;
+            myRSPCN_0.setDisplayRawDepth(rawDepth);
+
+            destroyAllWindows(); 
         }
         else if(choice == 9)
         {
-            cout << "Display frame view\n";
-            myRSPCN_0.setDisplayFrame(true);
+            cout << "Toggle frame view\n";
+
+            frame = !frame;
+            myRSPCN_0.setDisplayFrame(frame);
+
+            destroyAllWindows(); 
         }
         else if(choice == 0)
         {
