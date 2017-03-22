@@ -32,6 +32,19 @@ RSPCN::RSPCN(int deviceIdx)
     scale = dev->get_depth_scale();
 }
 
+void RSPCN::setCameraPresets(int value)
+{
+    //-- CAMERA CONTROL
+    if(cameraDevice == R200)
+        apply_depth_control_preset(dev, value);
+    else
+    {
+        apply_ivcam_preset(dev, value);
+    }
+
+    return;
+}
+
 void RSPCN::start()
 {
     thread_ = std::thread(&RSPCN::execute, this);
@@ -66,9 +79,6 @@ void RSPCN::execute()
     int xNear = X_NEAR;
     int yNear = Y_NEAR;
     int maxPassengerAge = MAX_PASSENGER_AGE;
-
-    int controlPreset = 0;
-    int ivcamPreset = 0;
 
     // Execution time
     duration<double> loopTime;
@@ -109,15 +119,6 @@ void RSPCN::execute()
 
     while(!halt)
     {
-        //-- CAMERA CONTROL
-        if(cameraDevice == R200)
-            apply_depth_control_preset(dev, controlPreset);
-        else
-        {
-            // Commented out because of some performance issues!
-            //apply_ivcam_preset(dev, ivcamPreset);
-        }
-
         //-- PERFORMANCE ESTMATION
         high_resolution_clock::time_point t1 = high_resolution_clock::now(); //START
 
@@ -380,11 +381,6 @@ void RSPCN::execute()
             createTrackbar("yNear [pixels]", "Color threadID: " + threadID, &yNear, ImageHeight);
             createTrackbar("Area min [pixels^2]", "Color threadID: " + threadID, &areaMin, 100000);
             createTrackbar("Passenger age [seconds]", "Color threadID: " + threadID, &maxPassengerAge, 30);
-
-            if(cameraDevice == R200)
-                createTrackbar("Camera Presets", "Color threadID: " + threadID, &controlPreset, 5);
-            else
-                createTrackbar("Ivcam Presets", "Color threadID: " + threadID, &ivcamPreset, 3);
         }
 
         // Show videos

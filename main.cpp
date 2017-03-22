@@ -22,10 +22,10 @@ int main()
     string input = "";
 
     RSPCN myRSPCN_0(0);
-    RSPCN myRSPCN_1(1);
+    // RSPCN myRSPCN_1(1);
 
     myRSPCN_0.start();
-    myRSPCN_1.start();
+    // myRSPCN_1.start();
 
     while(!stop)
     {
@@ -48,12 +48,17 @@ int main()
             cout << "Display depth on!\n";
             myRSPCN_0.setDisplayDepth(true);
         }
+        else if(input.compare("preset1") == 0)
+        {
+            cout << "Applying preset 1\n";
+            myRSPCN_0.setCameraPresets(1);
+        }
         else if(input.compare("exit") == 0)
         {
             cout << "Exiting program!\n";
 
             myRSPCN_0.stop();
-            myRSPCN_1.stop();
+            // myRSPCN_1.stop();
 
             cout << "Capture closed.\n";
 

@@ -86,6 +86,7 @@ class RSPCN {
     void setDisplayRawDepth(bool value) {displayRawDepth = value; return;};
     void setDisplayFrame(bool value) {displayFrame = value; return;};
     void setFramerateStabilization(bool value) {framerateStabilizationOn = value; return;};
+    void setCameraPresets(int value);
     void setSaveVideo(bool value) {saveVideo = value; return;};
 
     // Methods
