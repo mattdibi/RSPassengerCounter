@@ -1,11 +1,14 @@
 #!/bin/bash
-export OpenCV_DIR=/home/mattia/Scrivania/opencv-3.2.0/include
+if [ -d "swig_output" ]; then
+  rm -r swig_output/
+fi
+
 mkdir swig_output
 cp Main.java swig_output/
 swig -c++ -java -outdir swig_output/ -o swig_output/RSPCN_wrap.cpp RSPCN.i
 cd swig_output/
 
-g++ -c -fpic -std=c++11 -pthread ../RSPCN.cpp \
+g++ -c -fpic -std=c++11 -pthread ../RSPCN.cpp -I/home/mattia/Scrivania/opencv-3.2.0/include \
 -lopencv_core \
 -lopencv_highgui \
 -lopencv_imgproc \
