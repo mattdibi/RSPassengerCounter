@@ -48,6 +48,38 @@ void RSPCN::setCameraPresets(int value)
     return;
 }
 
+void RSPCN::toggleCalibration()
+{
+    calibrationOn = !calibrationOn;
+    destroyAllWindows();
+
+    return;
+}
+
+void RSPCN::toggleDisplayDepth()
+{
+    displayDepth = !displayDepth;
+    destroyAllWindows();
+
+    return;
+}
+
+void RSPCN::toggleDisplayRawDepth()
+{
+    displayRawDepth = !displayRawDepth;
+    destroyAllWindows();
+
+    return;
+}
+
+void RSPCN::toggleDisplayFrame()
+{
+    displayFrame = !displayFrame;
+    destroyAllWindows();
+
+    return;
+}
+
 void RSPCN::start()
 {
     thread_ = std::thread(&RSPCN::count, this);

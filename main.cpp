@@ -40,11 +40,6 @@ int main()
     bool stop = false;
     int choice;
 
-    bool calibration = false;
-    bool depth = false;
-    bool rawDepth = false;
-    bool frame = false;
-
     RSPCN myRSPCN_0(0);
     // RSPCN myRSPCN_1(1);
 
@@ -57,6 +52,7 @@ int main()
     {
         cout << "Please enter a valid command:\n>";
         choice = getInput();
+        cout << "You entered: " << choice << endl;
 
         if(choice > 0 && choice < 5)
         {
@@ -71,38 +67,22 @@ int main()
         else if(choice == 6)
         {
             cout << "Toggle calibration\n";
-
-            calibration = !calibration;
-            myRSPCN_0.setCalibration(calibration);
-
-            destroyAllWindows(); 
+            myRSPCN_0.toggleCalibration();
         }
         else if(choice == 7)
         {
             cout << "Toggle depth view\n";
-
-            depth = !depth;
-            myRSPCN_0.setDisplayDepth(depth);
-
-            destroyAllWindows(); 
+            myRSPCN_0.toggleDisplayDepth();
         }
         else if(choice == 8)
         {
             cout << "Toggle raw depth view\n";
-
-            rawDepth = !rawDepth;
-            myRSPCN_0.setDisplayRawDepth(rawDepth);
-
-            destroyAllWindows(); 
+            myRSPCN_0.toggleDisplayRawDepth();
         }
         else if(choice == 9)
         {
             cout << "Toggle frame view\n";
-
-            frame = !frame;
-            myRSPCN_0.setDisplayFrame(frame);
-
-            destroyAllWindows(); 
+            myRSPCN_0.toggleDisplayFrame();
         }
         else if(choice == 0)
         {

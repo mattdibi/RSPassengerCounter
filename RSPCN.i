@@ -84,6 +84,11 @@ class RSPCN {
     void resetCounters(){cnt_in = 0; cnt_out = 0; return;};
     void stop(){halt = true;};
 
+    void toggleCalibration();
+    void toggleDisplayDepth();
+    void toggleDisplayRawDepth();
+    void toggleDisplayFrame();
+    void toggleFrameRateStabilization(){framerateStabilizationOn = !framerateStabilizationOn; return;};
 
   private:
     context ctx;
@@ -157,6 +162,12 @@ class RSPCN {
     void count();
     void resetCounters(){cnt_in = 0; cnt_out = 0; return;};
     void stop(){halt = true;};
+
+    void toggleCalibration();
+    void toggleDisplayDepth();
+    void toggleDisplayRawDepth();
+    void toggleDisplayFrame();
+    void toggleFrameRateStabilization(){framerateStabilizationOn = !framerateStabilizationOn; return;};
 
 
   private:

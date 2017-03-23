@@ -51,12 +51,12 @@ public class Main {
             else if( c == 'f')
             {
                 System.out.println("Displaying frame view.");
-                myRSPCN.setDisplayFrame(true);
+                myRSPCN.toggleDisplayFrame();
             }
             else if( c == 'c')
             {
                 System.out.println("Displaying calibration view.");
-                myRSPCN.setCalibration(true);
+                myRSPCN.toggleCalibration();
             }
             else if( c == '2')
             {
@@ -66,7 +66,7 @@ public class Main {
             else if (c == 'd')
             {
                 System.out.println("Displaying depth view.");
-                myRSPCN.setDisplayDepth(true);
+                myRSPCN.toggleDisplayDepth();
             }
 
         }while(!stop);
