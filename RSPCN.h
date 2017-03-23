@@ -94,7 +94,7 @@ class RSPCN {
 
     // Methods
     void start();
-    void execute();
+    void count();
     void resetCounters(){cnt_in = 0; cnt_out = 0; return;};
     void stop(){halt = true;};
 

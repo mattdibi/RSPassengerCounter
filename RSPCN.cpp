@@ -50,7 +50,7 @@ void RSPCN::setCameraPresets(int value)
 
 void RSPCN::start()
 {
-    thread_ = std::thread(&RSPCN::execute, this);
+    thread_ = std::thread(&RSPCN::count, this);
     
     auto myid = thread_.get_id();
     stringstream ss;
@@ -58,7 +58,7 @@ void RSPCN::start()
     threadID = ss.str();
 }
 
-void RSPCN::execute()
+void RSPCN::count()
 {
     // Streams
     Mat frame;
