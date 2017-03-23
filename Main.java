@@ -77,12 +77,13 @@ public class Main {
 
                     case('d'):
                         System.out.println("Toggle depth view");
-                        myRSPCN.toggleDisplayDepth();;
+                        System.out.println("FUNCTION DISABLED: compatibility issues between Java and OpenCV");
+                        // myRSPCN.toggleDisplayDepth();
                         break;
 
                     case('D'):
                         System.out.println("Toggle raw depth view");
-                        myRSPCN.toggleDisplayRawDepth();;
+                        myRSPCN.toggleDisplayRawDepth();
                         break;
 
                     case('f'):
