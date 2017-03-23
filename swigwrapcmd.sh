@@ -20,7 +20,14 @@ g++ -c -fpic -std=c++11 -pthread ../RSPCN.cpp \
 
 g++ -c -fpic -std=c++11  ../RSPCN_wrap.cpp -I/usr/lib/jvm/java-8-openjdk-amd64/include -I/usr/lib/jvm/java-8-openjdk-amd64/include/linux
 
-g++ -std=c++11 -shared RSPCN.o RSPCN_wrap.o -o libRSPCN.so
+g++ -std=c++11 -shared RSPCN.o RSPCN_wrap.o -o libRSPCN.so -lopencv_core \
+-lopencv_highgui \
+-lopencv_imgproc \
+-lopencv_ml \
+-lopencv_objdetect \
+-lopencv_videoio \
+-lopencv_video \
+-lrealsense
 
 javac *.java
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/mattia/Scrivania/RSPassengerCounter/swig_output

@@ -15,5 +15,10 @@ public class Main {
 
         myRSPCN.start();
 
+        for(;;)
+        {
+
+        }
+
     }
 }
