@@ -16,6 +16,7 @@ void displayHelp()
     cout << "* f: toggle display frame view\n";
     cout << "* s: toggle frame rate stabilization\n";
     cout << "* q: exit program\n";
+    cout << "* h: display this help message\n";
     cout << "*****************************************\n";
 
     return;
@@ -96,6 +97,9 @@ int main()
                     break;
             }
         }
+
+        // Consume input
+        while ((choice = getchar()) != '\n' && choice != EOF);
 
     } while(!stop);
 
