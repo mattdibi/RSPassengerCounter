@@ -5,7 +5,7 @@ This is going to be my Electronics Engineering Master's Thesis.
 Developing a Passenger Counter (PCN) in a transportation environment using OpenCV and its hardware acceleration capabilities on different hardware platforms. In this implementation I am using the Intel RealSense cameras.
 
 ### Hardware
-Platform: 
+Target platform: 
 * Eurotech ReliGATE 20-25 (Intel E3827 Atom Processor)
 
 Video acquisition:
@@ -13,10 +13,11 @@ Video acquisition:
 * Intel RealSense R200
 
 ### Tools
-For the development I'm going to use:
-* Yocto Project
-* OpenCV
-* Librealsense
+For the development I've used:
+* [Yocto Project](https://www.yoctoproject.org/)
+* [OpenCV](http://opencv.org/)
+* Intel RealSense Library: [librealsense](https://github.com/IntelRealSense/librealsense)
+* Simplified Wrapper and Interface Generator: [SWIG](http://www.swig.org/)
 
 ### Performance
 Performance achived on Eurotech platform:
