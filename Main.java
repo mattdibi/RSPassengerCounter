@@ -41,6 +41,15 @@ public class Main {
         RSPCN myRSPCN = new RSPCN(0);
         // RSPCN myRSPCN_1 = new RSPCN(1);
 
+        if(args.length > 0)
+        {
+            if(args[0].equals("-s"))
+            {
+                myRSPCN.setSaveVideo(true);
+                System.out.println("Saving video color steam.");
+            }
+        }
+
         myRSPCN.start();
         // myRSPCN_1.start();
 
