@@ -65,12 +65,23 @@ public class Main {
                         displayHelp();
                         break;
 
+                    case('p'):
+                        System.out.println("Current count:");
+                        System.out.println("Count in  = " + myRSPCN.getCountIn());
+                        System.out.println("Count out = " + myRSPCN.getCountOut());
+                        break;
+
                     case('r'):
                         System.out.println("Resetting counters");
                         myRSPCN.resetCounters();
                         break;
                     
                     case('c'):
+                        System.out.println("Toggle color");
+                        myRSPCN.toggleDisplayColor();
+                        break;
+
+                    case('C'):
                         System.out.println("Toggle calibration");
                         myRSPCN.toggleCalibration();
                         break;
