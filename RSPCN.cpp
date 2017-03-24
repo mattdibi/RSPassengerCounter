@@ -56,6 +56,14 @@ void RSPCN::toggleCalibration()
     return;
 }
 
+void RSPCN::toggleDisplayColor()
+{
+    displayColor = !displayColor;
+    destroyAllWindows();
+
+    return;
+}
+
 void RSPCN::toggleDisplayDepth()
 {
     displayDepth = !displayDepth;
@@ -125,7 +133,8 @@ void RSPCN::count()
     // --SETUP WINDOWS
     if(!saveVideo)
     {
-        namedWindow("Color threadID: " + threadID,WINDOW_AUTOSIZE);
+        if(displayColor)
+            namedWindow("Color threadID: " + threadID,WINDOW_AUTOSIZE);
 
         if(displayFrame)
             namedWindow("Frame threadID: " + threadID,WINDOW_AUTOSIZE);
@@ -408,7 +417,7 @@ void RSPCN::count()
         putText(color, "Count OUT: " + to_string(cnt_out), Point(0, color.rows - 10) , FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
 
         // --CALIBRATION TRACKBARS
-        if(calibrationOn)
+        if(calibrationOn && displayColor)
         {
             createTrackbar("Threshold [centimeters]", "Color threadID: " + threadID, &thresholdCentimeters, 400);
             createTrackbar("Blur [matrix size]", "Color threadID: " + threadID, &blur_ksize, 100);
@@ -421,7 +430,8 @@ void RSPCN::count()
         // Show videos
         if(!saveVideo)
         {
-            imshow("Color threadID: " + threadID, color);
+            if(displayColor)
+                imshow("Color threadID: " + threadID, color);
 
             if(displayFrame)
                 imshow("Frame threadID: " + threadID,frame);

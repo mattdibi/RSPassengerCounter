@@ -10,7 +10,9 @@ void displayHelp()
     cout << "* COMMAND HELP: \n";
     cout << "* 0 - 5: selecting camera presets\n";
     cout << "* r: resetting counters\n";
-    cout << "* c: toggle display calibration\n";
+    cout << "* p: get passenger count\n";
+    cout << "* c: toggle display color\n";
+    cout << "* C: toggle display calibration\n";
     cout << "* d: toggle display depth view\n";
     cout << "* D: toggle display raw depth view\n";
     cout << "* f: toggle display frame view\n";
@@ -54,12 +56,23 @@ int main()
                     displayHelp();
                     break;
 
+                case('p'):
+                    cout << "Current count:\n";
+                    cout << "Count in  = " << myRSPCN_0.getCountIn() << endl;
+                    cout << "Count out = " << myRSPCN_0.getCountOut() << endl;
+                    break;
+
                 case('r'):
                     cout << "Resetting counters\n";
                     myRSPCN_0.resetCounters();
                     break;
-                
+
                 case('c'):
+                    cout << "Toggle color\n";
+                    myRSPCN_0.toggleDisplayColor();
+                    break;
+                
+                case('C'):
                     cout << "Toggle calibration\n";
                     myRSPCN_0.toggleCalibration();
                     break;

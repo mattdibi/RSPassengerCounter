@@ -85,6 +85,7 @@ class RSPCN {
 
     // Setters
     void setCalibration(bool value) {calibrationOn = value; return;};
+    void setDisplayColor(bool value) {displayColor = value; return;};
     void setDisplayDepth(bool value) {displayDepth = value; return;};
     void setDisplayRawDepth(bool value) {displayRawDepth = value; return;};
     void setDisplayFrame(bool value) {displayFrame = value; return;};
@@ -99,6 +100,7 @@ class RSPCN {
     void stop(){halt = true;};
 
     void toggleCalibration();
+    void toggleDisplayColor();
     void toggleDisplayDepth();
     void toggleDisplayRawDepth();
     void toggleDisplayFrame();
@@ -134,6 +136,7 @@ class RSPCN {
 
     // Options
     bool calibrationOn = false;
+    bool displayColor = false;
     bool displayRawDepth = false;
     bool displayDepth = false;
     bool displayFrame = false;
