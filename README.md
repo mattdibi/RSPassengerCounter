@@ -51,3 +51,34 @@ Performance achived on Eurotech platform:
 > q: exit program
 > h: display this help message
 ```
+
+### Build guide
+Requirements. A Linux system with installed:
+* OpenCV 
+* librealsense
+* JAVA SDK
+* SWIG
+* Cmake
+* poky toolchain (generated with yocto project)
+
+
+Build C++ version
+```sh
+$ cmake .
+$ make
+$ ./RSPCN
+```
+
+Build C++ poky version
+```sh
+$ ./X-COMPILE-OCV
+```
+
+Build JAVA version
+```sh
+$ sh swigwrapcmd.sh
+$ cd swig_output/
+$ java Main
+```
+
+
