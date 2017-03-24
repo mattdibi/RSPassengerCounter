@@ -24,13 +24,19 @@ void displayHelp()
     return;
 }
 
-int main()
+int main(int argc, char * argv[])
 {
     bool stop = false;
     char choice;
 
     RSPCN myRSPCN_0(0);
     // RSPCN myRSPCN_1(1);
+
+    if(argc >= 2)
+    {
+        if(!strcmp(argv[1], "-s"))
+            myRSPCN_0.setSaveVideo(true);
+    }
 
     myRSPCN_0.start();
     // myRSPCN_1.start();

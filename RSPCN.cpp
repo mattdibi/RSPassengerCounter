@@ -131,21 +131,19 @@ void RSPCN::count()
     dev->start();
 
     // --SETUP WINDOWS
-    if(!saveVideo)
-    {
-        if(displayColor)
-            namedWindow("Color threadID: " + threadID,WINDOW_AUTOSIZE);
+    if(displayColor)
+        namedWindow("Color threadID: " + threadID,WINDOW_AUTOSIZE);
 
-        if(displayFrame)
-            namedWindow("Frame threadID: " + threadID,WINDOW_AUTOSIZE);
+    if(displayFrame)
+        namedWindow("Frame threadID: " + threadID,WINDOW_AUTOSIZE);
 
-        if(displayRawDepth)
-            namedWindow("RawDepth threadID: " + threadID, WINDOW_AUTOSIZE);
+    if(displayRawDepth)
+        namedWindow("RawDepth threadID: " + threadID, WINDOW_AUTOSIZE);
 
-        if(displayDepth)
-            namedWindow("Distance threadID: " + threadID, WINDOW_AUTOSIZE);
-    }
-    else
+    if(displayDepth)
+        namedWindow("Distance threadID: " + threadID, WINDOW_AUTOSIZE);
+
+    if(saveVideo)
     {
         Size S(ImageWidth,ImageHeight);
 
@@ -427,21 +425,18 @@ void RSPCN::count()
             createTrackbar("Passenger age [seconds]", "Color threadID: " + threadID, &maxPassengerAge, 30);
         }
 
-        // Show videos
-        if(!saveVideo)
-        {
-            if(displayColor)
-                imshow("Color threadID: " + threadID, color);
+        // Show streams
+        if(displayColor)
+            imshow("Color threadID: " + threadID, color);
 
-            if(displayFrame)
-                imshow("Frame threadID: " + threadID,frame);
-                
-            if(displayRawDepth)
-                imshow("RawDepth threadID: " + threadID,rawDepth);
+        if(displayFrame)
+            imshow("Frame threadID: " + threadID,frame);
+            
+        if(displayRawDepth)
+            imshow("RawDepth threadID: " + threadID,rawDepth);
 
-            if(displayDepth)
-                imshow("Distance threadID: " + threadID,depthColorMap);
-        }
+        if(displayDepth)
+            imshow("Distance threadID: " + threadID,depthColorMap);
 
         // -- SAVING VIDEOS
         if(saveVideo)
