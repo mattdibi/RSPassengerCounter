@@ -11,7 +11,24 @@ $ git clone https://github.com/IntelRealSense/meta-intel-realsense.git
 
 **Important**: Set them to track morty branch
 
-Resulting folder structure
+## Build environment
+```sh
+$ source oe-init-build-env
+```
+
+Start adding needed layers
+```sh
+$ cd $HOME/poky/build
+$ bitbake-layers add-layer "$HOME/poky/meta-intel"
+$ bitbake-layers add-layer "$HOME/poky/meta-openebedded/meta-oe"
+$ bitbake-layers add-layer "$HOME/poky/meta-intel-realsense"
+```
+
+## Modify conf files
+* First you need to modify **local.conf**. Use the one provided in this repository
+* Then add the **auto.conf** file needed for the librealsense library. Use the one provided in this repository
+
+## Resulting folder structure
 
 ```sh
 poky
@@ -45,24 +62,6 @@ poky
 ├── README.hardware
 └── scripts
 ```
-
-
-## Build environment
-```sh
-$ source oe-init-build-env
-```
-
-Start adding needed layers
-```sh
-$ cd $HOME/poky/build
-$ bitbake-layers add-layer "$HOME/poky/meta-intel"
-$ bitbake-layers add-layer "$HOME/poky/meta-openebedded/meta-oe"
-$ bitbake-layers add-layer "$HOME/poky/meta-intel-realsense"
-```
-
-## Modify conf files
-* First you need to modify **local.conf**. Use the one provided in this repository
-* Then add the **auto.conf** file needed for the librealsense library. Use the one provided in this repository
 
 ## Build
 Build the image:
