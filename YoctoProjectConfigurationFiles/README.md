@@ -11,6 +11,42 @@ $ git clone https://github.com/IntelRealSense/meta-intel-realsense.git
 
 **Important**: Set them to track morty branch
 
+Resulting folder structure
+
+```sh
+poky
+├── bitbake
+├── build
+│   ├── bitbake.lock
+│   ├── cache
+│   ├── conf
+│   │   ├── auto.conf
+│   │   ├── bblayers.conf
+│   │   ├── local.conf
+│   │   ├── sanity_info
+│   │   └── templateconf.cfg
+│   ├── downloads
+│   ├── sstate-cache
+│   └── tmp
+├── documentation
+├── LICENSE
+├── meta
+├── meta-intel
+├── meta-intel-realsense
+├── meta-openembedded
+├── meta-poky
+├── meta-selftest
+├── meta-skeleton
+├── meta-yocto
+├── meta-yocto-bsp
+├── oe-init-build-env
+├── oe-init-build-env-memres
+├── README
+├── README.hardware
+└── scripts
+```
+
+
 ## Build environment
 ```sh
 $ source oe-init-build-env
