@@ -18,7 +18,9 @@ public class Main {
         System.out.print("* COMMAND HELP: \n");
         System.out.print("* 0 - 5: selecting camera presets\n");
         System.out.print("* r: resetting counters\n");
-        System.out.print("* c: toggle display calibration\n");
+        System.out.print("* p: get passenger count\n");
+        System.out.print("* c: toggle display color\n");
+        System.out.print("* C: toggle display calibration\n");
         System.out.print("* d: toggle display depth view\n");
         System.out.print("* D: toggle display raw depth view\n");
         System.out.print("* f: toggle display frame view\n");
@@ -42,7 +44,7 @@ public class Main {
         myRSPCN.start();
         // myRSPCN_1.start();
 
-        System.out.println("Enter characters, 'q' to quit.");
+        displayHelp();
 
         do
         {
