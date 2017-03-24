@@ -9,7 +9,7 @@ $ git clone git://git.openembedded.org/meta-openembedded
 $ git clone https://github.com/IntelRealSense/meta-intel-realsense.git
 ```
 
-Set them to track morty branch
+**Important**: Set them to track morty branch
 
 ## Build environment
 ```sh
@@ -34,10 +34,14 @@ Build the image:
 $ bitbake core-image-sato
 ```
 
+Output files will be available in $HOME/poky/build/tmp/deploy/images/intel-corei7-64/ folder
+
 Build the cross-compiler installer:
 ```sh
 $ bitbake core-image-sato -c populate_sdk
 ```
+
+Output files will be available in $HOME/poky/build/tmp/deploy/sdk/ folder
 
 Burn the image:
 ```sh
