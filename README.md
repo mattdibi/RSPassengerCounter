@@ -17,6 +17,7 @@ For the development I've used:
 * [OpenCV](http://opencv.org/)
 * Intel RealSense Library: [librealsense](https://github.com/IntelRealSense/librealsense)
 * Simplified Wrapper and Interface Generator: [SWIG](http://www.swig.org/)
+
 To build the ReliGATE 20-25 image I've used:
 * [Yocto Project](https://www.yoctoproject.org/)
     * [poky](http://git.yoctoproject.org/cgit.cgi/poky): base repository
