@@ -23,7 +23,7 @@ To build the ReliGATE 20-25 image I've used:
     * [meta-intel](http://git.yoctoproject.org/cgit.cgi/meta-intel): layer for targeting the Intel Atom processor
     * [meta-openembedded](https://github.com/openembedded/meta-openembedded): layer containing OpenCV recipes
     * [meta-intel-realsense](https://github.com/IntelRealSense/meta-intel-realsense.git): layer containig librealsense library
-    * meta-java: layer containing the JVM
+    * meta-java: layer containing the JVM (WIP)
 
 ### Performance
 Performance achived on Eurotech platform:
