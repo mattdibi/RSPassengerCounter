@@ -14,10 +14,16 @@ Video acquisition:
 
 ### Tools
 For the development I've used:
-* [Yocto Project](https://www.yoctoproject.org/)
 * [OpenCV](http://opencv.org/)
 * Intel RealSense Library: [librealsense](https://github.com/IntelRealSense/librealsense)
 * Simplified Wrapper and Interface Generator: [SWIG](http://www.swig.org/)
+To build the ReliGATE 20-25 image I've used:
+* [Yocto Project](https://www.yoctoproject.org/)
+    * [poky](http://git.yoctoproject.org/cgit.cgi/poky): base repository
+    * [meta-intel](http://git.yoctoproject.org/cgit.cgi/meta-intel): layer for targeting the Intel Atom processor
+    * [meta-openembedded](https://github.com/openembedded/meta-openembedded): layer containing OpenCV recipes
+    * [meta-intel-realsense](https://github.com/IntelRealSense/meta-intel-realsense.git): layer containig librealsense library
+    * meta-java: layer containing the JVM
 
 ### Performance
 Performance achived on Eurotech platform:
