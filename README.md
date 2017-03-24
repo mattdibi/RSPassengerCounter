@@ -26,9 +26,20 @@ Performance achived on Eurotech platform:
 ### Options
 ```sh
               - Without arguments: it opens the default webcam and captures the input stream.
--d            - Depth mode: it display the depth color map. WARNING: may decrese performance
--s <filename> - Capture mode: it saves all the stream on file.
--c            - Calibration mode: it opens the default webcam and display calibration trackbars.
--x            - Disable framerate stabilization. The program will run at max FPS possible.
--h            - Display help.
+-s            - Capture mode: it saves the color stream on file.
+```
+
+### Runtime commands
+```
+> 0 - 5: selecting camera presets
+> r: resetting counters
+> p: get passenger count
+> c: toggle display color
+> C: toggle display calibration
+> d: toggle display depth view
+> D: toggle display raw depth view
+> f: toggle display frame view
+> s: toggle frame rate stabilization
+> q: exit program
+> h: display this help message
 ```
