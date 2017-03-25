@@ -12,6 +12,11 @@ $ git clone git://git.yoctoproject.org/meta-oracle-java
 
 **Important**: Set them to track morty branch
 
+```sh
+$ git checkout morty
+```
+
+
 ## Build environment
 ```sh
 $ source oe-init-build-env
@@ -30,11 +35,11 @@ $ bitbake-layers add-layer "$HOME/poky/meta-oracle-java"
 * First you need to modify **local.conf**. Use the one provided in this repository
 * Then add the **auto.conf** file needed for the librealsense library. Use the one provided in this repository
 
-## Modify java recipe
+## Modify oracle-jse-jre recipe
 It is then needed to add a dependency in **meta-oracle-java/recipes-devtools/oracle-java/oracle-jse-jre_1.8.0.bb** recipe.
 The resulting file will be:
 
-```sh
+```bb
 #Automatically choose java package based on target architecture
 
 #Added line:
