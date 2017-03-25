@@ -38,7 +38,7 @@ The resulting file will be:
 #Automatically choose java package based on target architecture
 
 #Added line:
-**DEPENDS = "libxslt "**
+DEPENDS = "libxslt"
 
 def get_java_pkg(d):
        TA = d.getVar('TARGET_ARCH', True)
