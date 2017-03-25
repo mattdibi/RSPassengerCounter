@@ -7,6 +7,7 @@ $ cd ~/poky
 $ git clone git://git.yoctoproject.org/meta-intel
 $ git clone git://git.openembedded.org/meta-openembedded
 $ git clone https://github.com/IntelRealSense/meta-intel-realsense.git
+$ git clone git://git.yoctoproject.org/meta-oracle-java
 ```
 
 **Important**: Set them to track morty branch
@@ -22,11 +23,41 @@ $ cd $HOME/poky/build
 $ bitbake-layers add-layer "$HOME/poky/meta-intel"
 $ bitbake-layers add-layer "$HOME/poky/meta-openebedded/meta-oe"
 $ bitbake-layers add-layer "$HOME/poky/meta-intel-realsense"
+$ bitbake-layers add-layer "$HOME/poky/meta-oracle-java"
 ```
 
 ## Modify conf files
 * First you need to modify **local.conf**. Use the one provided in this repository
 * Then add the **auto.conf** file needed for the librealsense library. Use the one provided in this repository
+
+## Modify java recipe
+It is then needed to add a dependency in **meta-oracle-java/recipes-devtools/oracle-java/oracle-jse-jre_1.8.0.bb** recipe.
+The resulting file will be:
+
+```sh
+#Automatically choose java package based on target architecture
+
+#Added line:
+**DEPENDS = "libxslt "**
+
+def get_java_pkg(d):
+       TA = d.getVar('TARGET_ARCH', True)
+       if TA == "arm":
+               javaPkg = "oracle-jse-ejre-arm-vfp-hflt-client-headless"
+       elif TA == "i586":
+               javaPkg = "oracle-jse-jre-i586"
+       elif TA == "x86_64":
+               javaPkg = "oracle-jse-jre-x86-64"
+       else:
+               raise bb.parse.SkipPackage("Target architecture '%s' is not supported by the meta-oracle-java layer" %TA)
+
+       return javaPkg
+
+JAVA_PKG = "${@get_java_pkg(d)}"
+
+require ${JAVA_PKG}.inc
+```
+
 
 ## Resulting folder structure
 
@@ -51,6 +82,7 @@ poky
 ├── meta-intel
 ├── meta-intel-realsense
 ├── meta-openembedded
+├── meta-oracle-java
 ├── meta-poky
 ├── meta-selftest
 ├── meta-skeleton
