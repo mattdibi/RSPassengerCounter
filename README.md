@@ -78,6 +78,7 @@ Build JAVA version
 ```sh
 $ sh swigwrapcmd.sh
 $ cd swig_output/
+$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/swig_output
 $ java Main
 ```
 
