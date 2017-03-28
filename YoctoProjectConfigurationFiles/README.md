@@ -91,3 +91,7 @@ Burn the image:
 $ sudo dd if=tmp/deploy/images/intel-corei7-64/core-image-base-intel-
 corei7-64.wic of=TARGET_DEVICE status=progress
 ```
+
+## Additional informations/WIP
+* Stackoverflow question:[link](http://stackoverflow.com/questions/43074547/libc6-i386-installation-on-yocto-build/43076771#43076771)
+* Example project installing JAVA [link](http://wiki.hioproject.org/index.php?title=OpenHAB:_WeMo_Switch)
