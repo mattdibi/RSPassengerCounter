@@ -63,6 +63,23 @@ JAVA_PKG = "${@get_java_pkg(d)}"
 require ${JAVA_PKG}.inc
 ```
 
+## Modify rmc.bb recipe
+It is needed to add some lines to **meta-intel/common/recipes-bsp/rmc/rmc.bb** to correctly install some lib files.
+The resulting file will be:
+```bb
+...
+
+do_install_class-native() {
+        install -d ${D}${STAGING_BINDIR_NATIVE}
+        install -m 0755 ${S}/src/rmc ${D}${STAGING_BINDIR_NATIVE}
+}
+
+FILES_${PN} += "/usr/lib"
+FILES_${PN} += "/usr/lib/librsmpefi.a"
+FILES_${PN} += "/usr/lib/librmclefi.a"
+
+BBCLASSEXTEND = "native"
+```
 
 ## Resulting folder structure
 
