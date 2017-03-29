@@ -42,6 +42,8 @@ $ bitbake-layers add-layer "$HOME/poky/meta-oracle-java"
 * First you need to modify **local.conf**. Use the one provided in this repository
 * Then add the **auto.conf** file needed for the librealsense library. Use the one provided in this repository
 
+**Note**: Seems like the PREFERRED PROVIDER for openjdk-7-jre must be oracle-jse-jre
+
 ## Resulting folder structure
 
 ```sh
