@@ -44,6 +44,18 @@ $ bitbake-layers add-layer "$HOME/poky/meta-oracle-java"
 
 **Note**: Seems like the PREFERRED PROVIDER for openjdk-7-jre must be oracle-jse-jre
 
+## Patch openjdk
+[Here](https://bugzilla.opensuse.org/attachment.cgi?id=678295&action=diff) are reported the needed modification to properly build
+the image. It will give an Hash error but the image will be correctly built.
+I have included the pathched files in this repository in case they are needed in the future.
+Installation paths:
+* $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/gc_implementation/g1/concurrentMark.cpp
+* $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot//src/os/posix/vm/os_posix.cpp
+* $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/prims/unsafe.cpp
+* $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/code/dependencies.hpp
+* $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/oops/cpCacheOop.hpp
+
+
 ## Resulting folder structure
 
 ```sh
@@ -84,7 +96,7 @@ poky
 ## Build
 Build the image:
 ```sh
-$ bitbake core-image-sato
+$ bitbake -k core-image-sato
 ```
 
 Output files will be available in $HOME/poky/build/tmp/deploy/images/intel-corei7-64/ folder
