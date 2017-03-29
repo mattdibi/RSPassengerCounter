@@ -20,7 +20,7 @@ $ git checkout morty
 **Important**: Set meta-java layer to the 12-06-2016 commit
 
  ```sh
-$ git reset --hard a265b31ec7d022be254abdf959360a7624208585 
+$ git reset --hard 92aa80f6556debb7477c507a6802321623baea4a 
 ```
 
 ## Build environment
