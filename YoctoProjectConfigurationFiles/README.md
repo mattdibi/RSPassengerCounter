@@ -42,8 +42,6 @@ $ bitbake-layers add-layer "$HOME/poky/meta-oracle-java"
 * First you need to modify **local.conf**. Use the one provided in this repository
 * Then add the **auto.conf** file needed for the librealsense library. Use the one provided in this repository
 
-**Note**: Seems like the PREFERRED PROVIDER for openjdk-7-jre must be oracle-jse-jre
-
 ## Patch openjdk
 [Here](https://bugzilla.opensuse.org/attachment.cgi?id=678295&action=diff) are reported the needed modification to properly build
 the image. It will give an Hash error but the image will be correctly built.
