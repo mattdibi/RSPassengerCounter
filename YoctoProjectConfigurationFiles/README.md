@@ -20,7 +20,7 @@ $ git checkout morty
 **Important**: Set meta-java layer to the following commit
 
  ```sh
-$ git reset --hard 92aa80f6556debb7477c507a6802321623baea4a 
+$ git reset --hard 67e48693501bddb80745b9735b7b3d4d28dce9a1 
 ```
 
 ## Build environment
