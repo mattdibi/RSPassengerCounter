@@ -7,6 +7,7 @@ $ cd ~/poky
 $ git clone git://git.yoctoproject.org/meta-intel
 $ git clone git://git.openembedded.org/meta-openembedded
 $ git clone https://github.com/IntelRealSense/meta-intel-realsense.git
+$ git clone git://git.yoctoproject.org/meta-java
 $ git clone git://git.yoctoproject.org/meta-oracle-java
 ```
 
@@ -16,6 +17,11 @@ $ git clone git://git.yoctoproject.org/meta-oracle-java
 $ git checkout morty
 ```
 
+**Important**: Set meta-java layer to the 12-06-2016 commit
+
+ ```sh
+$ git reset --hard a265b31ec7d022be254abdf959360a7624208585 
+```
 
 ## Build environment
 ```sh
@@ -28,6 +34,7 @@ $ cd $HOME/poky/build
 $ bitbake-layers add-layer "$HOME/poky/meta-intel"
 $ bitbake-layers add-layer "$HOME/poky/meta-openebedded/meta-oe"
 $ bitbake-layers add-layer "$HOME/poky/meta-intel-realsense"
+$ bitbake-layers add-layer "$HOME/poky/meta-java"
 $ bitbake-layers add-layer "$HOME/poky/meta-oracle-java"
 ```
 
@@ -59,6 +66,7 @@ poky
 ├── meta-intel-realsense
 ├── meta-openembedded
 ├── meta-oracle-java
+├── meta-java
 ├── meta-poky
 ├── meta-selftest
 ├── meta-skeleton
