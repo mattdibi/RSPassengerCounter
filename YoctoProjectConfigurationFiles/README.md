@@ -17,7 +17,7 @@ $ git clone git://git.yoctoproject.org/meta-oracle-java
 $ git checkout morty
 ```
 
-**Important**: Set meta-java layer to the 12-06-2016 commit
+**Important**: Set meta-java layer to the following commit
 
  ```sh
 $ git reset --hard 92aa80f6556debb7477c507a6802321623baea4a 
