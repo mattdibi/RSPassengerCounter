@@ -106,3 +106,5 @@ corei7-64.wic of=TARGET_DEVICE status=progress
 * Stackoverflow question about installing libc6 lib:[link](http://stackoverflow.com/questions/43074547/libc6-i386-installation-on-yocto-build/43076771#43076771)
 * Example project installing JAVA: [link](http://wiki.hioproject.org/index.php?title=OpenHAB:_WeMo_Switch)
 * Stackoverflow question about Java installation on Yocto build error: [link](http://stackoverflow.com/questions/43093838/java-installation-error-on-yocto-build)
+
+Apparently the bug is known and is being patched: [source](https://bugzilla.opensuse.org/show_bug.cgi?id=981625)
