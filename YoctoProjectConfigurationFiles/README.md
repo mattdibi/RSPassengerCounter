@@ -91,6 +91,28 @@ poky
 └── scripts
 ```
 
+## Resulting build configuration
+```
+Build Configuration:
+BB_VERSION        = "1.32.0"
+BUILD_SYS         = "x86_64-linux"
+NATIVELSBSTRING   = "universal-4.8"
+TARGET_SYS        = "x86_64-poky-linux"
+MACHINE           = "intel-corei7-64"
+DISTRO            = "poky"
+DISTRO_VERSION    = "2.2.1"
+TUNE_FEATURES     = "m64 corei7"
+TARGET_FPU        = ""
+meta              
+meta-poky         
+meta-yocto-bsp    = "morty:924e576b8930fd2268d85f0b151e5f68a3c2afce"
+meta-intel        = "morty:6add41510412ca196efb3e4f949d403a8b6f35d7"
+meta-oe           = "morty:fe5c83312de11e80b85680ef237f8acb04b4b26e"
+meta-intel-realsense = "morty:2c0dfe9690d2871214fba9c1c32980a5eb89a421"
+meta-java         = "master:67e48693501bddb80745b9735b7b3d4d28dce9a1"
+meta-oracle-java  = "morty:f44365f02b283c3fb362dc99e2e996d3f11e356e"
+```
+
 ## Build
 Build the image:
 ```sh
