@@ -1,6 +1,6 @@
 # Yocto build guide
 
-## Clone needed repositories
+## Step 1: Clone needed repositories
 ```sh
 $ git clone git://git.yoctoproject.org/poky
 $ cd ~/poky
@@ -23,7 +23,7 @@ $ git checkout morty
 $ git reset --hard 67e48693501bddb80745b9735b7b3d4d28dce9a1 
 ```
 
-## Build environment
+## Step 2: Build environment
 ```sh
 $ source oe-init-build-env
 ```
@@ -38,11 +38,11 @@ $ bitbake-layers add-layer "$HOME/poky/meta-java"
 $ bitbake-layers add-layer "$HOME/poky/meta-oracle-java"
 ```
 
-## Modify conf files
+## Step 3: Modify conf files
 * First you need to modify **local.conf**. Use the one provided in this repository
 * Then add the **auto.conf** file needed for the librealsense library. Use the one provided in this repository
 
-## Patch openjdk
+## Step 4: Patch openjdk
 [Here](https://bugzilla.opensuse.org/attachment.cgi?id=678295&action=diff) are reported the needed modification to properly build
 the image. It will give an Hash error but the image will be correctly built.
 I have included the pathched files in this repository in case they are needed in the future.
@@ -113,7 +113,7 @@ meta-java         = "master:67e48693501bddb80745b9735b7b3d4d28dce9a1"
 meta-oracle-java  = "morty:f44365f02b283c3fb362dc99e2e996d3f11e356e"
 ```
 
-## Build
+## Step 5: Build
 Build the image:
 ```sh
 $ bitbake -k core-image-sato
