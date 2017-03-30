@@ -57,7 +57,7 @@ Performance achived on Eurotech platform:
 Requirements. A Linux system with installed:
 * OpenCV 
 * librealsense
-* JAVA SDK
+* JAVA SDK (JDK 7)
 * SWIG
 * Cmake
 * poky toolchain (generated with yocto project)
