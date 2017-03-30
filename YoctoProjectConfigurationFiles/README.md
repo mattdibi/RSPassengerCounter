@@ -49,8 +49,8 @@ Use the command:
 $ bitbake core-image-sato
 ```
 
-to launch the build process. We want it to download the openjdk7 sources so that they can be patched manually
-follwing the instruction in Step 4. 
+to launch the build process. We want Yocto to download the openjdk7 sources so that they can be patched manually
+follwing the instruction in Step 4. We'll need to wait for it to fail the build so that we can edit those files. 
 
 ## Step 4: Patch openjdk
 [Here](https://bugzilla.opensuse.org/attachment.cgi?id=678295&action=diff) are reported the needed modification to properly build
@@ -130,6 +130,7 @@ $ bitbake -k core-image-sato
 ```
 
 Output files will be available in $HOME/poky/build/tmp/deploy/images/intel-corei7-64/ folder
+**Note**: It will output an error. Ignore it since the image will correctly be built.
 
 Build the cross-compiler installer:
 ```sh
