@@ -34,8 +34,8 @@ Performance achived on Eurotech platform:
 
 ### Options
 ```sh
-              - Without arguments: it opens the default webcam and captures the input stream.
--s            - Capture mode: it saves the color stream on file.
+    - Without arguments: it opens the default webcam and captures the input stream.
+-s  - Capture mode: it saves the color stream on file.
 ```
 
 ### Runtime commands
@@ -57,10 +57,10 @@ Performance achived on Eurotech platform:
 Requirements. A Linux system with installed:
 * OpenCV 
 * librealsense
-* JAVA SDK (JDK 7)
+* JAVA SDK (JDK 7, JDK 8 is not supported)
 * SWIG
 * Cmake
-* poky toolchain (generated with yocto project)
+* poky toolchain (generated with yocto project see build guide)
 
 
 Build C++ version
@@ -75,7 +75,7 @@ Build C++ poky version
 $ ./X-COMPILE-OCV
 ```
 
-Build JAVA version
+Build JAVA version (TODO: Modify and conform to poky version)
 ```sh
 $ sh swigwrapcmd.sh
 $ cd swig_output/
