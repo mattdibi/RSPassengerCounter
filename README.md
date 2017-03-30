@@ -60,7 +60,7 @@ Requirements. A Linux system with installed:
 * JAVA SDK (JDK 7, JDK 8 is not supported)
 * SWIG
 * Cmake
-* poky toolchain (generated with yocto project see build guide)
+* poky toolchain (generated with yocto project see [build guide](https://github.com/mattdibi/RSPassengerCounter/tree/master/YoctoProjectConfigurationFiles))
 
 
 Build C++ version
