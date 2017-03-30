@@ -46,7 +46,7 @@ $ bitbake-layers add-layer "$HOME/poky/meta-oracle-java"
 Use the command:
 
 ```sh
-$ bitbake -k core-image-sato
+$ bitbake core-image-sato
 ```
 
 to launch the build process. We want it to download the openjdk7 sources so that they can be patched manually
