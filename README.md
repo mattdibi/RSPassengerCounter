@@ -83,4 +83,13 @@ $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/swig_output
 $ java Main
 ```
 
+Build JAVA poky version
+ ```sh
+$ sh swigwrapcmd20-25.sh
+$ cd swig_output_20-25/
+$ ./path/to/jdk1.7.0_80/bin/javac *.java
+$ scp swig_output_20-25/ root@<ReliGATE 20-25 IP address>:
+$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/swig_output
+$ java Main
+```
 
