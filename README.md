@@ -85,6 +85,7 @@ $ java Main
 
 Build JAVA poky version
  ```sh
+$ source /opt/poky/2.2.1/environment-setup-corei7-64-poky-linux
 $ sh swigwrapcmd20-25.sh
 $ cd swig_output_20-25/
 $ ./path/to/jdk1.7.0_80/bin/javac *.java

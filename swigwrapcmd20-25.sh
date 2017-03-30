@@ -3,8 +3,6 @@ if [ -d "swig_output_2025" ]; then
   rm -r swig_output_2025/
 fi
 
-# source /opt/poky/2.2.1/environment-setup-corei7-64-poky-linux
-
 mkdir swig_output_2025
 cp Main.java swig_output_2025/
 swig -c++ -java -outdir swig_output_2025/ -o swig_output_2025/RSPCN_wrap.cpp RSPCN.i
