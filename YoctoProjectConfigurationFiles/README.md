@@ -40,7 +40,9 @@ $ bitbake-layers add-layer "$HOME/poky/meta-oracle-java"
 
 ## Step 3: Modify conf files
 * First you need to modify **local.conf**. Use the one provided in this repository
-* Then add the **auto.conf** file needed for the librealsense library. Use the one provided in this repository
+* Then add the **auto.conf** file needed for the librealsense library. 
+
+Use the ones provided in this repository
 
 ## Launch the build
 Use the command:
