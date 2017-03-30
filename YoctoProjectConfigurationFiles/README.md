@@ -129,7 +129,8 @@ Build the image:
 $ bitbake -k core-image-sato
 ```
 
-Output files will be available in $HOME/poky/build/tmp/deploy/images/intel-corei7-64/ folder
+Output files will be available in $HOME/poky/build/tmp/deploy/images/intel-corei7-64/ folder.
+
 **Note**: It will output an error. Ignore it since the image will correctly be built.
 
 Build the cross-compiler installer:
