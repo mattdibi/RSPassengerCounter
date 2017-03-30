@@ -124,7 +124,8 @@ meta-oracle-java  = "morty:f44365f02b283c3fb362dc99e2e996d3f11e356e"
 ```
 
 ## Step 5: Build
-Build the image:
+
+##### Build the image:
 ```sh
 $ bitbake -k core-image-sato
 ```
@@ -133,14 +134,14 @@ Output files will be available in $HOME/poky/build/tmp/deploy/images/intel-corei
 
 **Note**: It will output an error. Ignore it since the image will correctly be built.
 
-Build the cross-compiler installer:
+##### Build the cross-compiler installer:
 ```sh
 $ bitbake core-image-sato -c populate_sdk
 ```
 
 Output files will be available in $HOME/poky/build/tmp/deploy/sdk/ folder
 
-Burn the image:
+##### Burn the image:
 ```sh
 $ sudo dd if=tmp/deploy/images/intel-corei7-64/core-image-base-intel-
 corei7-64.wic of=TARGET_DEVICE status=progress
