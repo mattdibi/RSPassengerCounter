@@ -85,12 +85,15 @@ $ java Main
 ```
 
 Build JAVA poky version
- ```sh
+```sh
 $ source /opt/poky/2.2.1/environment-setup-corei7-64-poky-linux
 $ sh swigwrapcmd20-25.sh
 $ cd swig_output_2025/
 $ ./path/to/jdk1.7.0_80/bin/javac *.java
 $ scp swig_output_20-25/ root@<ReliGATE 20-25 IP address>:
+```
+Once connected to ReliGATE:
+```sh
 $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/swig_output_2025
 $ java Main
 ```
