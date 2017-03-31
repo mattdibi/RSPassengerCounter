@@ -29,6 +29,3 @@ g++ -std=c++11 -shared RSPCN.o RSPCN_wrap.o -o libRSPCN.so -lopencv_core \
 -lopencv_video \
 -lrealsense
 
-javac *.java
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/mattia/Scrivania/RSPassengerCounter/swig_output
-java Main

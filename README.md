@@ -75,10 +75,11 @@ Build C++ poky version
 $ ./X-COMPILE-OCV
 ```
 
-Build JAVA version (TODO: Modify and conform to poky version)
+Build JAVA version 
 ```sh
 $ sh swigwrapcmd.sh
 $ cd swig_output/
+$ javac *.java
 $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/swig_output
 $ java Main
 ```
