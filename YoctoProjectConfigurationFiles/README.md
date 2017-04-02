@@ -8,7 +8,6 @@ $ git clone git://git.yoctoproject.org/meta-intel
 $ git clone git://git.openembedded.org/meta-openembedded
 $ git clone https://github.com/IntelRealSense/meta-intel-realsense.git
 $ git clone git://git.yoctoproject.org/meta-java
-$ git clone git://git.yoctoproject.org/meta-oracle-java
 ```
 
 **Important**: Set them to track morty branch
@@ -35,7 +34,6 @@ $ bitbake-layers add-layer "$HOME/poky/meta-intel"
 $ bitbake-layers add-layer "$HOME/poky/meta-openebedded/meta-oe"
 $ bitbake-layers add-layer "$HOME/poky/meta-intel-realsense"
 $ bitbake-layers add-layer "$HOME/poky/meta-java"
-$ bitbake-layers add-layer "$HOME/poky/meta-oracle-java"
 ```
 
 ## Step 3: Modify conf files
@@ -94,7 +92,6 @@ poky
 ├── meta-intel
 ├── meta-intel-realsense
 ├── meta-openembedded
-├── meta-oracle-java
 ├── meta-java
 ├── meta-poky
 ├── meta-selftest
@@ -127,7 +124,6 @@ meta-intel        = "morty:6add41510412ca196efb3e4f949d403a8b6f35d7"
 meta-oe           = "morty:fe5c83312de11e80b85680ef237f8acb04b4b26e"
 meta-intel-realsense = "morty:2c0dfe9690d2871214fba9c1c32980a5eb89a421"
 meta-java         = "master:67e48693501bddb80745b9735b7b3d4d28dce9a1"
-meta-oracle-java  = "morty:f44365f02b283c3fb362dc99e2e996d3f11e356e"
 ```
 
 ## Step 5: Build
