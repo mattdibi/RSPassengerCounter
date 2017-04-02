@@ -66,6 +66,10 @@ Installation paths:
 * $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/oops/cpCacheOop.hpp
 
 **Note**: Patch installer has been added in the PatchedFiles folder.
+Commmand to launch the installer:
+```sh
+sh install_patch.sh /path/to/poky/folder
+```
 
 ## Resulting folder structure
 
