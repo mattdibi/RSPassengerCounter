@@ -53,6 +53,15 @@ to launch the build process. We want Yocto to download the openjdk7 sources so t
 follwing the instruction in Step 4. We'll need to wait for it to fail the build so that we can edit those files. 
 
 ## Step 4: Patch openjdk
+
+#### Patch installer
+The patch installer can be found in the [PatchedFiles folder](https://github.com/mattdibi/RSPassengerCounter/tree/master/YoctoProjectConfigurationFiles/PatchedFiles).
+Command to launch the installer:
+```sh
+sh install_patch.sh /path/to/poky/folder
+```
+
+#### Manual patch installation
 [Here](https://bugzilla.opensuse.org/attachment.cgi?id=678295&action=diff) are reported the needed modification to properly build
 the image. It will give an Hash error but the image will be correctly built.
 I have included the pathched files in this repository in case they are needed in the future.
@@ -62,12 +71,6 @@ Installation paths:
 * $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/prims/unsafe.cpp
 * $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/code/dependencies.hpp
 * $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/oops/cpCacheOop.hpp
-
-**Note**: Patch installer has been added in the PatchedFiles folder.
-Commmand to launch the installer:
-```sh
-sh install_patch.sh /path/to/poky/folder
-```
 
 ## Resulting folder structure
 
