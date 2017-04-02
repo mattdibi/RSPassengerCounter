@@ -60,11 +60,12 @@ the image. It will give an Hash error but the image will be correctly built.
 I have included the pathched files in this repository in case they are needed in the future.
 Installation paths:
 * $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/gc_implementation/g1/concurrentMark.cpp
-* $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot//src/os/posix/vm/os_posix.cpp
+* $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/os/posix/vm/os_posix.cpp
 * $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/prims/unsafe.cpp
 * $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/code/dependencies.hpp
 * $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/oops/cpCacheOop.hpp
 
+**Note**: Patch installer has been added in the PatchedFiles folder.
 
 ## Resulting folder structure
 
