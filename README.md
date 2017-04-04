@@ -56,7 +56,7 @@ Performance achived on Eurotech platform:
 Requirements. A Linux system with:
 * OpenCV 
 * librealsense
-* JAVA SDK (JDK 7, JDK 8 is not supported)
+* JAVA SDK (JDK 8) 
 * SWIG
 * Cmake
 * poky toolchain (generated with yocto project see [build guide](https://github.com/mattdibi/RSPassengerCounter/tree/master/YoctoProjectConfigurationFiles))
