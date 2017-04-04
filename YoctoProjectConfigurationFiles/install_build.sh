@@ -9,9 +9,17 @@ echo "Input: $1"
 
 if [ -d "$1/poky/filec" ]; then
   echo "Directory filec found."
-    
+  
+  cd $1/poky/
+  source oe-init-build-env
+  
   cp auto.conf $1/poky/filec/conf
-  cp bblayers.conf $1/poky/filec/conf
+  
+  bitbake-layers add-layer "$1/poky/meta-intel"
+  bitbake-layers add-layer "$1/poky/meta-openebedded/meta-oe"
+  bitbake-layers add-layer "$1/poky/meta-intel-realsense"
+  bitbake-layers add-layer "$1/poky/meta-java"
+
   rm $1/poky/filec/conf/local.conf
   cp local.conf $1/poky/filec/conf
   cp opencv_3.1.bb $1/poky/meta-openembedded/meta-oe/recipes-support/opencv/
@@ -19,8 +27,16 @@ if [ -d "$1/poky/filec" ]; then
 elif [ -d "$1/poky/build" ]; then
   echo "Directory build found."
 
+  cd $1/poky/
+  source oe-init-build-env
+  
   cp auto.conf $1/poky/build/conf
-  cp bblayers.conf $1/poky/build/conf
+  
+  bitbake-layers add-layer "$1/poky/meta-intel"
+  bitbake-layers add-layer "$1/poky/meta-openebedded/meta-oe"
+  bitbake-layers add-layer "$1/poky/meta-intel-realsense"
+  bitbake-layers add-layer "$1/poky/meta-java"
+
   rm $1/poky/build/conf/local.conf
   cp local.conf $1/poky/build/conf
   cp opencv_3.1.bb $1/poky/meta-openembedded/meta-oe/recipes-support/opencv/
