@@ -78,11 +78,6 @@ $ bitbake core-image-sato
 **Note:** Depending on your host system configuration there may be some build problems. Please refer to the 
 troubleshooting section below.
 
-## Installer
-In this folder I have added an installer for the configuration files that automates steps 2 to 4. Instructions:
-```sh
-$ sh install_build.sh /path/to/poky/folder
-```
 ## Resulting folder structure
 
 ```sh
