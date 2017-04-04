@@ -42,35 +42,47 @@ $ bitbake-layers add-layer "$HOME/poky/meta-java"
 
 Use the ones provided in this repository
 
-## Launch the build
-Use the command:
+## Step 4: Modify opencv recipe
+Since we have to use the morty branch of the repository because of a compatibility issue of the realsense library, we cannot
+access the latest version of the opencv recipe which support openjdk as a Java Run-Time Environment.
+Referencing [that version](https://github.com/openembedded/meta-openembedded/commit/39d2e1b70a963835b707ccbd80dae6c34205e7a2) we can modify our recipe to add what we need.
 
+Add these **bold** lines to **$HOME/poky/meta-openembedded/meta-oe/recipes-support/opencv/opencv_3.1.bb**
+<pre>
+...
+PACKAGECONFIG ??= "eigen jpeg png tiff v4l libv4l gstreamer samples tbb <b>java</b> gphoto2 \
+    ${@bb.utils.contains("DISTRO_FEATURES", "x11", "gtk", "", d)} \
+    ${@bb.utils.contains("LICENSE_FLAGS_WHITELIST", "commercial", "libav", "", d)}"
+...
+PACKAGECONFIG[jasper] = "-DWITH_JASPER=ON,-DWITH_JASPER=OFF,jasper,"
+<b>PACKAGECONFIG[java] = "-DJAVA_INCLUDE_PATH=${JAVA_HOME}/include -DJAVA_INCLUDE_PATH2=${JAVA_HOME}/include/linux -DJAVA_AWT_INCLUDE_PATH=${JAVA_HOME}/include -DJAVA_AWT_LIBRARY=${JAVA_HOME}/lib/amd64/libjawt.so -DJAVA_JVM_LIBRARY=${JAVA_HOME}/lib/amd64/server/libjvm.so,,ant-native fastjar-native openjdk-8-native,"</b>
+PACKAGECONFIG[jpeg] = "-DWITH_JPEG=ON,-DWITH_JPEG=OFF,jpeg,"
+...
+PACKAGECONFIG[opencl] = "-DWITH_OPENCL=ON,-DWITH_OPENCL=OFF,opencl-headers,"
+<b>PACKAGECONFIG[oracle-java] = "-DJAVA_INCLUDE_PATH=${ORACLE_JAVA_HOME}/include -DJAVA_INCLUDE_PATH2=${ORACLE_JAVA_HOME}/include/linux -DJAVA_AWT_INCLUDE_PATH=${ORACLE_JAVA_HOME}/include -DJAVA_AWT_LIBRARY=${ORACLE_JAVA_HOME}/lib/amd64/libjawt.so -DJAVA_JVM_LIBRARY=${ORACLE_JAVA_HOME}/lib/amd64/server/libjvm.so,,ant-native oracle-jse-jdk oracle-jse-jdk-native,"</b>
+PACKAGECONFIG[png] = "-DWITH_PNG=ON,-DWITH_PNG=OFF,libpng,"
+...
+export PYTHON="${STAGING_BINDIR_NATIVE}/python"
+<b>export ORACLE_JAVA_HOME="${STAGING_DIR_NATIVE}/usr/bin/java"</b>
+<b>export JAVA_HOME="${STAGING_DIR_NATIVE}/usr/lib/jvm/openjdk-8-native"</b>
+export ANT_DIR="${STAGING_DIR_NATIVE}/usr/share/ant/"
+...
+PACKAGES += "${@bb.utils.contains('PACKAGECONFIG', 'oracle-java', '${PN}-java-dbg ${PN}-java', '', d)} \
+    <b> ${@bb.utils.contains('PACKAGECONFIG', 'java', '${PN}-java-dbg ${PN}-java', '', d)} \ </b>
+    ${PN}-samples-dbg ${PN}-samples ${PN}-apps python-opencv"
+...
+</pre>
+
+**Note:**I will probably add a patch installer in the future.
+
+## Step 5: Launch the build
+Use the command:
 ```sh
 $ bitbake core-image-sato
 ```
 
-to launch the build process. We want Yocto to download the openjdk7 sources so that they can be patched manually
-follwing the instruction in Step 4. We'll need to wait for it to fail the build so that we can edit those files. 
-
-## Step 4: Patch openjdk
-
-#### Patch installer
-The patch installer can be found in the [PatchedFiles folder](https://github.com/mattdibi/RSPassengerCounter/tree/master/YoctoProjectConfigurationFiles/PatchedFiles).
-Command to launch the installer:
-```sh
-sh install_patch.sh /path/to/poky/folder
-```
-
-#### Manual patch installation
-[Here](https://bugzilla.opensuse.org/attachment.cgi?id=678295&action=diff) are reported the needed modification to properly build
-the image. It will give an Hash error but the image will be correctly built.
-I have included the pathched files in this repository in case they are needed in the future.
-Installation paths:
-* $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/gc_implementation/g1/concurrentMark.cpp
-* $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/os/posix/vm/os_posix.cpp
-* $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/prims/unsafe.cpp
-* $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/code/dependencies.hpp
-* $HOME/poky/build/tmp/work/corei7-64-poky-linux/openjdk-7-jre/99b00-2.6.5-r6.1/icedtea-2.6.5/build/openjdk/hotspot/src/share/vm/oops/cpCacheOop.hpp
+**Note:** Depending on your host system configuration there may be some build problems. Please refer to the 
+troubleshooting section below.
 
 ## Resulting folder structure
 
@@ -129,23 +141,21 @@ meta-intel-realsense = "morty:2c0dfe9690d2871214fba9c1c32980a5eb89a421"
 meta-java         = "master:67e48693501bddb80745b9735b7b3d4d28dce9a1"
 ```
 
-## Step 5: Build
+## Useful commands 
 
 ##### Build the image:
 ```sh
-$ bitbake -k core-image-sato
+$ bitbake core-image-sato
 ```
 
-Output files will be available in $HOME/poky/build/tmp/deploy/images/intel-corei7-64/ folder.
-
-**Note**: It will output an error. Ignore it since the image will correctly be built.
+Output files will be available in **$HOME/poky/build/tmp/deploy/images/intel-corei7-64/** folder.
 
 ##### Build the cross-compiler installer:
 ```sh
 $ bitbake core-image-sato -c populate_sdk
 ```
 
-Output files will be available in $HOME/poky/build/tmp/deploy/sdk/ folder
+Output files will be available in **$HOME/poky/build/tmp/deploy/sdk/** folder
 
 ##### Burn the image:
 ```sh
@@ -153,7 +163,18 @@ $ sudo dd if=tmp/deploy/images/intel-corei7-64/core-image-base-intel-
 corei7-64.wic of=TARGET_DEVICE status=progress
 ```
 
-## Additional informations
+## Troubleshooting
+There's a known issue with some older version of G++ compilers.
+In the error **unrecognized command line option -fno-lifetime-dse** pops up you need to
+modify **$HOME/poky/meta-java/recipes-core/openjdk/openjdk-8-common.inc line 224** as following:
+```git
+# GCC 6 sets the default C++ standard to C++14 and introduces dead store
+# elimination by default. OpenJDK 8 is not ready for either of these
+# changes.
+- FLAGS_GCC6 = "-fno-lifetime-dse -fno-delete-null-pointer-checks"
++ FLAGS_GCC6 = "-fno-delete-null-pointer-checks"
+```
+### Additional informations
 * Example project installing JAVA: [link](http://wiki.hioproject.org/index.php?title=OpenHAB:_WeMo_Switch)
 * Stackoverflow question about Java installation on Yocto build error: [link](http://stackoverflow.com/questions/43093838/java-installation-error-on-yocto-build)
   * Solution to said error: apparently the bug is known and was patched: [source](https://bugzilla.opensuse.org/show_bug.cgi?id=981625)
