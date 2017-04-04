@@ -52,7 +52,7 @@ Performance achived on Eurotech platform:
 > h: display this help message
 ```
 
-### Build guide
+### User guide
 Requirements. A Linux system with:
 * OpenCV 
 * librealsense
@@ -62,19 +62,19 @@ Requirements. A Linux system with:
 * poky toolchain (generated with yocto project see [build guide](https://github.com/mattdibi/RSPassengerCounter/tree/master/YoctoProjectConfigurationFiles))
 
 
-Build C++ version
+**Build C++ version**
 ```sh
 $ cmake .
 $ make
 $ ./RSPCN
 ```
 
-Build C++ poky version
+**Build C++ poky version**
 ```sh
 $ ./X-COMPILE-OCV
 ```
 
-Build JAVA version 
+**Build JAVA version** 
 ```sh
 $ sh swigwrapcmd.sh
 $ cd swig_output/
@@ -83,7 +83,7 @@ $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/swig_output
 $ java Main
 ```
 
-Build JAVA poky version
+**Build JAVA poky version**
 ```sh
 $ source /opt/poky/2.2.1/environment-setup-corei7-64-poky-linux
 $ sh swigwrapcmd20-25.sh
@@ -96,4 +96,9 @@ $ javac *.java
 $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/swig_output_2025
 $ java Main
 ```
-
+**Use OpenCV Java API with the installed JDK**
+Once connected to ReliGATE:
+```sh
+javac -cp /usr/share/OpenCV/java/opencv-310.jar:. <your source>.java 
+java -cp /usr/share/OpenCV/java/opencv-310.jar:. -Djava.library.path=/usr/share/OpenCV/java/ <your source>
+```
