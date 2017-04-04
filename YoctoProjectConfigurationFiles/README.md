@@ -168,7 +168,7 @@ corei7-64.wic of=TARGET_DEVICE status=progress
 
 ## Troubleshooting
 There's a known issue with some older version of C++ compilers.
-In the error **unrecognized command line option -fno-lifetime-dse** pops up you need to
+In the error **"unrecognized command line option -fno-lifetime-dse"** pops up you need to
 modify **$HOME/poky/meta-java/recipes-core/openjdk/openjdk-8-common.inc line 224** as following:
 ```diff
 # GCC 6 sets the default C++ standard to C++14 and introduces dead store
