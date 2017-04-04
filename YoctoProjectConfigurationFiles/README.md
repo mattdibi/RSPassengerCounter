@@ -68,12 +68,13 @@ export PYTHON="${STAGING_BINDIR_NATIVE}/python"
 export ANT_DIR="${STAGING_DIR_NATIVE}/usr/share/ant/"
 ...
 PACKAGES += "${@bb.utils.contains('PACKAGECONFIG', 'oracle-java', '${PN}-java-dbg ${PN}-java', '', d)} \
-    <b> ${@bb.utils.contains('PACKAGECONFIG', 'java', '${PN}-java-dbg ${PN}-java', '', d)} \ </b>
+    <b>${@bb.utils.contains('PACKAGECONFIG', 'java', '${PN}-java-dbg ${PN}-java', '', d)} \ </b>
     ${PN}-samples-dbg ${PN}-samples ${PN}-apps python-opencv"
 ...
 </pre>
 
-**Note:**I will probably add a patch installer in the future.
+
+**Note:** I will probably add a patch installer in the future.
 
 ## Step 5: Launch the build
 Use the command:
