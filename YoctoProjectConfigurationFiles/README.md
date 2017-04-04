@@ -2,18 +2,12 @@
 
 ## Step 1: Clone needed repositories
 ```sh
-$ git clone git://git.yoctoproject.org/poky
+$ git clone git://git.yoctoproject.org/poky -b morty
 $ cd ~/poky
-$ git clone git://git.yoctoproject.org/meta-intel
-$ git clone git://git.openembedded.org/meta-openembedded
-$ git clone https://github.com/IntelRealSense/meta-intel-realsense.git
+$ git clone git://git.yoctoproject.org/meta-intel -b morty
+$ git clone git://git.openembedded.org/meta-openembedded -b morty
+$ git clone https://github.com/IntelRealSense/meta-intel-realsense.git -b morty
 $ git clone git://git.yoctoproject.org/meta-java
-```
-
-**Important**: Set them to track morty branch
-
-```sh
-$ git checkout morty
 ```
 
 **Important**: Set meta-java layer to the following commit
@@ -85,7 +79,7 @@ $ bitbake core-image-sato
 troubleshooting section below.
 
 ## Installer
-In this folder I have added an installer for the configuration files that automates steps 1 to 4. Instructions:
+In this folder I have added an installer for the configuration files that automates steps 2 to 4. Instructions:
 ```sh
 $ sh install_build.sh /path/to/poky/folder
 ```
