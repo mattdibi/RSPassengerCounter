@@ -96,7 +96,7 @@ $ javac *.java
 $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/swig_output_2025
 $ java Main
 ```
-**Use OpenCV Java API with the installed JDK**
+**Use OpenCV Java API with the installed JDK**  
 Once connected to ReliGATE:
 ```sh
 javac -cp /usr/share/OpenCV/java/opencv-310.jar:. <your source>.java 
