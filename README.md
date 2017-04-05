@@ -17,6 +17,7 @@ For the development I've used:
 * [OpenCV](http://opencv.org/)
 * Intel RealSense Library: [librealsense](https://github.com/IntelRealSense/librealsense)
 * Simplified Wrapper and Interface Generator: [SWIG](http://www.swig.org/)
+* [JavaCPP](https://github.com/bytedeco/javacpp) and its presets for the librealsense library
 
 To build the ReliGATE 20-25 image I've used:
 * [Yocto Project](https://www.yoctoproject.org/)
@@ -59,7 +60,7 @@ Requirements. A Linux system with:
 * JAVA SDK (JDK 8) 
 * SWIG
 * Cmake
-* poky toolchain (generated with yocto project see [build guide](https://github.com/mattdibi/RSPassengerCounter/tree/master/YoctoProjectConfigurationFiles))
+* poky toolchain (generated with yocto project see [build guide](https://github.com/mattdibi/RSPassengerCounter/tree/master/build_config))
 
 
 **Build C++ version**
@@ -74,7 +75,7 @@ $ ./RSPCN
 $ ./X-COMPILE-OCV
 ```
 
-**Build JAVA version** 
+**Build JAVA wrap version** 
 ```sh
 $ sh swigwrapcmd.sh
 $ cd swig_output/
@@ -83,7 +84,7 @@ $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/swig_output
 $ java Main
 ```
 
-**Build JAVA poky version**
+**Build JAVA wrap poky version**
 ```sh
 $ source /opt/poky/2.2.1/environment-setup-corei7-64-poky-linux
 $ sh swigwrapcmd20-25.sh

@@ -76,7 +76,7 @@ Use the command:
 $ bitbake core-image-sato
 ```
 **Note:** Depending on your host system configuration there may be some build problems. Please refer to the 
-troubleshooting section below.
+[troubleshooting section](https://github.com/mattdibi/RSPassengerCounter/tree/master/build_config#troubleshooting).
 
 ## Resulting folder structure
 
