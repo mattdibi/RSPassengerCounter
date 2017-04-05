@@ -1,0 +1,50 @@
+
+#!/bin/bash
+
+# Retreiving absolute path of the directory
+SCRIPT=$(readlink -f "$0")
+BASEDIR=$(dirname "$SCRIPT")
+echo "$BASEDIR"
+
+# Cloning needed layers
+git clone git://git.yoctoproject.org/poky -b morty
+cd $BASEDIR/poky
+git clone git://git.yoctoproject.org/meta-intel -b morty
+git clone git://git.openembedded.org/meta-openembedded -b morty
+git clone https://github.com/IntelRealSense/meta-intel-realsense.git -b morty
+git clone git://git.yoctoproject.org/meta-java
+
+cd $BASEDIR/poky/meta-java
+git reset --hard 67e48693501bddb80745b9735b7b3d4d28dce9a1
+
+# Building environment
+cd $BASEDIR/poky
+source oe-init-build-env
+
+if [ -d "$BASEDIR/poky/filec" ]; then
+  echo "Directory filec found."
+
+  bitbake-layers add-layer "$BASEDIR/poky/meta-intel"
+  bitbake-layers add-layer "$BASEDIR/poky/meta-openembedded/meta-oe"
+  bitbake-layers add-layer "$BASEDIR/poky/meta-intel-realsense"
+  bitbake-layers add-layer "$BASEDIR/poky/meta-java"
+
+  cp $BASEDIR/auto.conf $BASEDIR/poky/filec/conf
+  cp $BASEDIR/local.conf $BASEDIR/poky/filec/conf
+  cp $BASEDIR/opencv_3.1.bb $BASEDIR/poky/meta-openembedded/meta-oe/recipes-support/opencv/
+
+elif [ -d "$BASEDIR/poky/build" ]; then
+  echo "Directory build found."
+
+  bitbake-layers add-layer "$BASEDIR/poky/meta-intel"
+  bitbake-layers add-layer "$BASEDIR/poky/meta-openembedded/meta-oe"
+  bitbake-layers add-layer "$BASEDIR/poky/meta-intel-realsense"
+  bitbake-layers add-layer "$BASEDIR/poky/meta-java"
+
+  cp $BASEDIR/auto.conf $BASEDIR/poky/build/conf
+  cp $BASEDIR/local.conf $BASEDIR/poky/build/conf
+  cp $BASEDIR/opencv_3.1.bb $BASEDIR/poky/meta-openembedded/meta-oe/recipes-support/opencv/
+
+else
+  echo "No build directory found. Check path"
+fi

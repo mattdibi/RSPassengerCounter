@@ -25,7 +25,7 @@ Start adding needed layers
 ```sh
 $ cd $HOME/poky/build
 $ bitbake-layers add-layer "$HOME/poky/meta-intel"
-$ bitbake-layers add-layer "$HOME/poky/meta-openebedded/meta-oe"
+$ bitbake-layers add-layer "$HOME/poky/meta-openebemdded/meta-oe"
 $ bitbake-layers add-layer "$HOME/poky/meta-intel-realsense"
 $ bitbake-layers add-layer "$HOME/poky/meta-java"
 ```
@@ -77,6 +77,15 @@ $ bitbake core-image-sato
 ```
 **Note:** Depending on your host system configuration there may be some build problems. Please refer to the 
 [troubleshooting section](https://github.com/mattdibi/RSPassengerCounter/tree/master/build_config#troubleshooting).
+
+## Build installer
+I have added a build installer that automates steps 1 to 4. To use it simply copy the build_config folder where
+you want your build and launch the installer:
+
+```sh
+chmod +x build_install
+./build_install
+```
 
 ## Resulting folder structure
 
