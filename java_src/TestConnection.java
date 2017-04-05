@@ -1,3 +1,7 @@
+import org.bytedeco.javacpp.BytePointer;
+import org.bytedeco.javacpp.Loader;
+import org.bytedeco.javacpp.Pointer;
+
 import org.bytedeco.javacpp.RealSense;
 import org.bytedeco.javacpp.RealSense.context;
 import org.bytedeco.javacpp.RealSense.device;
@@ -50,14 +54,12 @@ public class TestConnection {
         device.enable_stream(RealSense.depth, 640, 480, RealSense.z16, 60);
         device.start();
 
-        // System.out.println("Test get_frame_data(): " + device.get_frame_data(RealSense.depth).getStringBytes());
+        Pointer rawDepthImageData = new Pointer((Pointer) null);
+        rawDepthImageData = device.get_frame_data(RealSense.depth);
+        
+        Mat rawDepthImage = new Mat(640, 480, CvType.CV_16U);
+        cvSetData(rawDepthImage, rawDepthImageData, 640 * 1 * CvType.CV_16U / 8);
 
-        Size sz = new Size(640,480);
-
-        Mat depth = new Mat(sz, CvType.CV_16U ,device.get_frame_data(RealSense.depth));
-        // depth = device.get_frame_data(RealSense.depth); 
-
-        // Display depth vision.
-        Highgui.imwrite("depth.jpg", depth);
+        Highgui.imwrite("depth.jpg", rawDepthImageData );
     }
 }
