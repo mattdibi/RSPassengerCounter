@@ -1,6 +1,4 @@
 ## User guide
-
-### User guide
 Requirements. A Linux system with:
 * OpenCV 
 * librealsense
