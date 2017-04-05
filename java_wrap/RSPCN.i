@@ -1,7 +1,7 @@
 %module RSPCNmodule
 
 %{
-#include "../passenger.h"
+#include "../../cpp_src/passenger.h"
 
 #include <iostream>
 #include <string>

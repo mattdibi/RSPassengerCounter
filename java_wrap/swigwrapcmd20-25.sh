@@ -8,7 +8,7 @@ cp Main.java swig_output_2025/
 swig -c++ -java -outdir swig_output_2025/ -o swig_output_2025/RSPCN_wrap.cpp RSPCN.i
 cd swig_output_2025/
 
-$CXX -c -fpic -std=c++11 -pthread ../RSPCN.cpp \
+$CXX -c -fpic -std=c++11 -pthread -I../../cpp_src ../../cpp_src/RSPCN.cpp \
 -lopencv_core \
 -lopencv_highgui \
 -lopencv_imgproc \

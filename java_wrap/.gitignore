@@ -1,0 +1,4 @@
+# Ignore swig_output folder
+swig_output/
+swig_output_2025/
+RSPCN_wrap*
