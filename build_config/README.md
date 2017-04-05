@@ -83,8 +83,17 @@ I have added a build installer that automates steps 1 to 4. To use it simply cop
 you want your build and launch the installer:
 
 ```sh
-chmod +x build_install
-./build_install
+$ chmod +x build_install
+$ ./build_install
+```
+
+**Note**: Before launching the set environment script please set your build directory as follows:
+
+```sh
+$ cd poky/
+$ set build
+$ source oe-init-build-env
+$ bitbake core-image-sato
 ```
 
 ## Resulting folder structure
