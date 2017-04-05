@@ -1,2 +1,5 @@
 # Ignore .class files
 *.class
+
+# Ignore images
+*.jpg
