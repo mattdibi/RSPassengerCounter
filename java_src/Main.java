@@ -41,12 +41,15 @@ public class Main {
             }
             
             System.out.println("Grabbing frame");
-            IplImage grabbedImage = grabber.grabVideo();
 
             // Create image window named "My Image".
             CanvasFrame canvas = new CanvasFrame("My Image", CanvasFrame.getDefaultGamma()/grabber.getGamma());
-            Frame image = grabber.grab();
-            canvas.showImage(image);
+            Frame grabbedImage = grabber.grab();
+
+            while((grabbedImage = grabber.grab()) != null)
+            {
+                canvas.showImage(grabbedImage);
+            }
 
         } catch (FrameGrabber.Exception e) {
             System.out.println("FrameGrabber exception thrown: " + e);
