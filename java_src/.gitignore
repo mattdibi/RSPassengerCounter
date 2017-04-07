@@ -1,3 +1,6 @@
+# Ignole swap files
+*.swp
+
 # Ignore .class files
 *.class
 

@@ -1,8 +1,6 @@
 import org.bytedeco.javacv.*;
 
-import org.bytedeco.javacpp.BytePointer;
-import org.bytedeco.javacpp.Loader;
-import org.bytedeco.javacpp.Pointer;
+import org.bytedeco.javacpp.*;
 
 import org.bytedeco.javacpp.RealSense;
 import org.bytedeco.javacpp.RealSense.context;
@@ -10,8 +8,6 @@ import org.bytedeco.javacpp.RealSense.device;
 
 import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_imgproc.*;
-import static org.bytedeco.javacpp.opencv_calib3d.*;
-import static org.bytedeco.javacpp.opencv_objdetect.*;
 
 public class Main {
 
@@ -19,13 +15,9 @@ public class Main {
 
         try{
             RealSenseFrameGrabber grabber = RealSenseFrameGrabber.createDefault(0);
-        } catch (FrameGrabber.Exception e) {
-            System.out.println("FrameGrabber exception thrown: " + e);
-        }
-        
-        try{
+
             String[] devDescription;
-            devDescription = RealSenseFrameGrabber.getDeviceDescriptions();
+            devDescription = grabber.getDeviceDescriptions();
 
             int size = devDescription.length;
 
@@ -36,22 +28,28 @@ public class Main {
                 System.out.println(devDescription[i]);
             }
 
+            OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
+
+            grabber.start();
+
+            try{
+                Thread.sleep(1000); //Needed for camera initialization
+            }catch(InterruptedException e) {
+                System.out.println("Main interrupted");
+            }
+            
+            System.out.println("Grabbing frame");
+            IplImage grabbedImage = grabber.grabVideo();
+
+            // Create image window named "My Image".
+            CanvasFrame canvas = new CanvasFrame("My Image", 1);
+            Frame image = converter.convert(grabbedImage);
+            canvas.showImage(image);
 
         } catch (FrameGrabber.Exception e) {
             System.out.println("FrameGrabber exception thrown: " + e);
         }
         
-//        grabber.enableDepthStream();
-//
-//        try{
-//            grabber.start();
-//        } catch (FrameGrabber.Exception e) {
-//            System.out.println("FrameGrabber exception thrown: " + e);
-//        }
-//
-
-
-        System.out.println("END");
     }
 }
 
