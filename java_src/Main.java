@@ -1,5 +1,6 @@
-import org.bytedeco.javacv.*;
+import java.io.File;
 
+import org.bytedeco.javacv.*;
 import org.bytedeco.javacpp.*;
 
 import org.bytedeco.javacpp.RealSense;
@@ -8,6 +9,7 @@ import org.bytedeco.javacpp.RealSense.device;
 
 import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_imgproc.*;
+import static org.bytedeco.javacpp.opencv_imgcodecs.*;
 
 public class Main {
 
@@ -42,8 +44,8 @@ public class Main {
             IplImage grabbedImage = grabber.grabVideo();
 
             // Create image window named "My Image".
-            CanvasFrame canvas = new CanvasFrame("My Image", 1);
-            Frame image = converter.convert(grabbedImage);
+            CanvasFrame canvas = new CanvasFrame("My Image", CanvasFrame.getDefaultGamma()/grabber.getGamma());
+            Frame image = grabber.grab();
             canvas.showImage(image);
 
         } catch (FrameGrabber.Exception e) {
