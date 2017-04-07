@@ -5,9 +5,12 @@ Requirements. A Linux system with:
 * librealsense
 * JAVA SDK (JDK 8) 
 
+The jar_files folder contains a subset of the binary files provided by JavaCV and JavaCPP-presets
+projects. These are needed to use the RealSense cameras.
+
 **Use the compile script**
 ```sh
-$ sh JavaCPPCompile.sh
+$ sh CompileAndRun.sh
 ```
 
 **Use OpenCV Java API with the installed JDK**  
