@@ -1,5 +1,3 @@
-import java.io.File;
-
 import org.bytedeco.javacv.*;
 import org.bytedeco.javacpp.*;
 
@@ -16,19 +14,9 @@ public class Main {
     public static void main(String[] args) {
 
         try{
+
             RealSenseFrameGrabber grabber = RealSenseFrameGrabber.createDefault(0);
-
-            String[] devDescription;
-            devDescription = grabber.getDeviceDescriptions();
-
-            int size = devDescription.length;
-
-            System.out.println("Device description: ");
-
-            for(int i = 0; i < size; i++)
-            {
-                System.out.println(devDescription[i]);
-            }
+            grabber.tryLoad();
 
             OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
 
@@ -42,20 +30,43 @@ public class Main {
             
             System.out.println("Grabbing frame");
 
-            // Create image window named "My Image".
-            CanvasFrame canvas = new CanvasFrame("My Image", CanvasFrame.getDefaultGamma()/grabber.getGamma());
+            // Create window named "Color"
+            CanvasFrame canvas = new CanvasFrame("Color", CanvasFrame.getDefaultGamma()/grabber.getGamma());
+
             Frame grabbedImage = grabber.grab();
+            int deviceWidth = grabber.getDepthImageWidth();
+            int deviceHeight = grabber.getDepthImageHeight(); 
 
             while((grabbedImage = grabber.grab()) != null)
             {
                 canvas.showImage(grabbedImage);
+
+                IplImage depthImage = grabber.grabDepth();
+                
+                // Mat depthMat = new Mat(depthImage);
+                // display(depthMat, "depthMat");
+
+                //cvSaveImage("depth.jpg", depthImage);
             }
 
         } catch (FrameGrabber.Exception e) {
             System.out.println("FrameGrabber exception thrown: " + e);
         }
         
+        return;
     }
+
+    static void display(Mat image, String caption) {
+        // Create image window named "My Image".
+        final CanvasFrame canvas = new CanvasFrame(caption, 1.0);
+
+        // Convert from OpenCV Mat to Java Buffered image for display
+        final OpenCVFrameConverter converter = new OpenCVFrameConverter.ToMat();
+
+        // Show image on window.
+        canvas.showImage(converter.convert(image));
+    }
+
 }
 
 

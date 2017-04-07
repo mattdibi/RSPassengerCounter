@@ -19,7 +19,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bytedeco.javacv;
+//package org.bytedeco.javacv;
+import org.bytedeco.javacv.*;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -52,8 +53,8 @@ public class RealSenseFrameGrabber extends FrameGrabber {
 
     public static int DEFAULT_DEPTH_WIDTH = 640;
     public static int DEFAULT_DEPTH_HEIGHT = 480;
-    public static int DEFAULT_COLOR_WIDTH = 1280;
-    public static int DEFAULT_COLOR_HEIGHT = 720;
+    public static int DEFAULT_COLOR_WIDTH = 640;
+    public static int DEFAULT_COLOR_HEIGHT = 480;
     public static int DEFAULT_COLOR_FRAMERATE = 30;
 
     private ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
@@ -221,6 +222,7 @@ public class RealSenseFrameGrabber extends FrameGrabber {
 
             if (!startedOnce) {
                 enableColorStream();
+                enableDepthStream();
                 behaveAsColorFrameGrabber = true;
                 this.setImageMode(ImageMode.GRAY);
             }
