@@ -35,25 +35,27 @@ public class Main {
         device.start();
 
         OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
-        CanvasFrame frame = new CanvasFrame("Depth Stream",1); 
+
+        CanvasFrame colorFrame = new CanvasFrame("Color Stream",1); 
+        CanvasFrame depthFrame = new CanvasFrame("Depth Stream",1); 
 
         // while(true) will begin here
         while(true) {
             device.wait_for_frames();
 
-            IplImage depthImage = new IplImage();
             IplImage colorImage = new IplImage();
+            IplImage depthImage = new IplImage();
 
-            depthImage = grabDepthImage();
             colorImage = grabColorImage();
+            depthImage = grabDepthImage();
 
-            //cvSaveImage("depth.jpg", depthImage);
             //cvSaveImage("color.jpg", colorImage);
+            //cvSaveImage("depth.jpg", depthImage);
 
             // displayImage in a frame
-            frame.showImage(converter.convert(depthImage));
+            colorFrame.showImage(converter.convert(colorImage));
+            depthFrame.showImage(converter.convert(depthImage));
         }
-        //return;
 
     }
     
@@ -61,7 +63,6 @@ public class Main {
 
         Pointer rawVideoImageData = new Pointer((Pointer) null);
         IplImage rawVideoImage = null;
-        IplImage returnImage = null;
 
         int iplDepth = IPL_DEPTH_8U, channels = 3;
 
@@ -74,8 +75,10 @@ public class Main {
         }
 
         cvSetData(rawVideoImage, rawVideoImageData, deviceWidth * channels * iplDepth / 8);
+        
+        cvCvtColor(rawVideoImage, rawVideoImage, CV_BGR2RGB);
 
-        return returnImage;
+        return rawVideoImage;
     }
 
     public static IplImage grabDepthImage() {
