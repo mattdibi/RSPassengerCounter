@@ -30,29 +30,27 @@ public class Main {
         System.out.println("Usb port id: " + device.get_usb_port_id().getString());
 
 
-        device.enable_stream(RealSense.color, 640, 480, RealSense.rgb8, 60);
-        device.enable_stream(RealSense.depth, 640, 480, RealSense.z16, 60);
+        device.enable_stream(RealSense.color, 640, 480, RealSense.rgb8, 30);
+        device.enable_stream(RealSense.depth, 640, 480, RealSense.z16, 30);
+
         device.start();
 
         OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
 
+        IplImage colorImage = null;
+        IplImage depthImage = null;
+
         CanvasFrame colorFrame = new CanvasFrame("Color Stream",1); 
         CanvasFrame depthFrame = new CanvasFrame("Depth Stream",1); 
 
-        // while(true) will begin here
+        // Frame capture loop
         while(true) {
             device.wait_for_frames();
-
-            IplImage colorImage = new IplImage();
-            IplImage depthImage = new IplImage();
 
             colorImage = grabColorImage();
             depthImage = grabDepthImage();
 
-            //cvSaveImage("color.jpg", colorImage);
-            //cvSaveImage("depth.jpg", depthImage);
-
-            // displayImage in a frame
+            // Display stream using Java2D frame 
             colorFrame.showImage(converter.convert(colorImage));
             depthFrame.showImage(converter.convert(depthImage));
         }
@@ -64,19 +62,27 @@ public class Main {
         Pointer rawVideoImageData = new Pointer((Pointer) null);
         IplImage rawVideoImage = null;
 
-        int iplDepth = IPL_DEPTH_8U, channels = 3;
-
         rawVideoImageData = device.get_frame_data(RealSense.color);
+
+        int iplDepth = IPL_DEPTH_8U, channels = 3;
         int deviceWidth = device.get_stream_width(RealSense.color);
         int deviceHeight = device.get_stream_height(RealSense.color);
 
-        if (rawVideoImage == null || rawVideoImage.width() != deviceWidth || rawVideoImage.height() != deviceHeight) {
-            rawVideoImage = IplImage.createHeader(deviceWidth, deviceHeight, iplDepth, channels);
-        }
+        rawVideoImage = IplImage.createHeader(deviceWidth, deviceHeight, iplDepth, channels);
 
         cvSetData(rawVideoImage, rawVideoImageData, deviceWidth * channels * iplDepth / 8);
-        
-        cvCvtColor(rawVideoImage, rawVideoImage, CV_BGR2RGB);
+
+        // ack, the camera's endianness doesn't correspond to our machine ...
+        // swap bytes of 16-bit images
+        if (iplDepth > 8 && !ByteOrder.nativeOrder().equals(ByteOrder.BIG_ENDIAN)) {
+            ByteBuffer bb = rawVideoImage.getByteBuffer();
+            ShortBuffer in = bb.order(ByteOrder.BIG_ENDIAN).asShortBuffer();
+            ShortBuffer out = bb.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+            out.put(in);
+        }
+        if (channels == 3) {
+            cvCvtColor(rawVideoImage, rawVideoImage, CV_BGR2RGB);
+        }   
 
         return rawVideoImage;
     }
@@ -92,18 +98,18 @@ public class Main {
         int deviceWidth = device.get_stream_width(RealSense.depth);
         int deviceHeight = device.get_stream_height(RealSense.depth);
 
-        if (rawDepthImage == null || rawDepthImage.width() != deviceWidth || rawDepthImage.height() != deviceHeight) {
-            rawDepthImage = IplImage.createHeader(deviceWidth, deviceHeight, iplDepth, channels);
-        }
+        rawDepthImage = IplImage.createHeader(deviceWidth, deviceHeight, iplDepth, channels);
 
         cvSetData(rawDepthImage, rawDepthImageData, deviceWidth * channels * iplDepth / 8);
 
-        if (iplDepth > 8 && !ByteOrder.nativeOrder().equals(ByteOrder.BIG_ENDIAN)) {
-            ByteBuffer bb = rawDepthImage.getByteBuffer();
-            ShortBuffer in = bb.order(ByteOrder.BIG_ENDIAN).asShortBuffer();
-            ShortBuffer out = bb.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
-            out.put(in);
-        }
+        // ack, the camera's endianness doesn't correspond to our machine ...
+        // swap bytes of 16-bit images
+        // if (iplDepth > 8 && !ByteOrder.nativeOrder().equals(ByteOrder.BIG_ENDIAN)) {
+        //     ByteBuffer bb = rawDepthImage.getByteBuffer();
+        //     ShortBuffer in = bb.order(ByteOrder.BIG_ENDIAN).asShortBuffer();
+        //     ShortBuffer out = bb.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+        //     out.put(in);
+        // }
 
         return rawDepthImage;
     }
