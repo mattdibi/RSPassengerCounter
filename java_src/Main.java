@@ -1,3 +1,8 @@
+import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
+
 import org.bytedeco.javacv.*;
 import org.bytedeco.javacpp.*;
 
@@ -11,60 +16,93 @@ import static org.bytedeco.javacpp.opencv_imgcodecs.*;
 
 public class Main {
 
+    private static context context = null;
+    private static device device = null;
+
     public static void main(String[] args) {
 
-        try{
+        context = new context();
+        System.out.println("Devices found: " + context.get_device_count());
 
-            RealSenseFrameGrabber grabber = RealSenseFrameGrabber.createDefault(0);
-            grabber.tryLoad();
+        device = context.get_device(0);
+        System.out.println("Using device 0, an " + device.get_name().getString());
+        System.out.println("Using firmware version: " +  device.get_firmware_version().getString()); 
+        System.out.println("Usb port id: " + device.get_usb_port_id().getString());
 
-            OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
 
-            grabber.start();
+        device.enable_stream(RealSense.color, 640, 480, RealSense.rgb8, 60);
+        device.enable_stream(RealSense.depth, 640, 480, RealSense.z16, 60);
+        device.start();
 
-            try{
-                Thread.sleep(1000); //Needed for camera initialization
-            }catch(InterruptedException e) {
-                System.out.println("Main interrupted");
-            }
-            
-            System.out.println("Grabbing frame");
+        OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
+        CanvasFrame frame = new CanvasFrame("Depth Stream",1); 
 
-            // Create window named "Color"
-            CanvasFrame canvas = new CanvasFrame("Color", CanvasFrame.getDefaultGamma()/grabber.getGamma());
+        // while(true) will begin here
+        while(true) {
+            device.wait_for_frames();
 
-            Frame grabbedImage = grabber.grab();
-            int deviceWidth = grabber.getDepthImageWidth();
-            int deviceHeight = grabber.getDepthImageHeight(); 
+            IplImage depthImage = new IplImage();
+            IplImage colorImage = new IplImage();
 
-            while((grabbedImage = grabber.grab()) != null)
-            {
-                canvas.showImage(grabbedImage);
+            depthImage = grabDepthImage();
+            colorImage = grabColorImage();
 
-                IplImage depthImage = grabber.grabDepth();
-                
-                // Mat depthMat = new Mat(depthImage);
-                // display(depthMat, "depthMat");
+            //cvSaveImage("depth.jpg", depthImage);
+            //cvSaveImage("color.jpg", colorImage);
 
-                //cvSaveImage("depth.jpg", depthImage);
-            }
-
-        } catch (FrameGrabber.Exception e) {
-            System.out.println("FrameGrabber exception thrown: " + e);
+            // displayImage in a frame
+            frame.showImage(converter.convert(depthImage));
         }
-        
-        return;
+        //return;
+
+    }
+    
+    public static IplImage grabColorImage() {
+
+        Pointer rawVideoImageData = new Pointer((Pointer) null);
+        IplImage rawVideoImage = null;
+        IplImage returnImage = null;
+
+        int iplDepth = IPL_DEPTH_8U, channels = 3;
+
+        rawVideoImageData = device.get_frame_data(RealSense.color);
+        int deviceWidth = device.get_stream_width(RealSense.color);
+        int deviceHeight = device.get_stream_height(RealSense.color);
+
+        if (rawVideoImage == null || rawVideoImage.width() != deviceWidth || rawVideoImage.height() != deviceHeight) {
+            rawVideoImage = IplImage.createHeader(deviceWidth, deviceHeight, iplDepth, channels);
+        }
+
+        cvSetData(rawVideoImage, rawVideoImageData, deviceWidth * channels * iplDepth / 8);
+
+        return returnImage;
     }
 
-    static void display(Mat image, String caption) {
-        // Create image window named "My Image".
-        final CanvasFrame canvas = new CanvasFrame(caption, 1.0);
+    public static IplImage grabDepthImage() {
 
-        // Convert from OpenCV Mat to Java Buffered image for display
-        final OpenCVFrameConverter converter = new OpenCVFrameConverter.ToMat();
+        Pointer rawDepthImageData = new Pointer((Pointer) null);
+        IplImage rawDepthImage = null;
 
-        // Show image on window.
-        canvas.showImage(converter.convert(image));
+        rawDepthImageData = device.get_frame_data(RealSense.depth);
+
+        int iplDepth = IPL_DEPTH_16U, channels = 1;
+        int deviceWidth = device.get_stream_width(RealSense.depth);
+        int deviceHeight = device.get_stream_height(RealSense.depth);
+
+        if (rawDepthImage == null || rawDepthImage.width() != deviceWidth || rawDepthImage.height() != deviceHeight) {
+            rawDepthImage = IplImage.createHeader(deviceWidth, deviceHeight, iplDepth, channels);
+        }
+
+        cvSetData(rawDepthImage, rawDepthImageData, deviceWidth * channels * iplDepth / 8);
+
+        if (iplDepth > 8 && !ByteOrder.nativeOrder().equals(ByteOrder.BIG_ENDIAN)) {
+            ByteBuffer bb = rawDepthImage.getByteBuffer();
+            ShortBuffer in = bb.order(ByteOrder.BIG_ENDIAN).asShortBuffer();
+            ShortBuffer out = bb.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+            out.put(in);
+        }
+
+        return rawDepthImage;
     }
 
 }
