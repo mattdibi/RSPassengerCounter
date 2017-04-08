@@ -74,12 +74,13 @@ public class Main {
 
         // ack, the camera's endianness doesn't correspond to our machine ...
         // swap bytes of 16-bit images
-        if (iplDepth > 8 && !ByteOrder.nativeOrder().equals(ByteOrder.BIG_ENDIAN)) {
-            ByteBuffer bb = rawVideoImage.getByteBuffer();
-            ShortBuffer in = bb.order(ByteOrder.BIG_ENDIAN).asShortBuffer();
-            ShortBuffer out = bb.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
-            out.put(in);
-        }
+
+        // if (iplDepth > 8 && !ByteOrder.nativeOrder().equals(ByteOrder.BIG_ENDIAN)) {
+        //     ByteBuffer bb = rawVideoImage.getByteBuffer();
+        //     ShortBuffer in = bb.order(ByteOrder.BIG_ENDIAN).asShortBuffer();
+        //     ShortBuffer out = bb.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+        //     out.put(in);
+        // }
         if (channels == 3) {
             cvCvtColor(rawVideoImage, rawVideoImage, CV_BGR2RGB);
         }   
@@ -102,8 +103,8 @@ public class Main {
 
         cvSetData(rawDepthImage, rawDepthImageData, deviceWidth * channels * iplDepth / 8);
 
-        // ack, the camera's endianness doesn't correspond to our machine ...
-        // swap bytes of 16-bit images
+        // WARNING: this part of code seems to screw depth data... Needs further investigations
+
         // if (iplDepth > 8 && !ByteOrder.nativeOrder().equals(ByteOrder.BIG_ENDIAN)) {
         //     ByteBuffer bb = rawDepthImage.getByteBuffer();
         //     ShortBuffer in = bb.order(ByteOrder.BIG_ENDIAN).asShortBuffer();
