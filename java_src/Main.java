@@ -142,6 +142,7 @@ public class Main {
         return rawDepthImage;
     }
 
+    // TODO: Uniform to others get---Image. Make it return a IplImage etc...
     public static void getFrameImage(IplImage src, IplImage dst) {
 
         UShortRawIndexer srcIdx = src.createIndexer();
