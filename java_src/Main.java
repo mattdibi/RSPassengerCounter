@@ -14,6 +14,7 @@ import org.bytedeco.javacpp.RealSense.device;
 import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_imgproc.*;
 import static org.bytedeco.javacpp.opencv_imgcodecs.*;
+import static org.bytedeco.javacpp.opencv_highgui.*;
 
 public class Main {
 
@@ -36,7 +37,7 @@ public class Main {
 
         device.start();
 
-        OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
+        OpenCVFrameConverter.ToIplImage converterToIpl = new OpenCVFrameConverter.ToIplImage();
 
         IplImage colorImage = null;
         IplImage depthImage = null;
@@ -60,10 +61,25 @@ public class Main {
             // TODO: rest of the algorithm
             // ...
 
-            // Display stream using Java2D frame 
-            colorFrame.showImage(converter.convert(colorImage));
-            depthFrame.showImage(converter.convert(depthImage));
-            frameFrame.showImage(converter.convert(frameImage));
+            // Conversion needed 
+            Mat frameMat = new Mat(colorImage);
+
+            // Drawing line
+            Scalar colorred = new Scalar( 0, 255, 0, 255);
+            Point p1 = new Point(0,frameMat.rows()/2);
+            Point p2 = new Point(frameMat.cols(), frameMat.rows()/2);
+            line( frameMat,
+                  p2,       //Starting point of the line
+                  p1,       //Ending point of the line
+                  colorred, //Color
+                  2,        //Thickness
+                  8,        //Linetype
+                  0);       
+
+            // Display streams using Java frame 
+            colorFrame.showImage(converterToIpl.convert(frameMat));
+            depthFrame.showImage(converterToIpl.convert(depthImage));
+            frameFrame.showImage(converterToIpl.convert(frameImage));
         }
 
     }
