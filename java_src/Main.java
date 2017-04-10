@@ -40,6 +40,7 @@ public class Main {
 
         IplImage colorImage = null;
         IplImage depthImage = null;
+        IplImage frameImage = IplImage.create(640, 480, IPL_DEPTH_8U, 1);
 
         CanvasFrame colorFrame = new CanvasFrame("Color Stream",1); 
         CanvasFrame depthFrame = new CanvasFrame("Depth Stream",1); 
@@ -49,18 +50,19 @@ public class Main {
         while(true) {
             device.wait_for_frames();
 
+            // Grab data from RealSense camera
             colorImage = grabColorImage();
             depthImage = grabDepthImage();
+
+            // Convert and threshold depth image
+            getFrameImage(depthImage, frameImage);
+
+            // TODO: rest of the algorithm
+            // ...
 
             // Display stream using Java2D frame 
             colorFrame.showImage(converter.convert(colorImage));
             depthFrame.showImage(converter.convert(depthImage));
-
-            IplImage frameImage = IplImage.create(640, 480, IPL_DEPTH_8U, 1);
-
-            // Convert and threshold image
-            getFrameImage(depthImage, frameImage);
-
             frameFrame.showImage(converter.convert(frameImage));
         }
 
