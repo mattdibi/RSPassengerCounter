@@ -5,6 +5,7 @@ import java.nio.ShortBuffer;
 
 import org.bytedeco.javacv.*;
 import org.bytedeco.javacpp.*;
+import org.bytedeco.javacpp.indexer.*;
 
 import org.bytedeco.javacpp.RealSense;
 import org.bytedeco.javacpp.RealSense.context;
@@ -42,6 +43,7 @@ public class Main {
 
         CanvasFrame colorFrame = new CanvasFrame("Color Stream",1); 
         CanvasFrame depthFrame = new CanvasFrame("Depth Stream",1); 
+        CanvasFrame frameFrame = new CanvasFrame("Frame Stream",1); 
 
         // Frame capture loop
         while(true) {
@@ -53,6 +55,13 @@ public class Main {
             // Display stream using Java2D frame 
             colorFrame.showImage(converter.convert(colorImage));
             depthFrame.showImage(converter.convert(depthImage));
+
+            IplImage frameImage = IplImage.create(640, 480, IPL_DEPTH_8U, 1);
+
+            // Convert and threshold image
+            getFrameImage(depthImage, frameImage);
+
+            frameFrame.showImage(converter.convert(frameImage));
         }
 
     }
@@ -113,6 +122,44 @@ public class Main {
         // }
 
         return rawDepthImage;
+    }
+
+    public static void getFrameImage(IplImage src, IplImage dst) {
+
+        UShortRawIndexer srcIdx = src.createIndexer();
+        UByteRawIndexer dstIdx = dst.createIndexer();
+
+        final int rows = src.height();
+        final int cols = src.width();
+
+        // Parallel computation: we need speed
+        Parallel.loop(0, rows, new Parallel.Looper() { 
+        public void loop(int from, int to, int looperID) {
+
+        for(int i = 0; i < rows; i++) {
+
+            for(int j = 0; j < cols; j++) {
+
+                double p = srcIdx.get(i, j, 0);
+                
+
+                if(p == 0)
+                     p = 65535;
+
+                // TODO: Implement intellingent threshold with distance conversion
+                // Threshold
+                if(p > 5000)
+                    p = 65535;
+
+                dstIdx.put(i, j, 0, 255 - (int)(p * 255.0 / 65535));
+
+            }
+        }}});
+
+        srcIdx.release();
+        dstIdx.release();
+
+        return ;
     }
 
 }
