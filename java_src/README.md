@@ -10,7 +10,8 @@ projects. These are needed to use the RealSense cameras.
 
 **Use the compile script**
 ```sh
-$ sh CompileAndRun.sh
+$ sh Compile.sh
+$ sh Run.sh
 ```
 
 **Use OpenCV Java API with the installed JDK**  
