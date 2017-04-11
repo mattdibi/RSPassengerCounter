@@ -56,16 +56,11 @@ public class Main {
             // Grab data from RealSense camera
             colorImage = grabColorImage();
             depthImage = grabDepthImage();
-
-            // Convert and threshold depth image
             frameImage = grabFrameImage(depthImage);
-
-            // TODO: rest of the algorithm
-            // ...
 
             // Conversion needed 
             Mat colorMat = new Mat(colorImage);
-            // Mat frameMat = new Mat(frameImage);
+            Mat frameMat = new Mat(frameImage);
 
             // Drawing line
             Scalar colorred = new Scalar( 0, 255, 0, 255);
@@ -80,37 +75,38 @@ public class Main {
                   0);       
 
             // Blurring image
-            // Size blur_k_size = new Size(3, 3);
-            // blur(frameMat, frameMat, blur_k_size);
+            Size blur_k_size = new Size(4, 4);
+            blur(frameMat, frameMat, blur_k_size);
 
             // Finding contours
-            CvSeq hierarchy = new CvSeq(null);
-            int ldrSz = Loader.sizeof(CvContour.class);
-            cvFindContours(frameImage, contours, hierarchy, ldrSz, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+            CvSeq hierarchy = new CvSeq(null); // This is where contours will be accessed
+            cvFindContours(frameImage, contours, hierarchy, Loader.sizeof(CvContour.class), CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
 
             while (hierarchy != null && !hierarchy.isNull()) {
 
                 if(hierarchy.elem_size() > 0) {
-                    // How can I access contours here?
-                    // double areaCurrentObject = contourArea(contours[idx]);
 
+                    // Find polygon that approximate detected contours
                     CvSeq points = cvApproxPoly(hierarchy, Loader.sizeof(CvContour.class), contours, CV_POLY_APPROX_DP, cvContourPerimeter(hierarchy)*0.02, 0);
 
-                    if(Math.abs(cvContourArea(points, CV_WHOLE_SEQ, 0)) > 10000) {
+                    if(Math.abs(cvContourArea(points, CV_WHOLE_SEQ, 0)) > 20000) {
 
-                        // cvDrawContours(colorImage, points, CvScalar.GREEN, CvScalar.GREEN, -1, 1, CV_AA);
-                        // Moments M = moments(hierarchy);
-                        // Point2f mc = Point2f( M.m10/M.m00 , M.m01/M.m00 );
-
+                        // Find bounding rectangle of detected shape
                         CvRect br = cvBoundingRect(hierarchy);
+
+                        // Find center of bounding rectangle of detected shape
                         CvPoint rectCenter = new CvPoint( (int)(br.x() + br.width()/2), (int)(br.y() + br.height()/2));
 
                         // Drawing rectangle
                         int x = br.x(), y = br.y(), w = br.width(), h = br.height();
+                        cvRectangle(frameImage, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.WHITE, 1, CV_AA, 0);
                         cvRectangle(colorImage, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.GREEN, 1, CV_AA, 0);
-
                         // Drawing rectangle center
+                        cvCircle(frameImage, rectCenter, 5, CvScalar.WHITE, 2, CV_AA, 0);
                         cvCircle(colorImage, rectCenter, 5, CvScalar.RED, 2, CV_AA, 0);
+
+                        // TODO: Passenger tracking
+                        // ...
 
                     }
                 }
