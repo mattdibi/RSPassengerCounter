@@ -56,19 +56,20 @@ public class Main {
             depthImage = grabDepthImage();
 
             // Convert and threshold depth image
-            getFrameImage(depthImage, frameImage);
+            frameImage = grabFrameImage(depthImage);
 
             // TODO: rest of the algorithm
             // ...
 
             // Conversion needed 
-            Mat frameMat = new Mat(colorImage);
+            Mat colorMat = new Mat(colorImage);
+            Mat frameMat = new Mat(frameImage);
 
             // Drawing line
             Scalar colorred = new Scalar( 0, 255, 0, 255);
-            Point p1 = new Point(0,frameMat.rows()/2);
-            Point p2 = new Point(frameMat.cols(), frameMat.rows()/2);
-            line( frameMat,
+            Point p1 = new Point(0,colorMat.rows()/2);
+            Point p2 = new Point(colorMat.cols(), colorMat.rows()/2);
+            line( colorMat,
                   p2,       //Starting point of the line
                   p1,       //Ending point of the line
                   colorred, //Color
@@ -77,9 +78,13 @@ public class Main {
                   0);       
 
             // Display streams using Java frame 
-            colorFrame.showImage(converterToIpl.convert(frameMat));
+            colorFrame.showImage(converterToIpl.convert(colorMat));
             depthFrame.showImage(converterToIpl.convert(depthImage));
             frameFrame.showImage(converterToIpl.convert(frameImage));
+            
+            // cvSaveImage("color.jpg", colorImage);
+            // cvSaveImage("depth.jpg", depthImage);
+            // cvSaveImage("frame.jpg", frameImage);
         }
 
     }
@@ -99,15 +104,6 @@ public class Main {
 
         cvSetData(rawVideoImage, rawVideoImageData, deviceWidth * channels * iplDepth / 8);
 
-        // ack, the camera's endianness doesn't correspond to our machine ...
-        // swap bytes of 16-bit images
-
-        // if (iplDepth > 8 && !ByteOrder.nativeOrder().equals(ByteOrder.BIG_ENDIAN)) {
-        //     ByteBuffer bb = rawVideoImage.getByteBuffer();
-        //     ShortBuffer in = bb.order(ByteOrder.BIG_ENDIAN).asShortBuffer();
-        //     ShortBuffer out = bb.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
-        //     out.put(in);
-        // }
         if (channels == 3) {
             cvCvtColor(rawVideoImage, rawVideoImage, CV_BGR2RGB);
         }   
@@ -130,20 +126,12 @@ public class Main {
 
         cvSetData(rawDepthImage, rawDepthImageData, deviceWidth * channels * iplDepth / 8);
 
-        // WARNING: this part of code seems to screw depth data... Needs further investigations
-
-        // if (iplDepth > 8 && !ByteOrder.nativeOrder().equals(ByteOrder.BIG_ENDIAN)) {
-        //     ByteBuffer bb = rawDepthImage.getByteBuffer();
-        //     ShortBuffer in = bb.order(ByteOrder.BIG_ENDIAN).asShortBuffer();
-        //     ShortBuffer out = bb.order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
-        //     out.put(in);
-        // }
-
         return rawDepthImage;
     }
 
-    // TODO: Uniform to others get---Image. Make it return a IplImage etc...
-    public static void getFrameImage(IplImage src, IplImage dst) {
+    public static IplImage grabFrameImage(IplImage src) {
+
+        IplImage dst = IplImage.create(640, 480, IPL_DEPTH_8U, 1);
 
         UShortRawIndexer srcIdx = src.createIndexer();
         UByteRawIndexer dstIdx = dst.createIndexer();
@@ -178,7 +166,7 @@ public class Main {
         srcIdx.release();
         dstIdx.release();
 
-        return ;
+        return dst;
     }
 
 }
