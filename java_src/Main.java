@@ -47,6 +47,8 @@ public class Main {
         CanvasFrame depthFrame = new CanvasFrame("Depth Stream",1); 
         CanvasFrame frameFrame = new CanvasFrame("Frame Stream",1); 
 
+        CvMemStorage contours = CvMemStorage.create();
+
         // Frame capture loop
         while(true) {
             device.wait_for_frames();
@@ -63,7 +65,7 @@ public class Main {
 
             // Conversion needed 
             Mat colorMat = new Mat(colorImage);
-            Mat frameMat = new Mat(frameImage);
+            // Mat frameMat = new Mat(frameImage);
 
             // Drawing line
             Scalar colorred = new Scalar( 0, 255, 0, 255);
@@ -77,8 +79,42 @@ public class Main {
                   8,        //Linetype
                   0);       
 
+            // Blurring image
+            // Size blur_k_size = new Size(3, 3);
+            // blur(frameMat, frameMat, blur_k_size);
+
+            // Finding contours
+            CvSeq hierarchy = new CvSeq(null);
+            int ldrSz = Loader.sizeof(CvContour.class);
+            cvFindContours(frameImage, contours, hierarchy, ldrSz, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+
+            while (hierarchy != null && !hierarchy.isNull()) {
+
+                if(hierarchy.elem_size() > 0) {
+                    // How can I access contours here?
+                    // double areaCurrentObject = contourArea(contours[idx]);
+
+                    CvSeq points = cvApproxPoly(hierarchy, Loader.sizeof(CvContour.class), contours, CV_POLY_APPROX_DP, cvContourPerimeter(hierarchy)*0.02, 0);
+
+                    if(Math.abs(cvContourArea(points, CV_WHOLE_SEQ, 0)) > 10000) {
+
+                        // cvDrawContours(colorImage, points, CvScalar.GREEN, CvScalar.GREEN, -1, 1, CV_AA);
+                        // Moments M = moments(hierarchy);
+                        // Point2f mc = Point2f( M.m10/M.m00 , M.m01/M.m00 );
+
+                        CvRect br = cvBoundingRect(hierarchy);
+                        int x = br.x(), y = br.y(), w = br.width(), h = br.height();
+                        cvRectangle(colorImage, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.GREEN, 1, CV_AA, 0);
+
+                    }
+                }
+
+                hierarchy = hierarchy.h_next();
+                
+            }
+
             // Display streams using Java frame 
-            colorFrame.showImage(converterToIpl.convert(colorMat));
+            colorFrame.showImage(converterToIpl.convert(colorImage));
             depthFrame.showImage(converterToIpl.convert(depthImage));
             frameFrame.showImage(converterToIpl.convert(frameImage));
             
@@ -155,7 +191,7 @@ public class Main {
 
                 // TODO: Implement intellingent threshold with distance conversion
                 // Threshold
-                if(p > 5000)
+                if(p > 8000)
                     p = 65535;
 
                 dstIdx.put(i, j, 0, 255 - (int)(p * 255.0 / 65535));
