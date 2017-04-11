@@ -2,6 +2,7 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
+import java.util.Vector;
 
 import org.bytedeco.javacv.*;
 import org.bytedeco.javacpp.*;
@@ -20,6 +21,15 @@ public class Main {
 
     private static context context = null;
     private static device device = null;
+    private static Vector<Passenger> passengers = new Vector<Passenger>(1,1);
+
+    private static int pid = 0;
+
+    private static final int maxPassengerAge = 2;
+    private static final int fps = 30;
+
+    private static int xNear = 40;
+    private static int yNear = 90;
 
     public static void main(String[] args) {
 
@@ -30,7 +40,6 @@ public class Main {
         System.out.println("Using device 0, an " + device.get_name().getString());
         System.out.println("Using firmware version: " +  device.get_firmware_version().getString()); 
         System.out.println("Usb port id: " + device.get_usb_port_id().getString());
-
 
         device.enable_stream(RealSense.color, 640, 480, RealSense.rgb8, 30);
         device.enable_stream(RealSense.depth, 640, 480, RealSense.z16, 30);
@@ -59,14 +68,13 @@ public class Main {
             frameImage = grabFrameImage(depthImage);
 
             // Conversion needed 
-            Mat colorMat = new Mat(colorImage);
             Mat frameMat = new Mat(frameImage);
 
             // Drawing line
-            Scalar colorred = new Scalar( 0, 255, 0, 255);
-            Point p1 = new Point(0,colorMat.rows()/2);
-            Point p2 = new Point(colorMat.cols(), colorMat.rows()/2);
-            line( colorMat,
+            CvScalar colorred = new CvScalar( 0, 255, 0, 255);
+            CvPoint p1 = new CvPoint(0,colorImage.height()/2);
+            CvPoint p2 = new CvPoint(colorImage.width(), colorImage.height()/2);
+            cvLine( colorImage,
                   p2,       //Starting point of the line
                   p1,       //Ending point of the line
                   colorred, //Color
@@ -75,6 +83,7 @@ public class Main {
                   0);       
 
             // Blurring image
+            // TODO: Use IplImage equivalent
             Size blur_k_size = new Size(4, 4);
             blur(frameMat, frameMat, blur_k_size);
 
@@ -105,14 +114,67 @@ public class Main {
                         cvCircle(frameImage, rectCenter, 5, CvScalar.WHITE, 2, CV_AA, 0);
                         cvCircle(colorImage, rectCenter, 5, CvScalar.RED, 2, CV_AA, 0);
 
-                        // TODO: Passenger tracking
-                        // ...
+                        boolean newPassenger = true;
+                        for(int i = 0; i < passengers.size(); i++) {
+                            //If passenger is near a known passenger assume they are the same one
+                            if( abs(rectCenter.x() - passengers.elementAt(i).getX()) <= xNear  && 
+                                abs(rectCenter.y() - passengers.elementAt(i).getY()) <= yNear  ) {
 
+                                newPassenger = false;
+                                passengers.elementAt(i).updateCoords(rectCenter);
+
+                                // TODO: Counter
+                                // ...
+                            }
+
+                        }
+
+                        if(newPassenger) {
+                        
+                            Passenger pass = new Passenger(pid, rectCenter, 0);
+                            passengers.add(pass);
+                            pid++;
+
+                        }
                     }
                 }
 
                 hierarchy = hierarchy.h_next();
                 
+            }
+
+            // TODO: Draw trajectories and update age
+            for(int i = 0; i < passengers.size(); i++) {
+
+                if(passengers.elementAt(i).getTracks().size() > 1) {
+
+                    // int[] historyX = new int[passengers.elementAt(i).getTracks().size()];
+                    // int[] historyY = new int[passengers.elementAt(i).getTracks().size()];
+
+                    // for(int j = 0; j < passengers.elementAt(i).getTracks().size() ; j++) {
+                    //     historyX[j] = passengers.elementAt(i).getTracks().elementAt(j).x();
+                    //     historyY[j] = passengers.elementAt(i).getTracks().elementAt(j).y();
+                    // }
+
+                    // cvPolyLine(colorImage, historyY, historyX, 1, 1, CV_RGB(255,255,255), 3, CV_AA, 0);    
+
+
+                    for(int j = 0; j < passengers.elementAt(i).getTracks().size() - 1 ; j++) {
+                        cvLine(colorImage,
+                               passengers.elementAt(i).getTracks().elementAt(j),
+                               passengers.elementAt(i).getTracks().elementAt(j + 1),
+                               passengers.elementAt(i).getTrackColor(),
+                               2,
+                               8,
+                               0);
+                    }
+                }
+                
+                passengers.elementAt(i).updateAge();
+
+                if(passengers.elementAt(i).getAge() > (maxPassengerAge * fps)) {
+                    passengers.remove(i);
+                }
             }
 
             // Display streams using Java frame 

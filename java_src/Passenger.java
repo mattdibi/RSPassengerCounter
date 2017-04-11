@@ -34,6 +34,8 @@ public class Passenger {
     public int getPid() {return pid;}
     
     public CvPoint getCenter() {return center;}
+    public int getX() {return center.x();}
+    public int getY() {return center.y();}
 
     public int getAge() {return age;}
 
