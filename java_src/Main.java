@@ -103,8 +103,14 @@ public class Main {
                         // Point2f mc = Point2f( M.m10/M.m00 , M.m01/M.m00 );
 
                         CvRect br = cvBoundingRect(hierarchy);
+                        CvPoint rectCenter = new CvPoint( (int)(br.x() + br.width()/2), (int)(br.y() + br.height()/2));
+
+                        // Drawing rectangle
                         int x = br.x(), y = br.y(), w = br.width(), h = br.height();
                         cvRectangle(colorImage, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.GREEN, 1, CV_AA, 0);
+
+                        // Drawing rectangle center
+                        cvCircle(colorImage, rectCenter, 5, CvScalar.RED, 2, CV_AA, 0);
 
                     }
                 }
