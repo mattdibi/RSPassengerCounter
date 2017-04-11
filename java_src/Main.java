@@ -148,17 +148,6 @@ public class Main {
 
                 if(passengers.elementAt(i).getTracks().size() > 1) {
 
-                    // int[] historyX = new int[passengers.elementAt(i).getTracks().size()];
-                    // int[] historyY = new int[passengers.elementAt(i).getTracks().size()];
-
-                    // for(int j = 0; j < passengers.elementAt(i).getTracks().size() ; j++) {
-                    //     historyX[j] = passengers.elementAt(i).getTracks().elementAt(j).x();
-                    //     historyY[j] = passengers.elementAt(i).getTracks().elementAt(j).y();
-                    // }
-
-                    // cvPolyLine(colorImage, historyY, historyX, 1, 1, CV_RGB(255,255,255), 3, CV_AA, 0);    
-
-
                     for(int j = 0; j < passengers.elementAt(i).getTracks().size() - 1 ; j++) {
                         cvLine(colorImage,
                                passengers.elementAt(i).getTracks().elementAt(j),
