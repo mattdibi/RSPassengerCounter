@@ -6,14 +6,14 @@ import org.bytedeco.javacpp.*;
 import static org.bytedeco.javacpp.opencv_core.*;
 
 public class Passenger {
-    private static final int MAX_TRACK_LENGTH = 4;
+    private static final int MAX_TRACK_LENGTH = 40;
 
     private CvPoint center;
     private Vector<CvPoint> tracks = new Vector<CvPoint>(1,1);
     
     private int pid;
     private int age;
-    private Scalar trackColor;
+    private CvScalar trackColor;
 
     // Constructor
     Passenger(int id, CvPoint c, int newAge) {
@@ -25,7 +25,7 @@ public class Passenger {
         tracks.add(newCenter);
         
         Random randomGenerator = new Random();
-        Scalar randColor = new Scalar(randomGenerator.nextInt(255),randomGenerator.nextInt(255),randomGenerator.nextInt(255), 255);
+        CvScalar randColor = new CvScalar(randomGenerator.nextInt(255),randomGenerator.nextInt(255),randomGenerator.nextInt(255), 255);
         trackColor = randColor;
 
     }
@@ -38,7 +38,7 @@ public class Passenger {
     public int getAge() {return age;}
 
     public Vector<CvPoint> getTracks() {return tracks;}
-    public Scalar getTrackColor() {return trackColor;}
+    public CvScalar getTrackColor() {return trackColor;}
 
     public CvPoint getCurrentPoint() {return tracks.elementAt(tracks.size() - 1);}
     public CvPoint getLastPoint() {return tracks.elementAt(tracks.size() - 2);}
