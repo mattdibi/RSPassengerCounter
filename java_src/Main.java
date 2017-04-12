@@ -148,6 +148,8 @@ public class Main {
                                         else
                                             cnt_out++;
 
+                                        System.out.println( "Up to down crossed" );
+
                                    }
 
                                    // Down to up
@@ -162,6 +164,7 @@ public class Main {
                                         else
                                             cnt_in++;
 
+                                        System.out.println( "Down to up crossed" );
                                    }
 
 
@@ -221,7 +224,7 @@ public class Main {
             colorFrame.showImage(converterToIpl.convert(colorImage));
             depthFrame.showImage(converterToIpl.convert(depthImage));
             frameFrame.showImage(converterToIpl.convert(frameImage));
-            
+
             // cvSaveImage("color.jpg", colorImage);
             // cvSaveImage("depth.jpg", depthImage);
             // cvSaveImage("frame.jpg", frameImage);
