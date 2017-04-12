@@ -7,6 +7,8 @@ public class Main {
         myRSPCN.start();
         // myRSPCN.stop();
 
+        myRSPCN.setCameraPresets(2);
+
 	}
 
 }

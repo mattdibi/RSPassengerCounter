@@ -20,6 +20,11 @@ public class RSPCN {
 
     private static Vector<Passenger> passengers = new Vector<Passenger>(1,1);
 
+    private int imageWidth;
+    private int imageHeight;
+    private int fps;
+    private int cameraType;
+
 	private boolean halt = false;
     
 	private static int cnt_out = 0;
@@ -44,16 +49,44 @@ public class RSPCN {
         context = new context();
         device = context.get_device(devNumber);
 
-        device.enable_stream(RealSense.color, 640, 480, RealSense.rgb8, 30);
-        device.enable_stream(RealSense.depth, 640, 480, RealSense.z16, 30);
+        String devName = device.get_name().getString();
+
+        // Camera settings
+        if(devName.equals("Intel RealSense R200")) {
+            cameraType = 0;
+
+            imageWidth = 320;
+            imageHeight = 240;
+            fps = 60;
+        }
+        else if (devName.equals("Intel RealSense SR300")) {
+            cameraType = 1;
+
+            imageWidth = 640;
+            imageHeight = 480;
+            fps = 30;
+        }
+        device.enable_stream(RealSense.color, imageWidth, imageHeight, RealSense.rgb8, fps);
+        device.enable_stream(RealSense.depth, imageWidth, imageHeight, RealSense.z16, fps);
         
         scale = device.get_depth_scale();
     }
 
     // Methods
+    public void setCameraPresets(int value) {
+
+        if(cameraType == 0) {
+            System.out.println( "Presets are not supported for R200 camera");
+        }
+        else {
+            RealSense.apply_ivcam_preset(device, value);
+        }
+
+        return;
+    }
+
     public void start() {
 		int pid = 0;
-		int fps = 30;
 
 		device.start();
 
@@ -61,7 +94,7 @@ public class RSPCN {
 
         IplImage colorImage = null;
         IplImage depthImage = null;
-        IplImage frameImage = IplImage.create(640, 480, IPL_DEPTH_8U, 1);
+        IplImage frameImage = IplImage.create(imageWidth, imageHeight, IPL_DEPTH_8U, 1);
 
         CanvasFrame colorFrame = new CanvasFrame("Color Stream",1); 
         CanvasFrame depthFrame = new CanvasFrame("Depth Stream",1); 
@@ -277,7 +310,7 @@ public class RSPCN {
 
     public IplImage grabFrameImage(IplImage src) {
 
-        IplImage dst = IplImage.create(640, 480, IPL_DEPTH_8U, 1);
+        IplImage dst = IplImage.create(imageWidth, imageHeight, IPL_DEPTH_8U, 1);
 
         UShortRawIndexer srcIdx = src.createIndexer();
         UByteRawIndexer dstIdx = dst.createIndexer();
