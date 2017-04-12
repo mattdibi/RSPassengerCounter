@@ -297,11 +297,12 @@ void RSPCN::count()
             {
                 // --TRACKING
                 // Getting mass center
-                Moments M = moments(contours[idx]);
-                Point2f mc = Point2f( M.m10/M.m00 , M.m01/M.m00 );
+                // Moments M = moments(contours[idx]);
+                // Point2f mc = Point2f( M.m10/M.m00 , M.m01/M.m00 );
 
                 // Getting bounding rectangle
                 Rect br = boundingRect(contours[idx]);
+                Point2f mc = Point2f((int)(br.x + br.width/2) ,(int)(br.y + br.height/2) );
 
                 // Drawing mass center and bounding rectangle
                 rectangle( color, br.tl(), br.br(), GREEN, 2, 8, 0 );
@@ -388,7 +389,7 @@ void RSPCN::count()
         for(unsigned int i = 0; i < passengers.size(); i++)
         {
             // -- DRAWING PASSENGER TRAJECTORIES
-            if(passengers[i].getTracks().size() > 0)
+            if(passengers[i].getTracks().size() > 1)
             {
                 polylines(color, passengers[i].getTracks(), false, passengers[i].getTrackColor(),2);
                 //putText(color, "Pid: " + to_string(passengers[i].getPid()), passengers[i].getCenter(), FONT_HERSHEY_SIMPLEX, 0.5, passengers[i].getTrackColor(), 2);
