@@ -34,6 +34,8 @@ public class Main {
     private static final int MAX_1PASS_AREA = 60000;
     private static final int MAX_2PASS_AREA = 90000;
 
+    private static final int thresholdCentimeters = 43; 
+
     private static int xNear = 40;
     private static int yNear = 90;
 
@@ -277,6 +279,10 @@ public class Main {
         final int rows = src.height();
         final int cols = src.width();
 
+        // Intelligent threshold
+        final float depthScale = device.get_depth_scale();
+        final int thresPixel = (int)(thresholdCentimeters / (100 * depthScale));
+
         // Parallel computation: we need speed
         Parallel.loop(0, rows, new Parallel.Looper() { 
         public void loop(int from, int to, int looperID) {
@@ -287,15 +293,15 @@ public class Main {
 
                 double p = srcIdx.get(i, j, 0);
                 
-
-                if(p == 0)
-                     p = 65535;
-
-                // TODO: Implement intellingent threshold with distance conversion
                 // Threshold
-                if(p > 8000)
+                // NODATA: 0 => To farthest value(65535)
+                // THRESH: X => To farthest value(65535)
+                if(p > thresPixel || p == 0)
                     p = 65535;
 
+                // Conversion to 8bit values and mapping
+                // 0   => Farthest point
+                // 255 => Nearest point
                 dstIdx.put(i, j, 0, 255 - (int)(p * 255.0 / 65535));
 
             }
