@@ -23,10 +23,16 @@ public class Main {
     private static device device = null;
     private static Vector<Passenger> passengers = new Vector<Passenger>(1,1);
 
+    private static int cnt_out = 0;
+    private static int cnt_in = 0;
+
     private static int pid = 0;
 
     private static final int maxPassengerAge = 2;
     private static final int fps = 30;
+
+    private static final int MAX_1PASS_AREA = 60000;
+    private static final int MAX_2PASS_AREA = 90000;
 
     private static int xNear = 40;
     private static int yNear = 90;
@@ -98,7 +104,9 @@ public class Main {
                     // Find polygon that approximate detected contours
                     CvSeq points = cvApproxPoly(hierarchy, Loader.sizeof(CvContour.class), contours, CV_POLY_APPROX_DP, cvContourPerimeter(hierarchy)*0.02, 0);
 
-                    if(Math.abs(cvContourArea(points, CV_WHOLE_SEQ, 0)) > 20000) {
+                    double areaCurrentObject = Math.abs(cvContourArea(points, CV_WHOLE_SEQ, 0)) ;
+
+                    if(areaCurrentObject > 20000) {
 
                         // Find bounding rectangle of detected shape
                         CvRect br = cvBoundingRect(hierarchy);
@@ -123,8 +131,41 @@ public class Main {
                                 newPassenger = false;
                                 passengers.elementAt(i).updateCoords(rectCenter);
 
-                                // TODO: Counter
-                                // ...
+                                // -- COUNT
+                                if(passengers.elementAt(i).getTracks().size() > 1)
+                                {
+                                   // Up to down 
+                                   if( passengers.elementAt(i).getLastPoint().y() < frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() >= frameImage.height()/2  ||
+                                       passengers.elementAt(i).getLastPoint().y() <= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() > frameImage.height()/2 ) {
+
+                                        // Counting multiple passenger depending on area size
+                                        if (areaCurrentObject > MAX_1PASS_AREA && areaCurrentObject < MAX_2PASS_AREA)
+                                            cnt_out += 2;
+                                        else if (areaCurrentObject > MAX_2PASS_AREA)
+                                            cnt_out += 3;
+                                        else
+                                            cnt_out++;
+
+                                   }
+
+                                   // Down to up
+                                   if( passengers.elementAt(i).getLastPoint().y() > frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() <= frameImage.height()/2  ||
+                                       passengers.elementAt(i).getLastPoint().y() >= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() < frameImage.height()/2 ) {
+
+                                        // Counting multiple passenger depending on area size
+                                        if (areaCurrentObject > MAX_1PASS_AREA && areaCurrentObject < MAX_2PASS_AREA)
+                                            cnt_in += 2;
+                                        else if (areaCurrentObject > MAX_2PASS_AREA)
+                                            cnt_in += 3;
+                                        else
+                                            cnt_in++;
+
+                                   }
+
+
+                                }
+                                
+                                break;
                             }
 
                         }
@@ -143,7 +184,7 @@ public class Main {
                 
             }
 
-            // TODO: Draw trajectories and update age
+            // Draw trajectories and update age
             for(int i = 0; i < passengers.size(); i++) {
 
                 if(passengers.elementAt(i).getTracks().size() > 1) {
@@ -165,6 +206,14 @@ public class Main {
                     passengers.remove(i);
                 }
             }
+
+            // Write current count
+            CvPoint cntInLoc = new CvPoint(0, colorImage.height() - 30);
+            CvPoint cntOutLoc = new CvPoint(0, colorImage.height() - 10);
+            CvFont font = cvFont(1,1);
+
+            cvPutText(colorImage, "Count IN:  " + cnt_in , cntInLoc , font, CvScalar.WHITE);
+            cvPutText(colorImage, "Count OUT: " + cnt_out, cntOutLoc, font, CvScalar.WHITE);
 
             // Display streams using Java frame 
             colorFrame.showImage(converterToIpl.convert(colorImage));
