@@ -389,7 +389,7 @@ void RSPCN::count()
         for(unsigned int i = 0; i < passengers.size(); i++)
         {
             // -- DRAWING PASSENGER TRAJECTORIES
-            if(passengers[i].getTracks().size() > 0)
+            if(passengers[i].getTracks().size() > 1)
             {
                 polylines(color, passengers[i].getTracks(), false, passengers[i].getTrackColor(),2);
                 //putText(color, "Pid: " + to_string(passengers[i].getPid()), passengers[i].getCenter(), FONT_HERSHEY_SIMPLEX, 0.5, passengers[i].getTrackColor(), 2);
