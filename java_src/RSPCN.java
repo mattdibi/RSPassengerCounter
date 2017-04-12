@@ -363,6 +363,19 @@ public class RSPCN {
         cnt_in  = 0;
     }
 	
+    // Getters and Setters
+    public static String getDeviceName() {
+        return device.get_name().getString();
+    }
+
+    public static String getDeviceSerial() {
+        return device.get_serial().getString();
+    }
+
+    public static String getDeviceFirmware() {
+        return device.get_firmware_version().getString();
+    }
+
 	public static int getCnt_out()
 	{
 	    return cnt_out;
@@ -373,141 +386,71 @@ public class RSPCN {
         return cnt_in;
     }
     
-    /**
-     * Get maxPassengerAge.
-     *
-     * @return maxPassengerAge as int.
-     */
     public int getMaxPassengerAge()
     {
         return maxPassengerAge;
     }
     
-    /**
-     * Set maxPassengerAge.
-     *
-     * @param maxPassengerAge the value to set.
-     */
     public void setMaxPassengerAge(int maxPassengerAge)
     {
         this.maxPassengerAge = maxPassengerAge;
     }
     
-    /**
-     * Get max1PassArea.
-     *
-     * @return max1PassArea as int.
-     */
     public int getMax1PassArea()
     {
         return max1PassArea;
     }
     
-    /**
-     * Set max1PassArea.
-     *
-     * @param max1PassArea the value to set.
-     */
     public void setMax1PassArea(int max1PassArea)
     {
         this.max1PassArea = max1PassArea;
     }
     
-    /**
-     * Get max2PassArea.
-     *
-     * @return max2PassArea as int.
-     */
     public int getMax2PassArea()
     {
         return max2PassArea;
     }
     
-    /**
-     * Set max2PassArea.
-     *
-     * @param max2PassArea the value to set.
-     */
     public void setMax2PassArea(int max2PassArea)
     {
         this.max2PassArea = max2PassArea;
     }
     
-    /**
-     * Get thresholdCentimeters.
-     *
-     * @return thresholdCentimeters as int.
-     */
     public int getThresholdCentimeters()
     {
         return thresholdCentimeters;
     }
     
-    /**
-     * Set thresholdCentimeters.
-     *
-     * @param thresholdCentimeters the value to set.
-     */
     public void setThresholdCentimeters(int thresholdCentimeters)
     {
         this.thresholdCentimeters = thresholdCentimeters;
     }
     
-    /**
-     * Get xNear.
-     *
-     * @return xNear as int.
-     */
     public int getXNear()
     {
         return xNear;
     }
     
-    /**
-     * Set xNear.
-     *
-     * @param xNear the value to set.
-     */
     public void setXNear(int xNear)
     {
         this.xNear = xNear;
     }
     
-    /**
-     * Get yNear.
-     *
-     * @return yNear as int.
-     */
     public int getYNear()
     {
         return yNear;
     }
     
-    /**
-     * Set yNear.
-     *
-     * @param yNear the value to set.
-     */
     public void setYNear(int yNear)
     {
         this.yNear = yNear;
     }
     
-    /**
-     * Get blurSize.
-     *
-     * @return blurSize as int.
-     */
     public int getBlurSize()
     {
         return blurSize;
     }
     
-    /**
-     * Set blurSize.
-     *
-     * @param blurSize the value to set.
-     */
     public void setBlurSize(int blurSize)
     {
         this.blurSize = blurSize;
