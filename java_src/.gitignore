@@ -1,4 +1,5 @@
-# Ignole swap files
+OldMain.java
+# Ignore swap files
 *.swp
 
 # Ignore .class files
