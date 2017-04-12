@@ -1,7 +1,4 @@
 import java.io.File;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.ShortBuffer;
 import java.util.Vector;
 
 import org.bytedeco.javacv.*;
@@ -14,8 +11,6 @@ import org.bytedeco.javacpp.RealSense.device;
 
 import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_imgproc.*;
-import static org.bytedeco.javacpp.opencv_imgcodecs.*;
-import static org.bytedeco.javacpp.opencv_highgui.*;
 
 public class Main {
 
