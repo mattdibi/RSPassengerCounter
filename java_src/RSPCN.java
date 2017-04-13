@@ -105,16 +105,17 @@ public class RSPCN implements Runnable{
         IplImage colorImage = null;
         IplImage depthImage = null;
         IplImage frameImage = IplImage.create(imageWidth, imageHeight, IPL_DEPTH_8U, 1);
+        IplImage trackImage = IplImage.create(imageWidth, imageHeight, IPL_DEPTH_8U, 1);
 
 
         CanvasFrame colorFrame = null;
         CanvasFrame depthFrame = null;
-        CanvasFrame frameFrame = null;
+        CanvasFrame trackFrame = null;
 
         if(!bareMetalMode) {
             colorFrame = new CanvasFrame("Color Stream",1); 
             depthFrame = new CanvasFrame("Depth Stream",1); 
-            frameFrame = new CanvasFrame("Frame Stream",1); 
+            trackFrame = new CanvasFrame("Track Stream",1); 
         }
 
         CvMemStorage contours = CvMemStorage.create();
@@ -127,6 +128,7 @@ public class RSPCN implements Runnable{
             colorImage = grabColorImage();
             depthImage = grabDepthImage();
             frameImage = grabFrameImage(depthImage);
+            trackImage = frameImage.clone(); 
 
             // Conversion needed 
             Mat frameMat = new Mat(frameImage);
@@ -171,10 +173,10 @@ public class RSPCN implements Runnable{
 
                         // Drawing rectangle
                         int x = br.x(), y = br.y(), w = br.width(), h = br.height();
-                        cvRectangle(frameImage, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.WHITE, 1, CV_AA, 0);
+                        // cvRectangle(trackImage, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.WHITE, 1, CV_AA, 0);
                         cvRectangle(colorImage, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.GREEN, 1, CV_AA, 0);
                         // Drawing rectangle center
-                        cvCircle(frameImage, rectCenter, 5, CvScalar.WHITE, 2, CV_AA, 0);
+                        // cvCircle(trackImage, rectCenter, 5, CvScalar.WHITE, 2, CV_AA, 0);
                         cvCircle(colorImage, rectCenter, 5, CvScalar.RED, 2, CV_AA, 0);
 
                         boolean newPassenger = true;
@@ -274,7 +276,7 @@ public class RSPCN implements Runnable{
             if(!bareMetalMode) {
                 colorFrame.showImage(converterToIpl.convert(colorImage));
                 depthFrame.showImage(converterToIpl.convert(depthImage));
-                frameFrame.showImage(converterToIpl.convert(frameImage));
+                trackFrame.showImage(converterToIpl.convert(trackImage));
             }
 
             // cvSaveImage("color.jpg", colorImage);
@@ -285,11 +287,12 @@ public class RSPCN implements Runnable{
         colorImage.release();
         depthImage.release();
         frameImage.release();
+        trackImage.release();
 
         if(!bareMetalMode) {
             colorFrame.dispose();
             depthFrame.dispose();
-            depthFrame.dispose();
+            trackFrame.dispose();
         }
 
         device.stop();
