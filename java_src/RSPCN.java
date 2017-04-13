@@ -193,8 +193,6 @@ public class RSPCN implements Runnable{
                                         else
                                             cnt_out++;
 
-                                        System.out.println( "Up to down crossed" );
-
                                    }
 
                                    // Down to up
@@ -209,7 +207,6 @@ public class RSPCN implements Runnable{
                                         else
                                             cnt_in++;
 
-                                        System.out.println( "Down to up crossed" );
                                    }
 
 

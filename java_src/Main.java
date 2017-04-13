@@ -3,6 +3,25 @@ import java.util.Scanner;
 
 public class Main {
 
+    public static void displayHelp()
+    {
+        System.out.print("*****************************************\n");
+        System.out.print("* COMMAND HELP: \n");
+        System.out.print("* q: exit program\n");
+        System.out.print("* r: resetting counters\n");
+        System.out.print("* c: get passenger count\n");
+        System.out.print("* p: set camera preset\n");
+        System.out.print("* t: set threshold centimeters\n");
+        System.out.print("* a: set max passenger age\n");
+        System.out.print("* b: set blur kernel size\n");
+        System.out.print("* x: set xNear\n");
+        System.out.print("* y: set yNear\n");
+        System.out.print("* h: display this help message\n");
+        System.out.print("*****************************************\n");
+
+        return;
+    }
+
     public static void main(String[] args) {
 
         char c;
@@ -31,12 +50,30 @@ public class Main {
                     myRSPCN.stop();
                     stop = true;
                     break;
+
+                case('r'): 
+                    System.out.println( "Resetting counters" );
+                    myRSPCN.resetCounters();
+                    break;
                 
+                case ('c'): 
+                    System.out.println( "Current count: ");
+                    System.out.println("Count in  > " + myRSPCN.getCnt_in());
+                    System.out.println("Count out > " + myRSPCN.getCnt_out());
+                    System.out.println("Current balance > " + (myRSPCN.getCnt_in() - myRSPCN.getCnt_out()));
+                    break;
+                    
+                case ('p'): 
+                    System.out.println( "Set preset: ");
+                    System.out.print("New preset > ");
+                    int preset = s.nextInt();
+                    myRSPCN.setCameraPresets(preset);
+                    break;
+
                 case ('t'): 
                     System.out.println( "Set threshold: ");
                     System.out.print("New threshold > ");
                     int centimeters = s.nextInt();
-
                     myRSPCN.setThresholdCentimeters(centimeters);
                     break;
                 
@@ -44,7 +81,6 @@ public class Main {
                     System.out.println( "Set passenger age: ");
                     System.out.print("New age > ");
                     int age = s.nextInt();
-
                     myRSPCN.setMaxPassengerAge(age);
                     break;
                 
@@ -52,7 +88,6 @@ public class Main {
                     System.out.println( "Set blur: ");
                     System.out.print("New blur > ");
                     int blur = s.nextInt();
-
                     myRSPCN.setBlurSize(blur);
                     break;
                 
@@ -60,7 +95,6 @@ public class Main {
                     System.out.println( "Set xNear: ");
                     System.out.print("New xNear > ");
                     int xNear = s.nextInt();
-
                     myRSPCN.setXNear(xNear);
                     break;
                 
@@ -68,12 +102,11 @@ public class Main {
                     System.out.println( "Set yNear: ");
                     System.out.print("New yNear > ");
                     int yNear = s.nextInt();
-
                     myRSPCN.setYNear(yNear);
                     break;
                 
                 default:
-                    // displayHelp();
+                    displayHelp();
                     break;
             }
 
