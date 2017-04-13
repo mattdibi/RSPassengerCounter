@@ -33,6 +33,21 @@ public class Main {
         System.out.println( "Device serial: " + myRSPCN.getDeviceSerial() );
         System.out.println( "Device firmware: " + myRSPCN.getDeviceFirmware() );
 
+        System.out.println( );
+
+        System.out.println( "Choose execution mode:" );
+        System.out.println( "M: bare metal mode." );
+        System.out.println( "N: normal mode." );
+
+        System.out.print("> ");
+        c = s.next().charAt(0);
+
+        if(c == 'M')
+        {
+            myRSPCN.setBareMetalMode(true);
+            System.out.println("Bare metal mode activated");
+        }
+
         myRSPCN.start();
 
         System.out.println( "Insert command: " );

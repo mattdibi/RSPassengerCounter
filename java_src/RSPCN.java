@@ -28,6 +28,7 @@ public class RSPCN implements Runnable{
     private int cameraType;
 
     private boolean halt = false;
+    private boolean bareMetalMode = false;
 
     private static int cnt_out = 0;
     private static int cnt_in = 0;
@@ -105,9 +106,16 @@ public class RSPCN implements Runnable{
         IplImage depthImage = null;
         IplImage frameImage = IplImage.create(imageWidth, imageHeight, IPL_DEPTH_8U, 1);
 
-        CanvasFrame colorFrame = new CanvasFrame("Color Stream",1); 
-        CanvasFrame depthFrame = new CanvasFrame("Depth Stream",1); 
-        CanvasFrame frameFrame = new CanvasFrame("Frame Stream",1); 
+
+        CanvasFrame colorFrame = null;
+        CanvasFrame depthFrame = null;
+        CanvasFrame frameFrame = null;
+
+        if(!bareMetalMode) {
+            colorFrame = new CanvasFrame("Color Stream",1); 
+            depthFrame = new CanvasFrame("Depth Stream",1); 
+            frameFrame = new CanvasFrame("Frame Stream",1); 
+        }
 
         CvMemStorage contours = CvMemStorage.create();
 
@@ -263,9 +271,11 @@ public class RSPCN implements Runnable{
             cvPutText(colorImage, "Count OUT: " + cnt_out, cntOutLoc, font, CvScalar.WHITE);
 
             // Display streams using Java frame 
-            colorFrame.showImage(converterToIpl.convert(colorImage));
-            depthFrame.showImage(converterToIpl.convert(depthImage));
-            frameFrame.showImage(converterToIpl.convert(frameImage));
+            if(!bareMetalMode) {
+                colorFrame.showImage(converterToIpl.convert(colorImage));
+                depthFrame.showImage(converterToIpl.convert(depthImage));
+                frameFrame.showImage(converterToIpl.convert(frameImage));
+            }
 
             // cvSaveImage("color.jpg", colorImage);
             // cvSaveImage("depth.jpg", depthImage);
@@ -276,9 +286,11 @@ public class RSPCN implements Runnable{
         depthImage.release();
         frameImage.release();
 
-        colorFrame.dispose();
-        depthFrame.dispose();
-        depthFrame.dispose();
+        if(!bareMetalMode) {
+            colorFrame.dispose();
+            depthFrame.dispose();
+            depthFrame.dispose();
+        }
 
         device.stop();
             
@@ -473,5 +485,10 @@ public class RSPCN implements Runnable{
     public void setBlurSize(int blurSize)
     {
         this.blurSize = blurSize;
+    }
+    
+    public void setBareMetalMode(boolean bareMetalMode)
+    {
+        this.bareMetalMode = bareMetalMode;
     }
 }
