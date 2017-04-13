@@ -23,16 +23,16 @@ java -cp /usr/share/OpenCV/java/opencv-310.jar:. -Djava.library.path=/usr/share/
 
 ### Runtime commands
 ```
-q: exit program
-r: resetting counters
-c: get passenger count
-p: set camera preset
-t: set threshold centimeters
-a: set max passenger age
-b: set blur kernel size
-x: set xNear
-y: set yNear
-h: display this help message
+> q: exit program
+> r: resetting counters
+> c: get passenger count
+> p: set camera preset
+> t: set threshold centimeters
+> a: set max passenger age
+> b: set blur kernel size
+> x: set xNear
+> y: set yNear
+> h: display this help message
 ```
 
 ### Additional informations
