@@ -20,6 +20,13 @@ Once connected to ReliGATE:
 javac -cp /usr/share/OpenCV/java/opencv-310.jar:. <your source>.java 
 java -cp /usr/share/OpenCV/java/opencv-310.jar:. -Djava.library.path=/usr/share/OpenCV/java/ <your source>
 ```
+### Execution modes
+```
+> M: bare metal mode.
+> N: normal mode.
+> V: video recording mode.
+> B: video recording in bare metal mode.
+```
 
 ### Runtime commands
 ```

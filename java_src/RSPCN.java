@@ -300,8 +300,10 @@ public class RSPCN implements Runnable{
                 // cvSaveImage("frame.jpg", frameImage);
             }
 
-            recorderColor.stop();
-            recorderTrack.stop();
+            if(videoRecordMode) {
+                recorderColor.stop();
+                recorderTrack.stop();
+            }
 
             colorImage.release();
             depthImage.release();

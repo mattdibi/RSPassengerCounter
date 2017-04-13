@@ -57,7 +57,7 @@ public class Main {
             myRSPCN.setVideoRecordMode(true);
             System.out.println("Video recording in bare metal mode activated");
         }
-        else if(c == 'N') {
+        else {
             System.out.println("Normal mode activated");
         }
 
