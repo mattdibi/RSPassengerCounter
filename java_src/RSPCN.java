@@ -109,12 +109,12 @@ public class RSPCN implements Runnable{
 
 
         CanvasFrame colorFrame = null;
-        CanvasFrame depthFrame = null;
+        // CanvasFrame depthFrame = null;
         CanvasFrame trackFrame = null;
 
         if(!bareMetalMode) {
             colorFrame = new CanvasFrame("Color Stream",1); 
-            depthFrame = new CanvasFrame("Depth Stream",1); 
+            // depthFrame = new CanvasFrame("Depth Stream",1); 
             trackFrame = new CanvasFrame("Track Stream",1); 
         }
 
@@ -275,7 +275,7 @@ public class RSPCN implements Runnable{
             // Display streams using Java frame 
             if(!bareMetalMode) {
                 colorFrame.showImage(converterToIpl.convert(colorImage));
-                depthFrame.showImage(converterToIpl.convert(depthImage));
+                // depthFrame.showImage(converterToIpl.convert(depthImage));
                 trackFrame.showImage(converterToIpl.convert(trackImage));
             }
 
@@ -291,7 +291,7 @@ public class RSPCN implements Runnable{
 
         if(!bareMetalMode) {
             colorFrame.dispose();
-            depthFrame.dispose();
+            // depthFrame.dispose();
             trackFrame.dispose();
         }
 
