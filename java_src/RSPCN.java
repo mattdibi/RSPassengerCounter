@@ -36,7 +36,7 @@ public class RSPCN implements Runnable{
     private static String devName = null;
     private static float scale;
 
-    private int blurSize = 4;
+    private int blurSize = 3;
 
     private int maxPassengerAge = 2;
 
@@ -128,10 +128,6 @@ public class RSPCN implements Runnable{
             colorImage = grabColorImage();
             depthImage = grabDepthImage();
             frameImage = grabFrameImage(depthImage);
-            trackImage = frameImage.clone(); 
-
-            // Conversion needed 
-            Mat frameMat = new Mat(frameImage);
 
             // Drawing line
             CvScalar colorred = new CvScalar( 0, 255, 0, 255);
@@ -146,9 +142,8 @@ public class RSPCN implements Runnable{
                   0);
 
             // Blurring image
-            // TODO: Use IplImage equivalent
-            Size blur_k_size = new Size(blurSize, blurSize);
-            blur(frameMat, frameMat, blur_k_size);
+            cvSmooth(frameImage, frameImage, CV_GAUSSIAN, blurSize, blurSize, 0, 0);
+            trackImage = frameImage.clone(); 
 
             // Finding contours
             CvSeq hierarchy = new CvSeq(null); // This is where contours will be accessed
@@ -487,7 +482,10 @@ public class RSPCN implements Runnable{
 
     public void setBlurSize(int blurSize)
     {
-        this.blurSize = blurSize;
+        if(blurSize <= 0 || blurSize % 2 != 1)
+            System.out.println( "Error: assertion  blurSize > 0 && blurSize % 2 == 1 failed.");
+        else
+            this.blurSize = blurSize;
     }
     
     public void setBareMetalMode(boolean bareMetalMode)
