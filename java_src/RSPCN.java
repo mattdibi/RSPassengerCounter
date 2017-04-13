@@ -25,9 +25,9 @@ public class RSPCN {
     private int fps;
     private int cameraType;
 
-	private boolean halt = false;
-    
-	private static int cnt_out = 0;
+    private boolean halt = false;
+
+    private static int cnt_out = 0;
     private static int cnt_in = 0;
 
     private static String devName = null;
@@ -70,7 +70,7 @@ public class RSPCN {
         }
         device.enable_stream(RealSense.color, imageWidth, imageHeight, RealSense.rgb8, fps);
         device.enable_stream(RealSense.depth, imageWidth, imageHeight, RealSense.z16, fps);
-        
+
         scale = device.get_depth_scale();
     }
 
@@ -88,9 +88,9 @@ public class RSPCN {
     }
 
     public void start() {
-		int pid = 0;
+        int pid = 0;
 
-		device.start();
+        device.start();
 
         OpenCVFrameConverter.ToIplImage converterToIpl = new OpenCVFrameConverter.ToIplImage();
 
@@ -126,7 +126,7 @@ public class RSPCN {
                   colorred, //Color
                   2,        //Thickness
                   8,        //Linetype
-                  0);       
+                  0);
 
             // Blurring image
             // TODO: Use IplImage equivalent
@@ -207,14 +207,14 @@ public class RSPCN {
 
 
                                 }
-                                
+
                                 break;
                             }
 
                         }
 
                         if(newPassenger) {
-                        
+
                             Passenger pass = new Passenger(pid, rectCenter, 0);
                             passengers.add(pass);
                             pid++;
@@ -224,7 +224,7 @@ public class RSPCN {
                 }
 
                 hierarchy = hierarchy.h_next();
-                
+
             }
 
             // Draw trajectories and update age
@@ -242,7 +242,7 @@ public class RSPCN {
                                0);
                     }
                 }
-                
+
                 passengers.elementAt(i).updateAge();
 
                 if(passengers.elementAt(i).getAge() > (maxPassengerAge * fps)) {
@@ -270,7 +270,7 @@ public class RSPCN {
 
     }
 
-	public IplImage grabColorImage() {
+    public IplImage grabColorImage() {
 
         Pointer rawVideoImageData = new Pointer((Pointer) null);
         IplImage rawVideoImage = null;
@@ -287,7 +287,7 @@ public class RSPCN {
 
         if (channels == 3) {
             cvCvtColor(rawVideoImage, rawVideoImage, CV_BGR2RGB);
-        }   
+        }
 
         return rawVideoImage;
     }
@@ -332,7 +332,7 @@ public class RSPCN {
             for(int j = 0; j < cols; j++) {
 
                 double p = srcIdx.get(i, j, 0);
-                
+
                 // Threshold
                 // NODATA: 0 => To farthest value(65535)
                 // THRESH: X => To farthest value(65535)
@@ -353,16 +353,16 @@ public class RSPCN {
         return dst;
     }
 
-	public void stop()
-	{
-	    this.halt = true;
-	}
+    public void stop()
+    {
+        this.halt = true;
+    }
 
     public void resetCounters() {
         cnt_out = 0;
         cnt_in  = 0;
     }
-	
+
     // Getters and Setters
     public static String getDeviceName() {
         return device.get_name().getString();
@@ -376,81 +376,81 @@ public class RSPCN {
         return device.get_firmware_version().getString();
     }
 
-	public static int getCnt_out()
-	{
-	    return cnt_out;
-	}
-    
+    public static int getCnt_out()
+    {
+        return cnt_out;
+    }
+
     public static int getCnt_in()
     {
         return cnt_in;
     }
-    
+
     public int getMaxPassengerAge()
     {
         return maxPassengerAge;
     }
-    
+
     public void setMaxPassengerAge(int maxPassengerAge)
     {
         this.maxPassengerAge = maxPassengerAge;
     }
-    
+
     public int getMax1PassArea()
     {
         return max1PassArea;
     }
-    
+
     public void setMax1PassArea(int max1PassArea)
     {
         this.max1PassArea = max1PassArea;
     }
-    
+
     public int getMax2PassArea()
     {
         return max2PassArea;
     }
-    
+
     public void setMax2PassArea(int max2PassArea)
     {
         this.max2PassArea = max2PassArea;
     }
-    
+
     public int getThresholdCentimeters()
     {
         return thresholdCentimeters;
     }
-    
+
     public void setThresholdCentimeters(int thresholdCentimeters)
     {
         this.thresholdCentimeters = thresholdCentimeters;
     }
-    
+
     public int getXNear()
     {
         return xNear;
     }
-    
+
     public void setXNear(int xNear)
     {
         this.xNear = xNear;
     }
-    
+
     public int getYNear()
     {
         return yNear;
     }
-    
+
     public void setYNear(int yNear)
     {
         this.yNear = yNear;
     }
-    
+
     public int getBlurSize()
     {
         return blurSize;
     }
-    
+
     public void setBlurSize(int blurSize)
     {
         this.blurSize = blurSize;

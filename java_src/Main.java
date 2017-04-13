@@ -1,8 +1,8 @@
 public class Main {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		RSPCN myRSPCN = new RSPCN(0);
+        RSPCN myRSPCN = new RSPCN(0);
 
         System.out.println( "Device name: " + myRSPCN.getDeviceName() );
         System.out.println( "Device serial: " + myRSPCN.getDeviceSerial() );
@@ -13,6 +13,6 @@ public class Main {
 
         myRSPCN.setCameraPresets(2);
 
-	}
+    }
 
 }
