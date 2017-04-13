@@ -12,9 +12,11 @@ import org.bytedeco.javacpp.RealSense.device;
 import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_imgproc.*;
 
-public class RSPCN {
+public class RSPCN implements Runnable{
 
     // Variables
+    Thread thread;
+
     private static context context = null;
     private static device device = null;
 
@@ -87,7 +89,12 @@ public class RSPCN {
         return;
     }
 
-    public void start() {
+    public void start(){
+        thread = new Thread(this, "Counting thread");
+        thread.start();
+    }
+
+    public void run() {
         int pid = 0;
 
         device.start();
@@ -267,6 +274,21 @@ public class RSPCN {
             // cvSaveImage("depth.jpg", depthImage);
             // cvSaveImage("frame.jpg", frameImage);
         }
+
+        colorImage.release();
+        depthImage.release();
+        frameImage.release();
+
+        colorFrame.dispose();
+        depthFrame.dispose();
+        depthFrame.dispose();
+
+        device.stop();
+            
+        device.disable_stream(RealSense.color);
+        device.disable_stream(RealSense.depth);
+
+        return;
 
     }
 
