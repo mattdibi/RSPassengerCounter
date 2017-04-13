@@ -13,13 +13,6 @@ projects. These are needed to use the RealSense cameras.
 $ sh Compile.sh
 $ sh Run.sh
 ```
-
-**Use OpenCV Java API with the installed JDK**  
-Once connected to ReliGATE:
-```sh
-javac -cp /usr/share/OpenCV/java/opencv-310.jar:. <your source>.java 
-java -cp /usr/share/OpenCV/java/opencv-310.jar:. -Djava.library.path=/usr/share/OpenCV/java/ <your source>
-```
 ### Execution modes
 ```
 > M: bare metal mode.
@@ -41,7 +34,16 @@ java -cp /usr/share/OpenCV/java/opencv-310.jar:. -Djava.library.path=/usr/share/
 > y: set yNear
 > h: display this help message
 ```
+## Note
+Please note that this project is not using the installed OpenCV Java API, instead it's using JavaCV and JavaCPP. The files needed to compile
+and run the code correctly are included in the jar_files folder and referenced by the Compile and Run scripts.
 
+## Use OpenCV Java API with the installed JDK
+If you want to use the included OpenCV Java API, once connected to ReliGATE:
+```sh
+javac -cp /usr/share/OpenCV/java/opencv-310.jar:. <your source>.java 
+java -cp /usr/share/OpenCV/java/opencv-310.jar:. -Djava.library.path=/usr/share/OpenCV/java/ <your source>
+```
 ### Additional informations
 * [ JavaCV Repository example ](https://github.com/bytedeco/javacv/blob/master/src/main/java/org/bytedeco/javacv/RealSenseFrameGrabber.java)
 * [ JavaCV Repository ](https://github.com/bytedeco/javacv)
