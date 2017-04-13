@@ -38,14 +38,27 @@ public class Main {
         System.out.println( "Choose execution mode:" );
         System.out.println( "M: bare metal mode." );
         System.out.println( "N: normal mode." );
+        System.out.println( "V: video recording mode." );
+        System.out.println( "B: video recording in bare metal mode." );
 
         System.out.print("> ");
         c = s.next().charAt(0);
 
-        if(c == 'M')
-        {
+        if(c == 'M') {
             myRSPCN.setBareMetalMode(true);
             System.out.println("Bare metal mode activated");
+        }
+        else if(c == 'V') {
+            myRSPCN.setVideoRecordMode(true);
+            System.out.println("Video recording mode activated");
+        }
+        else if(c == 'B') {
+            myRSPCN.setBareMetalMode(true);
+            myRSPCN.setVideoRecordMode(true);
+            System.out.println("Video recording in bare metal mode activated");
+        }
+        else if(c == 'N') {
+            System.out.println("Normal mode activated");
         }
 
         myRSPCN.start();

@@ -29,6 +29,7 @@ public class RSPCN implements Runnable{
 
     private boolean halt = false;
     private boolean bareMetalMode = false;
+    private boolean videoRecordMode = false;
 
     private static int cnt_out = 0;
     private static int cnt_in = 0;
@@ -118,182 +119,209 @@ public class RSPCN implements Runnable{
             trackFrame = new CanvasFrame("Track Stream",1); 
         }
 
-        CvMemStorage contours = CvMemStorage.create();
+        FFmpegFrameRecorder recorderColor = null;
+        FFmpegFrameRecorder recorderTrack = null;
 
-        // Frame capture loop
-        while(!halt) {
-            device.wait_for_frames();
+        try {
 
-            // Grab data from RealSense camera
-            colorImage = grabColorImage();
-            depthImage = grabDepthImage();
-            frameImage = grabFrameImage(depthImage);
+            if(videoRecordMode) {
+                recorderColor = FFmpegFrameRecorder.createDefault("color.mp4", imageWidth, imageHeight);
+                recorderColor.setFrameRate(fps);
+                recorderColor.start();
+                
+                recorderTrack = FFmpegFrameRecorder.createDefault("track.mp4", imageWidth, imageHeight);
+                recorderTrack.setFrameRate(fps);
+                recorderTrack.start();
+            }
 
-            // Drawing line
-            CvScalar colorred = new CvScalar( 0, 255, 0, 255);
-            CvPoint p1 = new CvPoint(0,colorImage.height()/2);
-            CvPoint p2 = new CvPoint(colorImage.width(), colorImage.height()/2);
-            cvLine( colorImage,
-                  p2,       //Starting point of the line
-                  p1,       //Ending point of the line
-                  colorred, //Color
-                  2,        //Thickness
-                  8,        //Linetype
-                  0);
+            CvMemStorage contours = CvMemStorage.create();
 
-            // Blurring image
-            cvSmooth(frameImage, frameImage, CV_GAUSSIAN, blurSize, blurSize, 0, 0);
-            trackImage = frameImage.clone(); 
+            // Frame capture loop
+            while(!halt) {
+                device.wait_for_frames();
 
-            // Finding contours
-            CvSeq hierarchy = new CvSeq(null); // This is where contours will be accessed
-            cvFindContours(frameImage, contours, hierarchy, Loader.sizeof(CvContour.class), CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+                // Grab data from RealSense camera
+                colorImage = grabColorImage();
+                depthImage = grabDepthImage();
+                frameImage = grabFrameImage(depthImage);
 
-            while (hierarchy != null && !hierarchy.isNull()) {
+                // Drawing line
+                CvScalar colorred = new CvScalar( 0, 255, 0, 255);
+                CvPoint p1 = new CvPoint(0,colorImage.height()/2);
+                CvPoint p2 = new CvPoint(colorImage.width(), colorImage.height()/2);
+                cvLine( colorImage,
+                      p2,       //Starting point of the line
+                      p1,       //Ending point of the line
+                      colorred, //Color
+                      2,        //Thickness
+                      8,        //Linetype
+                      0);
 
-                if(hierarchy.elem_size() > 0) {
+                // Blurring image
+                cvSmooth(frameImage, frameImage, CV_GAUSSIAN, blurSize, blurSize, 0, 0);
+                trackImage = frameImage.clone(); 
 
-                    // Find polygon that approximate detected contours
-                    CvSeq points = cvApproxPoly(hierarchy, Loader.sizeof(CvContour.class), contours, CV_POLY_APPROX_DP, cvContourPerimeter(hierarchy)*0.02, 0);
+                // Finding contours
+                CvSeq hierarchy = new CvSeq(null); // This is where contours will be accessed
+                cvFindContours(frameImage, contours, hierarchy, Loader.sizeof(CvContour.class), CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
 
-                    double areaCurrentObject = Math.abs(cvContourArea(points, CV_WHOLE_SEQ, 0)) ;
+                while (hierarchy != null && !hierarchy.isNull()) {
 
-                    if(areaCurrentObject > 20000) {
+                    if(hierarchy.elem_size() > 0) {
 
-                        // Find bounding rectangle of detected shape
-                        CvRect br = cvBoundingRect(hierarchy);
+                        // Find polygon that approximate detected contours
+                        CvSeq points = cvApproxPoly(hierarchy, Loader.sizeof(CvContour.class), contours, CV_POLY_APPROX_DP, cvContourPerimeter(hierarchy)*0.02, 0);
 
-                        // Find center of bounding rectangle of detected shape
-                        CvPoint rectCenter = new CvPoint( (int)(br.x() + br.width()/2), (int)(br.y() + br.height()/2));
+                        double areaCurrentObject = Math.abs(cvContourArea(points, CV_WHOLE_SEQ, 0)) ;
 
-                        // Drawing rectangle
-                        int x = br.x(), y = br.y(), w = br.width(), h = br.height();
-                        // cvRectangle(trackImage, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.WHITE, 1, CV_AA, 0);
-                        cvRectangle(colorImage, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.GREEN, 1, CV_AA, 0);
-                        // Drawing rectangle center
-                        // cvCircle(trackImage, rectCenter, 5, CvScalar.WHITE, 2, CV_AA, 0);
-                        cvCircle(colorImage, rectCenter, 5, CvScalar.RED, 2, CV_AA, 0);
+                        if(areaCurrentObject > 20000) {
 
-                        boolean newPassenger = true;
-                        for(int i = 0; i < passengers.size(); i++) {
-                            //If passenger is near a known passenger assume they are the same one
-                            if( abs(rectCenter.x() - passengers.elementAt(i).getX()) <= xNear  && 
-                                abs(rectCenter.y() - passengers.elementAt(i).getY()) <= yNear  ) {
+                            // Find bounding rectangle of detected shape
+                            CvRect br = cvBoundingRect(hierarchy);
 
-                                newPassenger = false;
-                                passengers.elementAt(i).updateCoords(rectCenter);
+                            // Find center of bounding rectangle of detected shape
+                            CvPoint rectCenter = new CvPoint( (int)(br.x() + br.width()/2), (int)(br.y() + br.height()/2));
 
-                                // -- COUNT
-                                if(passengers.elementAt(i).getTracks().size() > 1)
-                                {
-                                   // Up to down 
-                                   if( passengers.elementAt(i).getLastPoint().y() < frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() >= frameImage.height()/2  ||
-                                       passengers.elementAt(i).getLastPoint().y() <= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() > frameImage.height()/2 ) {
+                            // Drawing rectangle
+                            int x = br.x(), y = br.y(), w = br.width(), h = br.height();
+                            // cvRectangle(trackImage, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.WHITE, 1, CV_AA, 0);
+                            cvRectangle(colorImage, cvPoint(x, y), cvPoint(x+w, y+h), CvScalar.GREEN, 1, CV_AA, 0);
+                            // Drawing rectangle center
+                            // cvCircle(trackImage, rectCenter, 5, CvScalar.WHITE, 2, CV_AA, 0);
+                            cvCircle(colorImage, rectCenter, 5, CvScalar.RED, 2, CV_AA, 0);
 
-                                        // Counting multiple passenger depending on area size
-                                        if (areaCurrentObject > max1PassArea && areaCurrentObject < max2PassArea)
-                                            cnt_out += 2;
-                                        else if (areaCurrentObject > max2PassArea)
-                                            cnt_out += 3;
-                                        else
-                                            cnt_out++;
+                            boolean newPassenger = true;
+                            for(int i = 0; i < passengers.size(); i++) {
+                                //If passenger is near a known passenger assume they are the same one
+                                if( abs(rectCenter.x() - passengers.elementAt(i).getX()) <= xNear  && 
+                                    abs(rectCenter.y() - passengers.elementAt(i).getY()) <= yNear  ) {
 
-                                   }
+                                    newPassenger = false;
+                                    passengers.elementAt(i).updateCoords(rectCenter);
 
-                                   // Down to up
-                                   if( passengers.elementAt(i).getLastPoint().y() > frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() <= frameImage.height()/2  ||
-                                       passengers.elementAt(i).getLastPoint().y() >= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() < frameImage.height()/2 ) {
+                                    // -- COUNT
+                                    if(passengers.elementAt(i).getTracks().size() > 1)
+                                    {
+                                       // Up to down 
+                                       if( passengers.elementAt(i).getLastPoint().y() < frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() >= frameImage.height()/2  ||
+                                           passengers.elementAt(i).getLastPoint().y() <= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() > frameImage.height()/2 ) {
 
-                                        // Counting multiple passenger depending on area size
-                                        if (areaCurrentObject > max1PassArea && areaCurrentObject < max2PassArea)
-                                            cnt_in += 2;
-                                        else if (areaCurrentObject > max2PassArea)
-                                            cnt_in += 3;
-                                        else
-                                            cnt_in++;
+                                            // Counting multiple passenger depending on area size
+                                            if (areaCurrentObject > max1PassArea && areaCurrentObject < max2PassArea)
+                                                cnt_out += 2;
+                                            else if (areaCurrentObject > max2PassArea)
+                                                cnt_out += 3;
+                                            else
+                                                cnt_out++;
 
-                                   }
+                                       }
+
+                                       // Down to up
+                                       if( passengers.elementAt(i).getLastPoint().y() > frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() <= frameImage.height()/2  ||
+                                           passengers.elementAt(i).getLastPoint().y() >= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() < frameImage.height()/2 ) {
+
+                                            // Counting multiple passenger depending on area size
+                                            if (areaCurrentObject > max1PassArea && areaCurrentObject < max2PassArea)
+                                                cnt_in += 2;
+                                            else if (areaCurrentObject > max2PassArea)
+                                                cnt_in += 3;
+                                            else
+                                                cnt_in++;
+
+                                       }
 
 
+                                    }
+
+                                    break;
                                 }
 
-                                break;
                             }
 
+                            if(newPassenger) {
+
+                                Passenger pass = new Passenger(pid, rectCenter, 0);
+                                passengers.add(pass);
+                                pid++;
+
+                            }
                         }
+                    }
 
-                        if(newPassenger) {
+                    hierarchy = hierarchy.h_next();
 
-                            Passenger pass = new Passenger(pid, rectCenter, 0);
-                            passengers.add(pass);
-                            pid++;
+                }
 
+                // Draw trajectories and update age
+                for(int i = 0; i < passengers.size(); i++) {
+
+                    if(passengers.elementAt(i).getTracks().size() > 1) {
+
+                        for(int j = 0; j < passengers.elementAt(i).getTracks().size() - 1 ; j++) {
+                            cvLine(colorImage,
+                                   passengers.elementAt(i).getTracks().elementAt(j),
+                                   passengers.elementAt(i).getTracks().elementAt(j + 1),
+                                   passengers.elementAt(i).getTrackColor(),
+                                   2,
+                                   8,
+                                   0);
                         }
+                    }
+
+                    passengers.elementAt(i).updateAge();
+
+                    if(passengers.elementAt(i).getAge() > (maxPassengerAge * fps)) {
+                        passengers.remove(i);
                     }
                 }
 
-                hierarchy = hierarchy.h_next();
+                // Write current count
+                CvPoint cntInLoc = new CvPoint(0, colorImage.height() - 30);
+                CvPoint cntOutLoc = new CvPoint(0, colorImage.height() - 10);
+                CvFont font = cvFont(1,1);
 
-            }
+                cvPutText(colorImage, "Count IN:  " + cnt_in , cntInLoc , font, CvScalar.WHITE);
+                cvPutText(colorImage, "Count OUT: " + cnt_out, cntOutLoc, font, CvScalar.WHITE);
 
-            // Draw trajectories and update age
-            for(int i = 0; i < passengers.size(); i++) {
-
-                if(passengers.elementAt(i).getTracks().size() > 1) {
-
-                    for(int j = 0; j < passengers.elementAt(i).getTracks().size() - 1 ; j++) {
-                        cvLine(colorImage,
-                               passengers.elementAt(i).getTracks().elementAt(j),
-                               passengers.elementAt(i).getTracks().elementAt(j + 1),
-                               passengers.elementAt(i).getTrackColor(),
-                               2,
-                               8,
-                               0);
-                    }
+                // Display streams using Java frame 
+                if(!bareMetalMode) {
+                    colorFrame.showImage(converterToIpl.convert(colorImage));
+                    // depthFrame.showImage(converterToIpl.convert(depthImage));
+                    trackFrame.showImage(converterToIpl.convert(trackImage));
                 }
 
-                passengers.elementAt(i).updateAge();
-
-                if(passengers.elementAt(i).getAge() > (maxPassengerAge * fps)) {
-                    passengers.remove(i);
+                if(videoRecordMode) {
+                    recorderColor.record(converterToIpl.convert(colorImage));
+                    recorderTrack.record(converterToIpl.convert(trackImage));
                 }
+
+                // cvSaveImage("color.jpg", colorImage);
+                // cvSaveImage("depth.jpg", depthImage);
+                // cvSaveImage("frame.jpg", frameImage);
             }
 
-            // Write current count
-            CvPoint cntInLoc = new CvPoint(0, colorImage.height() - 30);
-            CvPoint cntOutLoc = new CvPoint(0, colorImage.height() - 10);
-            CvFont font = cvFont(1,1);
+            recorderColor.stop();
+            recorderTrack.stop();
 
-            cvPutText(colorImage, "Count IN:  " + cnt_in , cntInLoc , font, CvScalar.WHITE);
-            cvPutText(colorImage, "Count OUT: " + cnt_out, cntOutLoc, font, CvScalar.WHITE);
+            colorImage.release();
+            depthImage.release();
+            frameImage.release();
+            trackImage.release();
 
-            // Display streams using Java frame 
             if(!bareMetalMode) {
-                colorFrame.showImage(converterToIpl.convert(colorImage));
-                // depthFrame.showImage(converterToIpl.convert(depthImage));
-                trackFrame.showImage(converterToIpl.convert(trackImage));
+                colorFrame.dispose();
+                // depthFrame.dispose();
+                trackFrame.dispose();
             }
 
-            // cvSaveImage("color.jpg", colorImage);
-            // cvSaveImage("depth.jpg", depthImage);
-            // cvSaveImage("frame.jpg", frameImage);
+            device.stop();
+                
+            device.disable_stream(RealSense.color);
+            device.disable_stream(RealSense.depth);
+
+        } catch (Exception e) {
+            System.out.println( e );
         }
-
-        colorImage.release();
-        depthImage.release();
-        frameImage.release();
-        trackImage.release();
-
-        if(!bareMetalMode) {
-            colorFrame.dispose();
-            // depthFrame.dispose();
-            trackFrame.dispose();
-        }
-
-        device.stop();
-            
-        device.disable_stream(RealSense.color);
-        device.disable_stream(RealSense.depth);
 
         return;
 
@@ -491,5 +519,10 @@ public class RSPCN implements Runnable{
     public void setBareMetalMode(boolean bareMetalMode)
     {
         this.bareMetalMode = bareMetalMode;
+    }
+    
+    public void setVideoRecordMode(boolean videoRecordMode)
+    {
+        this.videoRecordMode = videoRecordMode;
     }
 }

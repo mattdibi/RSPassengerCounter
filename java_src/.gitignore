@@ -4,5 +4,6 @@
 # Ignore .class files
 *.class
 
-# Ignore images
+# Ignore media files
+*.mp4
 *.jpg
