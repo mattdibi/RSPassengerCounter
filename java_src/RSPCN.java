@@ -345,9 +345,11 @@ public class RSPCN implements Runnable{
 
         cvSetData(rawVideoImage, rawVideoImageData, imageWidth * channels * iplDepth / 8);
 
-        cvCvtColor(rawVideoImage, rawVideoImage, CV_BGR2RGB);
+        IplImage returnImage = IplImage.create(imageWidth, imageHeight, IPL_DEPTH_8U, 3);
 
-        return rawVideoImage;
+        cvCvtColor(rawVideoImage, returnImage, CV_BGR2RGB);
+
+        return returnImage;
     }
 
     public IplImage grabDepthImage() {
