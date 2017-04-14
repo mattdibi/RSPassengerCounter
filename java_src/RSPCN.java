@@ -103,24 +103,36 @@ public class RSPCN implements Runnable{
 
         OpenCVFrameConverter.ToIplImage converterToIpl = new OpenCVFrameConverter.ToIplImage();
 
+        FFmpegFrameRecorder recorderColor = null;
+        FFmpegFrameRecorder recorderTrack = null;
+
         IplImage colorImage = null;
         IplImage depthImage = null;
         IplImage frameImage = IplImage.create(imageWidth, imageHeight, IPL_DEPTH_8U, 1);
         IplImage trackImage = IplImage.create(imageWidth, imageHeight, IPL_DEPTH_8U, 1);
 
+        // Tracking variables
+        CvMemStorage contours = CvMemStorage.create();
+
+        // Counter locations
+        CvPoint cntInLoc = new CvPoint(0, imageHeight - 30);
+        CvPoint cntOutLoc = new CvPoint(0, imageHeight - 10);
+        CvFont font = cvFont(1,1);
+
+        // Line location
+        CvScalar colorred = new CvScalar( 0, 255, 0, 255);
+        CvPoint p1 = new CvPoint(0,imageHeight/2);
+        CvPoint p2 = new CvPoint(imageWidth, imageHeight/2);
 
         CanvasFrame colorFrame = null;
-        // CanvasFrame depthFrame = null;
         CanvasFrame trackFrame = null;
+        // CanvasFrame depthFrame = null;
 
         if(!bareMetalMode) {
             colorFrame = new CanvasFrame("Color Stream",1); 
-            // depthFrame = new CanvasFrame("Depth Stream",1); 
             trackFrame = new CanvasFrame("Track Stream",1); 
+            // depthFrame = new CanvasFrame("Depth Stream",1); 
         }
-
-        FFmpegFrameRecorder recorderColor = null;
-        FFmpegFrameRecorder recorderTrack = null;
 
         try {
 
@@ -134,7 +146,6 @@ public class RSPCN implements Runnable{
                 recorderTrack.start();
             }
 
-            CvMemStorage contours = CvMemStorage.create();
 
             // Frame capture loop
             while(!halt) {
@@ -146,9 +157,6 @@ public class RSPCN implements Runnable{
                 frameImage = grabFrameImage(depthImage);
 
                 // Drawing line
-                CvScalar colorred = new CvScalar( 0, 255, 0, 255);
-                CvPoint p1 = new CvPoint(0,colorImage.height()/2);
-                CvPoint p2 = new CvPoint(colorImage.width(), colorImage.height()/2);
                 cvLine( colorImage,
                       p2,       //Starting point of the line
                       p1,       //Ending point of the line
@@ -275,19 +283,14 @@ public class RSPCN implements Runnable{
                     }
                 }
 
-                // Write current count
-                CvPoint cntInLoc = new CvPoint(0, colorImage.height() - 30);
-                CvPoint cntOutLoc = new CvPoint(0, colorImage.height() - 10);
-                CvFont font = cvFont(1,1);
-
                 cvPutText(colorImage, "Count IN:  " + cnt_in , cntInLoc , font, CvScalar.WHITE);
                 cvPutText(colorImage, "Count OUT: " + cnt_out, cntOutLoc, font, CvScalar.WHITE);
 
                 // Display streams using Java frame 
                 if(!bareMetalMode) {
                     colorFrame.showImage(converterToIpl.convert(colorImage));
-                    // depthFrame.showImage(converterToIpl.convert(depthImage));
                     trackFrame.showImage(converterToIpl.convert(trackImage));
+                    // depthFrame.showImage(converterToIpl.convert(depthImage));
                 }
 
                 if(videoRecordMode) {
@@ -312,8 +315,8 @@ public class RSPCN implements Runnable{
 
             if(!bareMetalMode) {
                 colorFrame.dispose();
-                // depthFrame.dispose();
                 trackFrame.dispose();
+                // depthFrame.dispose();
             }
 
             device.stop();
@@ -337,16 +340,12 @@ public class RSPCN implements Runnable{
         rawVideoImageData = device.get_frame_data(RealSense.color);
 
         int iplDepth = IPL_DEPTH_8U, channels = 3;
-        int deviceWidth = device.get_stream_width(RealSense.color);
-        int deviceHeight = device.get_stream_height(RealSense.color);
 
-        rawVideoImage = IplImage.createHeader(deviceWidth, deviceHeight, iplDepth, channels);
+        rawVideoImage = IplImage.createHeader(imageWidth, imageHeight, iplDepth, channels);
 
-        cvSetData(rawVideoImage, rawVideoImageData, deviceWidth * channels * iplDepth / 8);
+        cvSetData(rawVideoImage, rawVideoImageData, imageWidth * channels * iplDepth / 8);
 
-        if (channels == 3) {
-            cvCvtColor(rawVideoImage, rawVideoImage, CV_BGR2RGB);
-        }
+        cvCvtColor(rawVideoImage, rawVideoImage, CV_BGR2RGB);
 
         return rawVideoImage;
     }
@@ -359,12 +358,10 @@ public class RSPCN implements Runnable{
         rawDepthImageData = device.get_frame_data(RealSense.depth);
 
         int iplDepth = IPL_DEPTH_16U, channels = 1;
-        int deviceWidth = device.get_stream_width(RealSense.depth);
-        int deviceHeight = device.get_stream_height(RealSense.depth);
 
-        rawDepthImage = IplImage.createHeader(deviceWidth, deviceHeight, iplDepth, channels);
+        rawDepthImage = IplImage.createHeader(imageWidth, imageHeight, iplDepth, channels);
 
-        cvSetData(rawDepthImage, rawDepthImageData, deviceWidth * channels * iplDepth / 8);
+        cvSetData(rawDepthImage, rawDepthImageData, imageWidth * channels * iplDepth / 8);
 
         return rawDepthImage;
     }
@@ -412,8 +409,7 @@ public class RSPCN implements Runnable{
         return dst;
     }
 
-    public void stop()
-    {
+    public void stop() {
         this.halt = true;
     }
 
@@ -435,96 +431,78 @@ public class RSPCN implements Runnable{
         return device.get_firmware_version().getString();
     }
 
-    public static int getCnt_out()
-    {
+    public static int getCnt_out() {
         return cnt_out;
     }
 
-    public static int getCnt_in()
-    {
+    public static int getCnt_in() {
         return cnt_in;
     }
 
-    public int getMaxPassengerAge()
-    {
+    public int getMaxPassengerAge() {
         return maxPassengerAge;
     }
 
-    public void setMaxPassengerAge(int maxPassengerAge)
-    {
+    public void setMaxPassengerAge(int maxPassengerAge) {
         this.maxPassengerAge = maxPassengerAge;
     }
 
-    public int getMax1PassArea()
-    {
+    public int getMax1PassArea() {
         return max1PassArea;
     }
 
-    public void setMax1PassArea(int max1PassArea)
-    {
+    public void setMax1PassArea(int max1PassArea) {
         this.max1PassArea = max1PassArea;
     }
 
-    public int getMax2PassArea()
-    {
+    public int getMax2PassArea() {
         return max2PassArea;
     }
 
-    public void setMax2PassArea(int max2PassArea)
-    {
+    public void setMax2PassArea(int max2PassArea) {
         this.max2PassArea = max2PassArea;
     }
 
-    public int getThresholdCentimeters()
-    {
+    public int getThresholdCentimeters() {
         return thresholdCentimeters;
     }
 
-    public void setThresholdCentimeters(int thresholdCentimeters)
-    {
+    public void setThresholdCentimeters(int thresholdCentimeters) {
         this.thresholdCentimeters = thresholdCentimeters;
     }
 
-    public int getXNear()
-    {
+    public int getXNear() {
         return xNear;
     }
 
-    public void setXNear(int xNear)
-    {
+    public void setXNear(int xNear) {
         this.xNear = xNear;
     }
 
-    public int getYNear()
-    {
+    public int getYNear() {
         return yNear;
     }
 
-    public void setYNear(int yNear)
-    {
+    public void setYNear(int yNear) {
         this.yNear = yNear;
     }
 
-    public int getBlurSize()
-    {
+    public int getBlurSize() {
         return blurSize;
     }
 
-    public void setBlurSize(int blurSize)
-    {
+    public void setBlurSize(int blurSize) {
         if(blurSize <= 0 || blurSize % 2 != 1)
             System.out.println( "Error: assertion  blurSize > 0 && blurSize % 2 == 1 failed.");
         else
             this.blurSize = blurSize;
     }
     
-    public void setBareMetalMode(boolean bareMetalMode)
-    {
+    public void setBareMetalMode(boolean bareMetalMode) {
         this.bareMetalMode = bareMetalMode;
     }
     
-    public void setVideoRecordMode(boolean videoRecordMode)
-    {
+    public void setVideoRecordMode(boolean videoRecordMode) {
         this.videoRecordMode = videoRecordMode;
     }
 }
