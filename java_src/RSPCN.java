@@ -82,7 +82,7 @@ public class RSPCN implements Runnable{
     public void setCameraPresets(int value) {
 
         if(cameraType == 0) {
-            System.out.println( "Presets are not supported for R200 camera");
+            RealSense.apply_depth_control_preset(device, value);
         }
         else {
             RealSense.apply_ivcam_preset(device, value);
