@@ -41,8 +41,9 @@ public class RSPCN implements Runnable{
 
     private int maxPassengerAge = 2;
 
-    private int max1PassArea = 60000;
-    private int max2PassArea = 90000;
+    private int areaThreshold = 10000;  
+    private int max1PassArea  = 60000;
+    private int max2PassArea  = 90000;
 
     private int thresholdCentimeters = 43; 
 
@@ -182,7 +183,7 @@ public class RSPCN implements Runnable{
 
                         double areaCurrentObject = Math.abs(cvContourArea(points, CV_WHOLE_SEQ, 0)) ;
 
-                        if(areaCurrentObject > 20000) {
+                        if(areaCurrentObject > areaThreshold) {
 
                             // Find bounding rectangle of detected shape
                             CvRect br = cvBoundingRect(hierarchy);
@@ -504,5 +505,9 @@ public class RSPCN implements Runnable{
     
     public void setVideoRecordMode(boolean videoRecordMode) {
         this.videoRecordMode = videoRecordMode;
+    }
+    
+    public void setAreaThreshold(int areaThreshold) {
+        this.areaThreshold = areaThreshold;
     }
 }

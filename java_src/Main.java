@@ -13,6 +13,7 @@ public class Main {
         System.out.print("* p: set camera preset\n");
         System.out.print("* t: set threshold centimeters\n");
         System.out.print("* a: set max passenger age\n");
+        System.out.print("* A: set area threshold\n");
         System.out.print("* b: set blur kernel size\n");
         System.out.print("* x: set xNear\n");
         System.out.print("* y: set yNear\n");
@@ -110,6 +111,13 @@ public class Main {
                     System.out.print("New age > ");
                     int age = s.nextInt();
                     myRSPCN.setMaxPassengerAge(age);
+                    break;
+
+                case ('A') :
+                    System.out.println( "Set area threshold: ");
+                    System.out.print("New area > ");
+                    int area = s.nextInt();
+                    myRSPCN.setAreaThreshold(area);
                     break;
                 
                 case ('b') :
