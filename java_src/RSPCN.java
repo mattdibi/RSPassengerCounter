@@ -148,7 +148,7 @@ public class RSPCN implements Runnable{
 
 
             // Frame capture loop
-            while(!halt) {
+            do {
                 device.wait_for_frames();
 
                 // Grab data from RealSense camera
@@ -301,7 +301,8 @@ public class RSPCN implements Runnable{
                 // cvSaveImage("color.jpg", colorImage);
                 // cvSaveImage("depth.jpg", depthImage);
                 // cvSaveImage("frame.jpg", frameImage);
-            }
+
+            } while(!halt);
 
             if(videoRecordMode) {
                 recorderColor.stop();
@@ -381,10 +382,7 @@ public class RSPCN implements Runnable{
         // Intelligent threshold
         final int thresPixel = (int)(thresholdCentimeters / (100 * scale));
 
-        // Parallel computation: we need speed
-        Parallel.loop(0, rows, new Parallel.Looper() { 
-        public void loop(int from, int to, int looperID) {
-
+        // Loop
         for(int i = 0; i < rows; i++) {
 
             for(int j = 0; j < cols; j++) {
@@ -403,7 +401,7 @@ public class RSPCN implements Runnable{
                 dstIdx.put(i, j, 0, 255 - (int)(p * 255.0 / 65535));
 
             }
-        }}});
+        }
 
         srcIdx.release();
         dstIdx.release();
