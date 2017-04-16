@@ -32,3 +32,21 @@ Performance achived on Eurotech platform:
 * Intel RealSense SR300 @640x480 30FPS = [30; 400] cm range
 * Intel RealSense R200  @320x240 60FPS = [10; 150] cm range
 
+### Software stack
+
+```
+  ──────────                  ────────────────   ==> (RSPCN ver. OSGi)
+ │  OpenCV  │                │  librealsense  │ 
+ │OSGi bund.│                │  OSGi bundle   │ 
+  ──────────   ────────────   ────────────────   ──────────────────   ==> (RSPCN ver. Java)
+ │  OpenCV  │ │   OpenCV   │ │ Java interface │ │ OSGi Environment │
+ │ Java API │ │ Python API │ │                │ │    (.jar file)   │
+  ─────────────────────────   ────────────────   ──────────────────   ==> (RSPCN ver. C++ )
+ │   OpenCV 3.1 Library    │ │  librealsense  │ │     JRE/JDK      │
+ │     (native library)    │ │   (driver RS)  │ │    openjdk-8     │
+  ───────────────────────────────────────────────────────────────── 
+ │        Custom linux distribution (Poky w/ Yocto Project)        │
+  ───────────────────────────────────────────────────────────────── 
+ │                       ReliGate 20-25                            │
+  ───────────────────────────────────────────────────────────────── 
+```
