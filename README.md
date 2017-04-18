@@ -39,8 +39,8 @@ Performance achived on Eurotech platform:
  │  OpenCV  │                │  librealsense  │ 
  │OSGi bund.│                │  OSGi bundle   │ 
   ──────────   ────────────   ────────────────   ──────────────────   ==> (RSPCN ver. Java)
- │  OpenCV  │ │   OpenCV   │ │ Java interface │ │ OSGi Environment │
- │ Java API │ │ Python API │ │                │ │    (.jar file)   │
+ │  OpenCV  │ │   OpenCV   │ │ Java interface │ │  OSGi Framework  │
+ │ Java API │ │ Python API │ │                │ │    (Equinox?)    │
   ─────────────────────────   ────────────────   ──────────────────   ==> (RSPCN ver. C++ )
  │   OpenCV 3.1 Library    │ │  librealsense  │ │     JRE/JDK      │
  │     (native library)    │ │   (driver RS)  │ │    openjdk-8     │
