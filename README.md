@@ -53,9 +53,9 @@ Performance achived on Eurotech platform:
 
 ### Roadmap
 
--  RSPCN C++ version  => Release v2.0
--  RSPCN Java version => Release v3.0
--  RSPCN OSGi version 
+- [X] RSPCN C++ version  => Release v2.0
+- [X] RSPCN Java version => Release v3.0
+- [ ] RSPCN OSGi version 
 
 ### Improvements
 
