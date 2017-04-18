@@ -24,5 +24,11 @@ osgi> start <bundle id>
 ```
 osgi> start <bundle id>: start the bundle
 osgi> stop <bundle id>: stop the bundle
-osgi> ss: list all bundle
+osgi> ss: list all bundles
 ```
+
+### Resources
+
+* Equinox OSGi Quick Start guide: [link](http://www.eclipse.org/equinox/documents/quickstart-framework.php)
+* Equinox OSGi R4 framework downloads page: [link](http://archive.eclipse.org/equinox/drops/R-3.6.1-201009090800/index.php)
+* [Equinox framework download link](http://archive.eclipse.org/equinox/drops/R-3.6.1-201009090800/download.php?dropFile=org.eclipse.osgi_3.6.1.R36x_v20100806.jar)
