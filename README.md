@@ -50,3 +50,29 @@ Performance achived on Eurotech platform:
  │                       ReliGate 20-25                            │
   ───────────────────────────────────────────────────────────────── 
 ```
+
+### Roadmap
+
+[X]  RSPCN C++ version Release v2.0
+[X]  RSPCN Java version Release v3.0
+[ ]  RSPCN OSGi version 
+
+### Improvements
+
+- build_config
+  [ ] Custom recipe to auto install needed jar files in the root directory
+
+- cpp_src
+  [ ] Improve counting algorithm.
+  [ ] Improve tracking algorithm using Haar Cascade Classifiers
+
+- java_src
+  [ ] Add multicamera support
+  [ ] Fix color stream framerate
+  [ ] Follow improvements of the cpp version
+
+- osgi_src
+  [ ] Eclipse configuration to automatically launch the program on the target platform from the host machine
+
+- docs
+  [ ] Add photos in the README file
