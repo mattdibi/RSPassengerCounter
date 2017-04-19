@@ -13,6 +13,13 @@ projects. These are needed to use the RealSense cameras.
 $ sh Compile.sh
 $ sh Run.sh
 ```
+
+**Generate and run the PassengerCounter.jar file**
+```sh
+$ jar -cvfm PassengerCounter.jar PassengerCounter.mf -C ./ .
+$ java -jar PassengerCounter.jar
+```
+
 ### Execution modes
 ```
 > M: bare metal mode.

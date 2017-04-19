@@ -1,0 +1,4 @@
+Manifest-Version: 1.0 
+Created-By: Mattia Dal Ben
+Class-Path:  jar_files/ffmpeg-platform.jar jar_files/javacpp.jar jar_files/librealsense-platform.jar jar_files/javacv.jar jar_files/opencv-platform.jar 
+Main-Class: Main 
