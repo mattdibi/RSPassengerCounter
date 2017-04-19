@@ -8,13 +8,13 @@ Requirements. A Linux system with:
 The jar_files folder contains a subset of the binary files provided by JavaCV and JavaCPP-presets
 projects. These are needed to use the RealSense cameras.
 
-**Use the compile script**
+*Use the compile script*
 ```sh
 $ sh Compile.sh
 $ sh Run.sh
 ```
 
-**Generate and run the PassengerCounter.jar file**
+*Generate and run the PassengerCounter.jar file*
 ```sh
 $ jar -cvfm PassengerCounter.jar PassengerCounter.mf -C ./ .
 $ java -jar PassengerCounter.jar
