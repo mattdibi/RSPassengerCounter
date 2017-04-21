@@ -33,6 +33,7 @@ public class Main {
         char c;
         Scanner s= new Scanner(System.in);
         boolean stop = false;
+        boolean dispH = false;
 
         int devCount = context.get_device_count();
         System.out.println( "Device count: " + devCount);
@@ -55,32 +56,24 @@ public class Main {
         System.out.print("> ");
         c = s.next().charAt(0);
 
-        if(c == 'M') {
-            for(int i = 0; i < devCount; i++) {
-               counters.elementAt(i).setBareMetalMode(true);
-            }
-            System.out.println("Bare metal mode activated");
-        }
-        else if(c == 'V') {
-            for(int i = 0; i < devCount; i++) {
-               counters.elementAt(i).setVideoRecordMode(true);
-            }
-            System.out.println("Video recording mode activated");
-        }
-        else if(c == 'B') {
-            for(int i = 0; i < devCount; i++) {
-               counters.elementAt(i).setBareMetalMode(true);
-               counters.elementAt(i).setVideoRecordMode(true);
-            }
-            System.out.println("Video recording in bare metal mode activated");
-        }
-        else {
-            System.out.println("Normal mode activated");
-        }
-
-        // Starting all detected cameras
         for(int i = 0; i < devCount; i++) {
-           counters.elementAt(i).start();
+            if(c == 'M') {
+                counters.elementAt(i).setBareMetalMode(true);
+                System.out.println("Bare metal mode activated");
+            }
+            else if(c == 'V') {
+                counters.elementAt(i).setVideoRecordMode(true);
+                System.out.println("Video recording mode activated");
+            }
+            else if(c == 'B') {
+                counters.elementAt(i).setBareMetalMode(true);
+                counters.elementAt(i).setVideoRecordMode(true);
+                System.out.println("Video recording in bare metal mode activated");
+            }
+            else {
+                System.out.println("Normal mode activated");
+            }
+            counters.elementAt(i).start();
         }
 
         System.out.println( "Insert command: " );
@@ -91,99 +84,85 @@ public class Main {
 
             System.out.println("You entered: " + c);
 
-            switch(c) {
-                case('q'): 
-                    System.out.println( "Exiting program" );
-                    for(int i = 0; i < devCount; i++) {
-                       counters.elementAt(i).stop();
-                    }
-                    stop = true;
-                    break;
+            for(int i = 0; i < devCount; i++) {
+                switch(c) {
+                    case('q'): 
+                        System.out.println( "Closing device: " + i );
+                        counters.elementAt(i).stop();
+                        stop = true;
+                        break;
 
-                case('r'): 
-                    System.out.println( "Resetting counters" );
-                    for(int i = 0; i < devCount; i++) {
-                       counters.elementAt(i).resetCounters();
-                    }
-                    break;
-                
-                case ('c'): 
-                    System.out.println( "Current count: ");
-                    for(int i = 0; i < devCount; i++) {
+                    case('r'): 
+                        System.out.println( "Resetting counters device: " + i );
+                        counters.elementAt(i).resetCounters();
+                        break;
+                    
+                    case ('c'): 
                         System.out.println( );
                         System.out.println("Device: " + i);
                         System.out.println("Count in  > " + counters.elementAt(i).getCnt_in());
                         System.out.println("Count out > " + counters.elementAt(i).getCnt_out());
                         System.out.println("Current balance > " + (counters.elementAt(i).getCnt_in() - counters.elementAt(i).getCnt_out()));
-                    }
-                    break;
+                        break;
+                        
+                    case ('p'): 
+                        System.out.println( "Set preset device: " + i);
+                        System.out.print("New preset > ");
+                        int preset = s.nextInt();
+                        counters.elementAt(i).setCameraPresets(preset);
+                        break;
+
+                    case ('t'): 
+                        System.out.println( "Set threshold device: " + i);
+                        System.out.print("New threshold > ");
+                        int centimeters = s.nextInt();
+                        counters.elementAt(i).setThresholdCentimeters(centimeters);
+                        break;
                     
-                case ('p'): 
-                    System.out.println( "Set preset: ");
-                    System.out.print("New preset > ");
-                    int preset = s.nextInt();
-                    for(int i = 0; i < devCount; i++) {
-                       counters.elementAt(i).setCameraPresets(preset);
-                    }
-                    break;
+                    case ('a') :
+                        System.out.println( "Set passenger age device: " + i);
+                        System.out.print("New age > ");
+                        int age = s.nextInt();
+                        counters.elementAt(i).setMaxPassengerAge(age);
+                        break;
 
-                case ('t'): 
-                    System.out.println( "Set threshold: ");
-                    System.out.print("New threshold > ");
-                    int centimeters = s.nextInt();
-                    for(int i = 0; i < devCount; i++) {
-                       counters.elementAt(i).setThresholdCentimeters(centimeters);
-                    }
-                    break;
-                
-                case ('a') :
-                    System.out.println( "Set passenger age: ");
-                    System.out.print("New age > ");
-                    int age = s.nextInt();
-                    for(int i = 0; i < devCount; i++) {
-                       counters.elementAt(i).setMaxPassengerAge(age);
-                    }
-                    break;
-
-                case ('A') :
-                    System.out.println( "Set area threshold: ");
-                    System.out.print("New area > ");
-                    int area = s.nextInt();
-                    for(int i = 0; i < devCount; i++) {
-                       counters.elementAt(i).setAreaThreshold(area);
-                    }
-                    break;
-                
-                case ('b') :
-                    System.out.println( "Set blur: ");
-                    System.out.print("New blur > ");
-                    int blur = s.nextInt();
-                    for(int i = 0; i < devCount; i++) {
-                       counters.elementAt(i).setBlurSize(blur);
-                    }
-                    break;
-                
-                case ('x') :
-                    System.out.println( "Set xNear: ");
-                    System.out.print("New xNear > ");
-                    int xNear = s.nextInt();
-                    for(int i = 0; i < devCount; i++) {
-                       counters.elementAt(i).setXNear(xNear);
-                    }
-                    break;
-                
-                case ('y') :
-                    System.out.println( "Set yNear: ");
-                    System.out.print("New yNear > ");
-                    int yNear = s.nextInt();
-                    for(int i = 0; i < devCount; i++) {
-                       counters.elementAt(i).setYNear(yNear);
-                    }
-                    break;
-                
-                default:
-                    displayHelp();
-                    break;
+                    case ('A') :
+                        System.out.println( "Set area threshold device: " + i);
+                        System.out.print("New area > ");
+                        int area = s.nextInt();
+                        counters.elementAt(i).setAreaThreshold(area);
+                        break;
+                    
+                    case ('b') :
+                        System.out.println( "Set blur device: " + i);
+                        System.out.print("New blur > ");
+                        int blur = s.nextInt();
+                        counters.elementAt(i).setBlurSize(blur);
+                        break;
+                    
+                    case ('x') :
+                        System.out.println( "Set xNear device: " + i);
+                        System.out.print("New xNear > ");
+                        int xNear = s.nextInt();
+                        counters.elementAt(i).setXNear(xNear);
+                        break;
+                    
+                    case ('y') :
+                        System.out.println( "Set yNear device: " + i);
+                        System.out.print("New yNear > ");
+                        int yNear = s.nextInt();
+                        counters.elementAt(i).setYNear(yNear);
+                        break;
+                    
+                    default:
+                        dispH = true;
+                        break;
+                }
+            }
+            
+            if(dispH) {
+                displayHelp();
+                dispH = false;
             }
 
         } while(!stop);
