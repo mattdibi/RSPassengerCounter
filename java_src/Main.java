@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.Scanner;
+import org.bytedeco.javacpp.RealSense.*;
 
 public class Main {
 
@@ -25,14 +26,27 @@ public class Main {
 
     public static void main(String[] args) {
 
+        context context = new context();
+
         char c;
         Scanner s= new Scanner(System.in);
         boolean stop = false;
-        RSPCN myRSPCN = new RSPCN(0);
 
+        int devCount = context.get_device_count();
+        System.out.println( "Device count: " + devCount);
+
+        RSPCN myRSPCN = new RSPCN(context, 0);
+        RSPCN mySecondRSPCN = new RSPCN(context, 1);
+
+        System.out.println( "Device 1");
         System.out.println( "Device name: " + myRSPCN.getDeviceName() );
         System.out.println( "Device serial: " + myRSPCN.getDeviceSerial() );
         System.out.println( "Device firmware: " + myRSPCN.getDeviceFirmware() );
+
+        System.out.println( "Device 2");
+        System.out.println( "Device name: " + mySecondRSPCN.getDeviceName() );
+        System.out.println( "Device serial: " + mySecondRSPCN.getDeviceSerial() );
+        System.out.println( "Device firmware: " + mySecondRSPCN.getDeviceFirmware() );
 
         System.out.println( );
 
@@ -63,6 +77,7 @@ public class Main {
         }
 
         myRSPCN.start();
+        mySecondRSPCN.start();
 
         System.out.println( "Insert command: " );
 
@@ -77,6 +92,7 @@ public class Main {
                 case('q'): 
                     System.out.println( "Exiting program" );
                     myRSPCN.stop();
+                    mySecondRSPCN.stop();
                     stop = true;
                     break;
 

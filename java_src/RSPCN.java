@@ -17,10 +17,10 @@ public class RSPCN implements Runnable{
     // Variables
     Thread thread;
 
-    private static context context = null;
-    private static device device = null;
+    private context context = null;
+    private device device = null;
 
-    private static Vector<Passenger> passengers = new Vector<Passenger>(1,1);
+    private Vector<Passenger> passengers = new Vector<Passenger>(1,1);
 
     private int imageWidth;
     private int imageHeight;
@@ -31,11 +31,11 @@ public class RSPCN implements Runnable{
     private boolean bareMetalMode = false;
     private boolean videoRecordMode = false;
 
-    private static int cnt_out = 0;
-    private static int cnt_in = 0;
+    private int cnt_out = 0;
+    private int cnt_in = 0;
 
-    private static String devName = null;
-    private static float scale;
+    private String devName = null;
+    private float scale;
 
     private int blurSize = 3;
 
@@ -51,28 +51,39 @@ public class RSPCN implements Runnable{
     private int yNear = 90;
 
     // Constructor
-    RSPCN(int devNumber) {
+    RSPCN(context newContext, int devNumber) {
 
-        context = new context();
+        context = newContext;
         device = context.get_device(devNumber);
 
-        String devName = device.get_name().getString();
+        String tmpDevName = device.get_name().getString();
+        String[] splittedName = tmpDevName.split(" ");
+        devName = splittedName[2];
 
         // Camera settings
-        if(devName.equals("Intel RealSense R200")) {
+        if(devName.equals("R200")) {
             cameraType = 0;
 
             imageWidth = 320;
             imageHeight = 240;
             fps = 60;
         }
-        else if (devName.equals("Intel RealSense SR300")) {
+        else if (devName.equals("SR300")) {
             cameraType = 1;
 
             imageWidth = 640;
             imageHeight = 480;
             fps = 30;
         }
+        else {
+            // Unknown camera. Use minimum settings.
+            cameraType = 0;
+
+            imageWidth = 320;
+            imageHeight = 240;
+            fps = 30;
+        }
+
         device.enable_stream(RealSense.color, imageWidth, imageHeight, RealSense.rgb8, fps);
         device.enable_stream(RealSense.depth, imageWidth, imageHeight, RealSense.z16, fps);
 
@@ -93,7 +104,7 @@ public class RSPCN implements Runnable{
     }
 
     public void start(){
-        thread = new Thread(this, "Counting thread");
+        thread = new Thread(this, "Counting thread " + devName);
         thread.start();
     }
 
@@ -130,19 +141,19 @@ public class RSPCN implements Runnable{
         // CanvasFrame depthFrame = null;
 
         if(!bareMetalMode) {
-            colorFrame = new CanvasFrame("Color Stream",1); 
-            trackFrame = new CanvasFrame("Track Stream",1); 
+            colorFrame = new CanvasFrame("Color Stream " + devName,1); 
+            trackFrame = new CanvasFrame("Track Stream " + devName,1); 
             // depthFrame = new CanvasFrame("Depth Stream",1); 
         }
 
         try {
 
             if(videoRecordMode) {
-                recorderColor = FFmpegFrameRecorder.createDefault("color.mp4", imageWidth, imageHeight);
+                recorderColor = FFmpegFrameRecorder.createDefault("color" + devName + ".mp4", imageWidth, imageHeight);
                 recorderColor.setFrameRate(fps);
                 recorderColor.start();
                 
-                recorderTrack = FFmpegFrameRecorder.createDefault("track.mp4", imageWidth, imageHeight);
+                recorderTrack = FFmpegFrameRecorder.createDefault("track" + devName + ".mp4", imageWidth, imageHeight);
                 recorderTrack.setFrameRate(fps);
                 recorderTrack.start();
             }
@@ -420,23 +431,23 @@ public class RSPCN implements Runnable{
     }
 
     // Getters and Setters
-    public static String getDeviceName() {
+    public String getDeviceName() {
         return device.get_name().getString();
     }
 
-    public static String getDeviceSerial() {
+    public String getDeviceSerial() {
         return device.get_serial().getString();
     }
 
-    public static String getDeviceFirmware() {
+    public String getDeviceFirmware() {
         return device.get_firmware_version().getString();
     }
 
-    public static int getCnt_out() {
+    public int getCnt_out() {
         return cnt_out;
     }
 
-    public static int getCnt_in() {
+    public int getCnt_in() {
         return cnt_in;
     }
 
