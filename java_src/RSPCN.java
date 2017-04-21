@@ -34,7 +34,7 @@ public class RSPCN implements Runnable{
     private int cnt_out = 0;
     private int cnt_in = 0;
 
-    private String devName = null;
+    private int devNumber;
     private float scale;
 
     private int blurSize = 3;
@@ -51,31 +51,29 @@ public class RSPCN implements Runnable{
     private int yNear = 90;
 
     // Constructor
-    RSPCN(context newContext, int devNumber) {
+    RSPCN(context newContext, int deviceNumber) {
 
         context = newContext;
-        device = context.get_device(devNumber);
+        device = context.get_device(deviceNumber);
+        devNumber = deviceNumber;
 
-        String tmpDevName = device.get_name().getString();
-        String[] splittedName = tmpDevName.split(" ");
-        devName = splittedName[2];
+        String devName = device.get_name().getString();
 
         // Camera settings
-        if(devName.equals("R200")) {
+        if(devName.equals("Intel RealSense R200")) {
             cameraType = 0;
 
             imageWidth = 320;
             imageHeight = 240;
             fps = 60;
         }
-        else if (devName.equals("SR300")) {
+        else if (devName.equals("Intel RealSense SR300")) {
             cameraType = 1;
 
             imageWidth = 640;
             imageHeight = 480;
             fps = 30;
-        }
-        else {
+        }else {
             // Unknown camera. Use minimum settings.
             cameraType = 0;
 
@@ -104,7 +102,7 @@ public class RSPCN implements Runnable{
     }
 
     public void start(){
-        thread = new Thread(this, "Counting thread " + devName);
+        thread = new Thread(this, "Counting thread " + devNumber);
         thread.start();
     }
 
@@ -141,19 +139,19 @@ public class RSPCN implements Runnable{
         // CanvasFrame depthFrame = null;
 
         if(!bareMetalMode) {
-            colorFrame = new CanvasFrame("Color Stream " + devName,1); 
-            trackFrame = new CanvasFrame("Track Stream " + devName,1); 
+            colorFrame = new CanvasFrame("Color Stream " + devNumber,1); 
+            trackFrame = new CanvasFrame("Track Stream " + devNumber,1); 
             // depthFrame = new CanvasFrame("Depth Stream",1); 
         }
 
         try {
 
             if(videoRecordMode) {
-                recorderColor = FFmpegFrameRecorder.createDefault("color" + devName + ".mp4", imageWidth, imageHeight);
+                recorderColor = FFmpegFrameRecorder.createDefault("color" + devNumber + ".mp4", imageWidth, imageHeight);
                 recorderColor.setFrameRate(fps);
                 recorderColor.start();
                 
-                recorderTrack = FFmpegFrameRecorder.createDefault("track" + devName + ".mp4", imageWidth, imageHeight);
+                recorderTrack = FFmpegFrameRecorder.createDefault("track" + devNumber + ".mp4", imageWidth, imageHeight);
                 recorderTrack.setFrameRate(fps);
                 recorderTrack.start();
             }
