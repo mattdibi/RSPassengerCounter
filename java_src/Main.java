@@ -40,6 +40,8 @@ public class Main {
 
         for(int i = 0; i < devCount; i++) {
             counters.add(new RSPCN(context, i));
+            System.out.println( );
+            System.out.println( "Device number: " + i);
             System.out.println( "Device name: " + counters.elementAt(i).getDeviceName() );
             System.out.println( "Device serial: " + counters.elementAt(i).getDeviceSerial() );
             System.out.println( "Device firmware: " + counters.elementAt(i).getDeviceFirmware() );
@@ -55,6 +57,7 @@ public class Main {
 
         System.out.print("> ");
         c = s.next().charAt(0);
+        // TODO: Add input control
 
         for(int i = 0; i < devCount; i++) {
             if(c == 'M') {
@@ -81,6 +84,7 @@ public class Main {
             System.out.print("> ");
 
             c = s.next().charAt(0);
+            // TODO: Add input control
 
             System.out.println("You entered: " + c);
 
@@ -109,6 +113,7 @@ public class Main {
                         System.out.println( "Set preset device: " + i);
                         System.out.print("New preset > ");
                         int preset = s.nextInt();
+                        //TODO: Add input control
                         counters.elementAt(i).setCameraPresets(preset);
                         break;
 
@@ -116,6 +121,7 @@ public class Main {
                         System.out.println( "Set threshold device: " + i);
                         System.out.print("New threshold > ");
                         int centimeters = s.nextInt();
+                        //TODO: Add input control
                         counters.elementAt(i).setThresholdCentimeters(centimeters);
                         break;
                     
@@ -123,6 +129,7 @@ public class Main {
                         System.out.println( "Set passenger age device: " + i);
                         System.out.print("New age > ");
                         int age = s.nextInt();
+                        //TODO: Add input control
                         counters.elementAt(i).setMaxPassengerAge(age);
                         break;
 
@@ -130,6 +137,7 @@ public class Main {
                         System.out.println( "Set area threshold device: " + i);
                         System.out.print("New area > ");
                         int area = s.nextInt();
+                        //TODO: Add input control
                         counters.elementAt(i).setAreaThreshold(area);
                         break;
                     
@@ -137,6 +145,7 @@ public class Main {
                         System.out.println( "Set blur device: " + i);
                         System.out.print("New blur > ");
                         int blur = s.nextInt();
+                        //TODO: Add input control
                         counters.elementAt(i).setBlurSize(blur);
                         break;
                     
@@ -144,6 +153,7 @@ public class Main {
                         System.out.println( "Set xNear device: " + i);
                         System.out.print("New xNear > ");
                         int xNear = s.nextInt();
+                        //TODO: Add input control
                         counters.elementAt(i).setXNear(xNear);
                         break;
                     
@@ -151,6 +161,7 @@ public class Main {
                         System.out.println( "Set yNear device: " + i);
                         System.out.print("New yNear > ");
                         int yNear = s.nextInt();
+                        //TODO: Add input control
                         counters.elementAt(i).setYNear(yNear);
                         break;
                     
