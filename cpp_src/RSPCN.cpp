@@ -3,9 +3,9 @@
 
 #include "RSPCN.h"
 
-RSPCN::RSPCN(int deviceIdx) 
+RSPCN::RSPCN(device *assignedDevice, int deviceIdx)
 {
-    dev = ctx.get_device(deviceIdx);
+    dev = assignedDevice;
 
     string devName = dev->get_name();
 

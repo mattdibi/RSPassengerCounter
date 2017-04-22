@@ -29,17 +29,31 @@ int main(int argc, char * argv[])
     bool stop = false;
     char choice;
 
-    RSPCN myRSPCN_0(0);
-    // RSPCN myRSPCN_1(1);
+    vector<RSPCN *> counters;
+    context ctx;
+    int deviceNumber = ctx.get_device_count();
+
+    for(int i = 0; i < deviceNumber; i++) {
+        counters.push_back(new RSPCN(ctx.get_device(i), i));
+        cout << endl; 
+        cout << "Device number: " << i << endl;
+        cout << "Device name: " << counters[i]->getDeviceName() << endl;
+        cout << "Device serial: " << counters[i]->getDeviceSerial() << endl;
+        cout << "Device firmware: " << counters[i]->getDeviceFirmware() << endl;
+    }
 
     if(argc >= 2)
     {
-        if(!strcmp(argv[1], "-s"))
-            myRSPCN_0.setSaveVideo(true);
+        if(!strcmp(argv[1], "-s")) {
+            for(int i = 0; i < deviceNumber; i++) {
+                counters[i]->setSaveVideo(true);
+            }
+        }
     }
 
-    myRSPCN_0.start();
-    // myRSPCN_1.start();
+    for(int i = 0; i < deviceNumber; i++) {
+        counters[i]->start();
+    }
 
     displayHelp();
 
@@ -49,74 +63,73 @@ int main(int argc, char * argv[])
         choice = getchar();
         cout << "You entered: " << choice << endl;
 
-        if(choice >= '0' && choice <= '5')
-        {
-            cout << "Setting camera presets: " << choice << endl;
-            myRSPCN_0.setCameraPresets((int)(choice - '0'));
-        }
-        else
-        {
-            switch(choice)
+        for(int i = 0; i < deviceNumber; i++) {
+            
+            if(choice >= '0' && choice <= '5')
             {
-                case('h'):
-                    displayHelp();
-                    break;
+                cout << "Setting camera presets: " << choice << endl;
+                counters[i]->setCameraPresets((int)(choice - '0'));
+            }
+            else
+            {
+                cout << "Device : " << i << endl;
+                switch(choice)
+                {
+                    case('p'):
+                        cout << "Current count:\n";
+                        cout << "Count in  = " << counters[i]->getCountIn() << endl;
+                        cout << "Count out = " << counters[i]->getCountOut() << endl;
+                        cout << "Current balance =" << counters[i]->getCountIn() - counters[i]->getCountOut() << endl;
+                        break;
 
-                case('p'):
-                    cout << "Current count:\n";
-                    cout << "Count in  = " << myRSPCN_0.getCountIn() << endl;
-                    cout << "Count out = " << myRSPCN_0.getCountOut() << endl;
-                    break;
+                    case('r'):
+                        cout << "Resetting counters\n";
+                        counters[i]->resetCounters();
+                        break;
 
-                case('r'):
-                    cout << "Resetting counters\n";
-                    myRSPCN_0.resetCounters();
-                    break;
+                    case('c'):
+                        cout << "Toggle color\n";
+                        counters[i]->toggleDisplayColor();
+                        break;
+                    
+                    case('C'):
+                        cout << "Toggle calibration\n";
+                        counters[i]->toggleCalibration();
+                        break;
 
-                case('c'):
-                    cout << "Toggle color\n";
-                    myRSPCN_0.toggleDisplayColor();
-                    break;
-                
-                case('C'):
-                    cout << "Toggle calibration\n";
-                    myRSPCN_0.toggleCalibration();
-                    break;
+                    case('d'):
+                        cout << "Toggle depth view\n";
+                        counters[i]->toggleDisplayDepth();;
+                        break;
 
-                case('d'):
-                    cout << "Toggle depth view\n";
-                    myRSPCN_0.toggleDisplayDepth();;
-                    break;
+                    case('D'):
+                        cout << "Toggle raw depth view\n";
+                        counters[i]->toggleDisplayRawDepth();;
+                        break;
 
-                case('D'):
-                    cout << "Toggle raw depth view\n";
-                    myRSPCN_0.toggleDisplayRawDepth();;
-                    break;
+                    case('f'):
+                        cout << "Toggle frame view\n";
+                        counters[i]->toggleDisplayFrame();
+                        break;
+                    
+                    case('s'):
+                        cout << "Toggle frame rate stabilization\n";
+                        counters[i]->toggleFrameRateStabilization();
+                        break;
+                    
+                    case('q'):
+                        cout << "Exiting program!\n";
+                        counters[i]->stop();
+                        cout << "Capture closed.\n";
+                        stop = true;
+                        break;
 
-                case('f'):
-                    cout << "Toggle frame view\n";
-                    myRSPCN_0.toggleDisplayFrame();
-                    break;
-                
-                case('s'):
-                    cout << "Toggle frame rate stabilization\n";
-                    myRSPCN_0.toggleFrameRateStabilization();
-                    break;
-                
-                case('q'):
-                    cout << "Exiting program!\n";
-                    myRSPCN_0.stop();
-                    // myRSPCN_1.stop();
-                    cout << "Capture closed.\n";
-                    stop = true;
-                    break;
-
-                default:
-                    displayHelp();
-                    break;
+                    default:
+                        displayHelp();
+                        break;
+                }
             }
         }
-
         // Consume input
         while ((choice = getchar()) != '\n' && choice != EOF);
 

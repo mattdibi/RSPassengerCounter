@@ -69,7 +69,7 @@ class RSPCN {
   public:
 
     // Constructor
-    RSPCN(int deviceIdx);
+    RSPCN(device *assignedDevice, int deviceIdx);
     ~RSPCN() { thread_.join(); }
 
     // Selectors
@@ -107,7 +107,6 @@ class RSPCN {
     void toggleFrameRateStabilization(){framerateStabilizationOn = !framerateStabilizationOn; return;};
 
   private:
-    context ctx;
     device * dev;
 
     std::thread thread_;
