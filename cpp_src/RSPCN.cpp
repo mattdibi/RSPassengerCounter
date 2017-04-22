@@ -3,7 +3,7 @@
 
 #include "RSPCN.h"
 
-RSPCN::RSPCN(device *assignedDevice, int deviceIdx)
+RSPCN::RSPCN(device *assignedDevice)
 {
     dev = assignedDevice;
 

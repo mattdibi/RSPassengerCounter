@@ -69,7 +69,7 @@ class RSPCN {
   public:
 
     // Constructor
-    RSPCN(device *assignedDevice, int deviceIdx);
+    RSPCN(device *assignedDevice);
     ~RSPCN() { thread_.join(); }
 
     // Selectors

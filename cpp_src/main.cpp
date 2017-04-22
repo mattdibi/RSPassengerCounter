@@ -35,7 +35,7 @@ int main(int argc, char * argv[])
     int deviceNumber = ctx.get_device_count();
 
     for(int i = 0; i < deviceNumber; i++) {
-        counters.push_back(new RSPCN(ctx.get_device(i), i));
+        counters.push_back(new RSPCN(ctx.get_device(i)));
         cout << endl; 
         cout << "Device number: " << i << endl;
         cout << "Device name: " << counters[i]->getDeviceName() << endl;
