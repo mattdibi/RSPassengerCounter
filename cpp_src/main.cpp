@@ -27,6 +27,7 @@ void displayHelp()
 int main(int argc, char * argv[])
 {
     bool stop = false;
+    bool dispH = false;
     char choice;
 
     vector<RSPCN *> counters;
@@ -125,11 +126,17 @@ int main(int argc, char * argv[])
                         break;
 
                     default:
-                        displayHelp();
+                        dispH = true;
                         break;
                 }
             }
         }
+
+        if(dispH) {
+            displayHelp();
+            dispH = false;
+        }
+
         // Consume input
         while ((choice = getchar()) != '\n' && choice != EOF);
 
