@@ -27,7 +27,7 @@ void displayHelp()
 int main(int argc, char * argv[])
 {
     bool stop = false;
-    bool dispH = false;
+    bool displayHelpFlag = false;
     char choice;
 
     vector<RSPCN *> counters;
@@ -126,15 +126,15 @@ int main(int argc, char * argv[])
                         break;
 
                     default:
-                        dispH = true;
+                        displayHelpFlag = true;
                         break;
                 }
             }
         }
 
-        if(dispH) {
+        if(displayHelpFlag) {
             displayHelp();
-            dispH = false;
+            displayHelpFlag = false;
         }
 
         // Consume input
