@@ -39,7 +39,7 @@ public class Main {
         System.out.println( "Device count: " + devCount);
 
         for(int i = 0; i < devCount; i++) {
-            counters.add(new RSPCN(context, i));
+            counters.add(new RSPCN(context.get_device(i), i));
             System.out.println( );
             System.out.println( "Device number: " + i);
             System.out.println( "Device name: " + counters.elementAt(i).getDeviceName() );

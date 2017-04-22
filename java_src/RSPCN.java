@@ -6,7 +6,6 @@ import org.bytedeco.javacpp.*;
 import org.bytedeco.javacpp.indexer.*;
 
 import org.bytedeco.javacpp.RealSense;
-import org.bytedeco.javacpp.RealSense.context;
 import org.bytedeco.javacpp.RealSense.device;
 
 import static org.bytedeco.javacpp.opencv_core.*;
@@ -17,7 +16,6 @@ public class RSPCN implements Runnable{
     // Variables
     Thread thread;
 
-    private context context = null;
     private device device = null;
 
     private Vector<Passenger> passengers = new Vector<Passenger>(1,1);
@@ -51,10 +49,9 @@ public class RSPCN implements Runnable{
     private int yNear = 90;
 
     // Constructor
-    RSPCN(context newContext, int deviceNumber) {
+    RSPCN(device assignedDevice, int deviceNumber) {
 
-        context = newContext;
-        device = context.get_device(deviceNumber);
+        device = assignedDevice;
         devNumber = deviceNumber;
 
         String devName = device.get_name().getString();
