@@ -51,8 +51,9 @@ public class RSPCN implements Runnable{
     // Constructor
     RSPCN(device assignedDevice, int deviceNumber) {
 
-        device = assignedDevice;
+        // The deviceNumber is used as a unique identifier for windows names and recorded video files
         devNumber = deviceNumber;
+        device = assignedDevice;
 
         String devName = device.get_name().getString();
 
