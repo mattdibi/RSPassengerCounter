@@ -100,6 +100,7 @@ void RSPCN::start()
 
 void RSPCN::count()
 {
+    // This is needed to avoid threading problems with GTK
     XInitThreads();
 
     // Streams
