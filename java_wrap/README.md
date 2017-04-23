@@ -28,6 +28,9 @@ $ javac *.java
 $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/swig_output_2025
 $ java Main
 ```
+
+### Note
+Please note that this wrapper uses an obsolete version of the cpp_src code. For the latest features use the java_src version.
     
 ### Options
 ```sh
