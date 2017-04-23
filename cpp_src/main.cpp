@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 
 #include "RSPCN.cpp"
 
@@ -121,6 +122,8 @@ int main(int argc, char * argv[])
                     case('q'):
                         cout << "Exiting program!\n";
                         counters[i]->stop();
+                        // Waiting for counter to stop (better implementation: synch threads)
+                        std::this_thread::sleep_for (std::chrono::seconds(1));
                         cout << "Capture closed.\n";
                         stop = true;
                         break;
