@@ -466,7 +466,25 @@ void RSPCN::count()
 
     cout << "Loop execution time for " + (string)dev->get_name() + ": " << loopTime.count() << " seconds\n";
 
-    destroyAllWindows(); 
+    // Close windows
+    if(displayColor)
+        destroyWindow("Color threadID: " + threadID);
+
+    if(displayFrame)
+        destroyWindow("Frame threadID: " + threadID);
+        
+    if(displayRawDepth)
+        destroyWindow("RawDepth threadID: " + threadID);
+
+    if(displayDepth)
+        destroyWindow("Distance threadID: " + threadID);
+
+    // Disable streams
+    dev->stop();
+
+    dev->disable_stream(rs::stream::color);
+    dev->disable_stream(rs::stream::depth);
+
     return;
 }
 
