@@ -32,6 +32,15 @@ Performance achived on Eurotech platform:
 * Intel RealSense SR300 @640x480 30FPS = [30; 400] cm range
 * Intel RealSense R200  @320x240 60FPS = [10; 150] cm range
 
+### Project structure
+Folder structure and their purpose:
+
+- **build_config**: here you will find the configuration files and instruction to build the Yocto project custom distro for the 20-25 platform. It will contain all the needed projects to run the code in this repository.
+- **cpp_src**: here you will find the C++ version of the code.
+- **java_wrap**: here you will find a java wrap of the an obsolete version of the C++ code. It uses SWIG to generate the Java wrapper.
+- **java_src**: here you will find the Java version of the code. It depends on the JavaCPP project.
+- **osgi_src**: WIP
+
 ### Software stack
 
 ```
@@ -67,8 +76,6 @@ Performance achived on Eurotech platform:
   - Improve tracking algorithm using Haar Cascade Classifiers
 
 - java_src
-  - Add multicamera support
-  - Fix color stream framerate
   - Follow improvements of the cpp version
 
 - osgi_src
