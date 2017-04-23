@@ -20,6 +20,7 @@
 #include <chrono>
 #include <thread>
 
+#include <X11/Xlib.h>
 #include <librealsense/rs.hpp>
 #include <opencv2/opencv.hpp>
 

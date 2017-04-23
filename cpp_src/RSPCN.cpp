@@ -100,6 +100,8 @@ void RSPCN::start()
 
 void RSPCN::count()
 {
+    XInitThreads();
+
     // Streams
     Mat frame;
     Mat rawDepth;
