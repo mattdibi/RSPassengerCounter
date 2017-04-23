@@ -15,6 +15,7 @@ public class RSPCN implements Runnable{
 
     // Variables
     Thread thread;
+    private long threadID;
 
     private device device = null;
 
@@ -32,7 +33,6 @@ public class RSPCN implements Runnable{
     private int cnt_out = 0;
     private int cnt_in = 0;
 
-    private int devNumber;
     private float scale;
 
     private int blurSize = 3;
@@ -49,15 +49,13 @@ public class RSPCN implements Runnable{
     private int yNear = 90;
 
     // Constructor
-    RSPCN(device assignedDevice, int deviceNumber) {
+    RSPCN(device assignedDevice) {
 
-        // The deviceNumber is used as a unique identifier for windows names and recorded video files
-        devNumber = deviceNumber;
         device = assignedDevice;
 
+        // Auto camera settings
         String devName = device.get_name().getString();
 
-        // Camera settings
         if(devName.equals("Intel RealSense R200")) {
             cameraType = 0;
 
@@ -100,12 +98,15 @@ public class RSPCN implements Runnable{
     }
 
     public void start(){
-        thread = new Thread(this, "Counting thread " + devNumber);
+        thread = new Thread(this);
         thread.start();
     }
 
     public void run() {
         int pid = 0;
+
+        // The threadID is used as a unique identifier for windows names and recorded video files
+        threadID = Thread.currentThread().getId();
 
         device.start();
 
@@ -137,19 +138,19 @@ public class RSPCN implements Runnable{
         // CanvasFrame depthFrame = null;
 
         if(!bareMetalMode) {
-            colorFrame = new CanvasFrame("Color Stream " + devNumber,1); 
-            trackFrame = new CanvasFrame("Track Stream " + devNumber,1); 
+            colorFrame = new CanvasFrame("Color Stream " + threadID,1); 
+            trackFrame = new CanvasFrame("Track Stream " + threadID,1); 
             // depthFrame = new CanvasFrame("Depth Stream",1); 
         }
 
         try {
 
             if(videoRecordMode) {
-                recorderColor = FFmpegFrameRecorder.createDefault("color" + devNumber + ".mp4", imageWidth, imageHeight);
+                recorderColor = FFmpegFrameRecorder.createDefault("color" + threadID + ".mp4", imageWidth, imageHeight);
                 recorderColor.setFrameRate(fps);
                 recorderColor.start();
                 
-                recorderTrack = FFmpegFrameRecorder.createDefault("track" + devNumber + ".mp4", imageWidth, imageHeight);
+                recorderTrack = FFmpegFrameRecorder.createDefault("track" + threadID + ".mp4", imageWidth, imageHeight);
                 recorderTrack.setFrameRate(fps);
                 recorderTrack.start();
             }
