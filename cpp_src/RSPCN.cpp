@@ -286,7 +286,7 @@ void RSPCN::count()
         findContours(morphTrans, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 
         // For every detected object
-        for(unsigned int idx = 0; idx < hierarchy.size(); idx++)
+        for(unsigned int idx = 0; idx < contours.size(); idx++)
         {
             // Draw contours for every detected object
             // drawContours( color, contours, idx, Scalar(0,255,0), 2, 8, hierarchy, 0, Point(0,0) );
