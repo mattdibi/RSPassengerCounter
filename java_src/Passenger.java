@@ -18,7 +18,6 @@ public class Passenger {
     // Constructor
     Passenger(int id, CvPoint c, int newAge) {
         pid = id;
-        center = c;
         age = newAge;
 
         CvPoint newCenter = new CvPoint(c.x(), c.y());
@@ -32,11 +31,6 @@ public class Passenger {
 
     // Selectors
     public int getPid() {return pid;}
-
-    public CvPoint getCenter() {return center;}
-    public int getX() {return center.x();}
-    public int getY() {return center.y();}
-
     public int getAge() {return age;}
 
     public Vector<CvPoint> getTracks() {return tracks;}
@@ -47,12 +41,9 @@ public class Passenger {
 
     // Methods
     public void updateCoords(CvPoint newCenter) {
-        center = newCenter;
-
         tracks.add(newCenter);
 
         if(tracks.size() > MAX_TRACK_LENGTH) {
-
             // Remove oldest track record
             tracks.remove(0);
         }
