@@ -210,8 +210,8 @@ public class RSPCN implements Runnable{
                             boolean newPassenger = true;
                             for(int i = 0; i < passengers.size(); i++) {
                                 //If passenger is near a known passenger assume they are the same one
-                                if( abs(rectCenter.x() - passengers.elementAt(i).getX()) <= xNear  && 
-                                    abs(rectCenter.y() - passengers.elementAt(i).getY()) <= yNear  ) {
+                                if( abs(rectCenter.x() - passengers.elementAt(i).getCurrentPoint().x()) <= xNear  && 
+                                    abs(rectCenter.y() - passengers.elementAt(i).getCurrentPoint().y()) <= yNear  ) {
 
                                     newPassenger = false;
                                     passengers.elementAt(i).updateCoords(rectCenter);
