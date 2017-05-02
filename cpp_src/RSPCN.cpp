@@ -271,14 +271,6 @@ void RSPCN::count()
 
         frame = depth.clone();
 
-        // Horizontal line     
-        line( color,
-              Point(0,color.rows/2),            //Starting point of the line
-              Point(color.cols,color.rows/2),   //Ending point of the line
-              RED,                              //Color
-              2,                                //Thickness
-              8);                               //Linetype
-        
         // Blurring the image
         blur(frame, morphTrans, Size(blur_ksize,blur_ksize));
 
@@ -412,9 +404,18 @@ void RSPCN::count()
 
         // Debugging
         // putText(color, "Tracked passengers: " + to_string(passengers.size()), Point(15,  15) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
-        putText(color, "FPS: " + to_string(fps), Point(0,  15) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
 
         // --PRINTING INFORMATION
+        putText(color, "FPS: " + to_string(fps), Point(0,  15) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
+
+        // Horizontal line     
+        line( color,
+              Point(0,color.rows/2),            //Starting point of the line
+              Point(color.cols,color.rows/2),   //Ending point of the line
+              RED,                              //Color
+              2,                                //Thickness
+              8);                               //Linetype
+        
         putText(color, "Count IN: "  + to_string(cnt_in), Point(0,color.rows - 30) , FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
         putText(color, "Count OUT: " + to_string(cnt_out), Point(0, color.rows - 10) , FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
 
