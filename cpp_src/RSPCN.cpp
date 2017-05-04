@@ -192,86 +192,17 @@ void RSPCN::count()
         Mat color(Size(ImageWidth, ImageHeight), CV_8UC3, (void*)dev->get_frame_data(rs::stream::color), Mat::AUTO_STEP);
         Mat depth(Size(ImageWidth, ImageHeight), CV_16U , (void*)dev->get_frame_data(rs::stream::depth), Mat::AUTO_STEP);
 
+        // Saving depth information
         if(displayRawDepth)
             rawDepth = depth.clone();
 
-        // -- DEPTH COLOR STREAM DISPLAY
-        if(displayDepth)
-        {
-            depthColorMap = depth.clone(); //Deep copy (depthColorMap has its own copy of the pixels of depth)
-
-            double min;
-            double max;
-            Point tmpMinLoc;
-            Point tmpMaxLoc;
-
-            int nearestVal;
-            Point nearestLoc;
-
-            int farthestVal;
-            Point farthestLoc;
-
-            /* ****************************************************************************************************************
-            NOTE:
-            The depth matrix has a strange standard:
-                0 = No depth data
-                1 - 65535 = Depth where 1 is the nearest and 65535 is the farthest
-            I want to have 65535 as the new No depth data values
-            
-            Furthermore, while displaying the depth data, I want to have the farthest object in black and the nearest in white
-            this took some mental gymnastic to be implemented
-            **************************************************************************************************************** */
-
-            // Saving farthest point
-            minMaxLoc(depthColorMap, &min, &max, &tmpMinLoc, &tmpMaxLoc);
-            farthestVal = max;
-            farthestLoc = tmpMaxLoc;
-
-            // If pixelValue == 0 set it to 65535( = 2^16 - 1)
-            depthColorMap.setTo(65535, depthColorMap == NODATA);
-
-            // Saving nearest point
-            minMaxLoc(depthColorMap, &min, &max, &tmpMinLoc, &tmpMaxLoc);
-            nearestVal = min;
-            nearestLoc = tmpMinLoc;
-
-            // Converts CV_16U to CV_8U using a scale factor of 255.0/ 65535
-            depthColorMap.convertTo(depthColorMap, CV_8UC1, 255.0 / 65535);
-
-            // Current situation: Nearest object => Black, Farthest object => White
-            // We want to have  : Nearest object => White, Farthest object => Black
-            depthColorMap =  cv::Scalar::all(255) - depthColorMap;
-
-            // Color map: Nearest object => Red, Farthest object => Blue
-            equalizeHist( depthColorMap, depthColorMap );
-            applyColorMap(depthColorMap, depthColorMap, COLORMAP_JET);
-
-            // Highlight nearest and farthest pixel
-            circle( depthColorMap, nearestLoc, 5, WHITE, 2, 8, 0 );
-            putText(depthColorMap, "Nearest: " + to_string(nearestVal*scale) + " m", Point(0, depthColorMap.rows - 30), FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
-
-            circle( depthColorMap, farthestLoc, 5, WHITE, 2, 8, 0 );
-            putText(depthColorMap, "Farthest: " + to_string(farthestVal*scale) + " m", Point(0, depthColorMap.rows - 10), FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
-        }
+        if(displayDepth) 
+            depthColorMap = getColorMap(depth);
         
-        // OLDVER: Without thresholding
-        // frame = conversion(depth);
-        // depth.convertTo( frame, CV_8UC1);
-        
-        // NEWVER: With variable threshold
-        depth.setTo(65535, depth == NODATA);
-        depth.convertTo(depth, CV_32FC1); // Threshold only accepts CV_8U or CV_32F types
+        // -- CONVERTING DEPTH IMAGE AND THRESHOLDING
+        frame = getFrame(depth, thresholdCentimeters);
 
-        int threshPixel = thresholdCentimeters / (100*scale);
-        threshold(depth, depth, threshPixel, 65535, THRESH_BINARY);
-
-        depth.convertTo(depth, CV_8UC1, 255.0 / 65535); // Convert to CV_8U
-
-        depth =  cv::Scalar::all(255) - depth;
-
-        frame = depth.clone();
-
-        // Blurring the image
+        // -- BLURRING
         blur(frame, morphTrans, Size(blur_ksize,blur_ksize));
 
         // --FINDING CONTOURS
@@ -502,4 +433,86 @@ void RSPCN::count()
     return;
 }
 
+
+/* ****************************************************************************************************************
+    NOTE:
+    The depth matrix has a strange standard:
+        0 = No depth data
+        1 - 65535 = Depth where 1 is the nearest and 65535 is the farthest
+    I want to have 65535 as the new No depth data values
+
+    Furthermore, while displaying the depth data, I want to have the farthest object in black and the nearest in white
+    this took some mental gymnastic to be implemented
+**************************************************************************************************************** */
+Mat RSPCN::getColorMap(Mat depthImage) {
+
+    Mat depthColorMap = depthImage;//.clone(); //Deep copy (depthColorMap has its own copy of the pixels of depth)
+
+    double min;
+    double max;
+    Point tmpMinLoc;
+    Point tmpMaxLoc;
+
+    int nearestVal;
+    Point nearestLoc;
+
+    int farthestVal;
+    Point farthestLoc;
+
+    // Saving farthest point
+    minMaxLoc(depthColorMap, &min, &max, &tmpMinLoc, &tmpMaxLoc);
+    farthestVal = max;
+    farthestLoc = tmpMaxLoc;
+
+    // If pixelValue == 0 set it to 65535( = 2^16 - 1)
+    depthColorMap.setTo(65535, depthColorMap == NODATA);
+
+    // Saving nearest point
+    minMaxLoc(depthColorMap, &min, &max, &tmpMinLoc, &tmpMaxLoc);
+    nearestVal = min;
+    nearestLoc = tmpMinLoc;
+
+    // Converts CV_16U to CV_8U using a scale factor of 255.0/ 65535
+    depthColorMap.convertTo(depthColorMap, CV_8UC1, 255.0 / 65535);
+
+    // Current situation: Nearest object => Black, Farthest object => White
+    // We want to have  : Nearest object => White, Farthest object => Black
+    depthColorMap = cv::Scalar::all(255) - depthColorMap;
+
+    // Color map: Nearest object => Red, Farthest object => Blue
+    equalizeHist( depthColorMap, depthColorMap );
+    applyColorMap(depthColorMap, depthColorMap, COLORMAP_JET);
+
+    // Highlight nearest and farthest pixel
+    circle( depthColorMap, nearestLoc, 5, WHITE, 2, 8, 0 );
+    putText(depthColorMap, "Nearest: " + to_string(nearestVal*scale) + " m", Point(0, depthColorMap.rows - 30), FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
+
+    circle( depthColorMap, farthestLoc, 5, WHITE, 2, 8, 0 );
+    putText(depthColorMap, "Farthest: " + to_string(farthestVal*scale) + " m", Point(0, depthColorMap.rows - 10), FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
+
+    return depthColorMap;
+}
+
+Mat RSPCN::getFrame(Mat depthImage, int thresholdCentimeters) {
+
+    // If depthImage(x,y) == NODATA, set it to 65535
+    depthImage.setTo(65535, depthImage == NODATA);
+
+    // Threshold only accepts CV_8U or CV_32F types
+    depthImage.convertTo(depthImage, CV_32FC1);
+
+    // Converting threshold from cm to pixel value
+    int threshPixel = thresholdCentimeters / (100*scale);
+    threshold(depthImage, depthImage, threshPixel, 65535, THRESH_BINARY);
+
+    // Convert to CV_8U (lossy conversion)
+    depthImage.convertTo(depthImage, CV_8UC1, 255.0 / 65535);
+
+    // Invert b&w: white = foreground, black= background.
+    depthImage = cv::Scalar::all(255) - depthImage;
+
+    return depthImage;
+}
+
 #endif
+

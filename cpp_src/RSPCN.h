@@ -107,6 +107,9 @@ class RSPCN {
     void toggleDisplayFrame();
     void toggleFrameRateStabilization(){framerateStabilizationOn = !framerateStabilizationOn; return;};
 
+    Mat getColorMap(Mat depthImage);
+    Mat getFrame(Mat depthImage, int thresholdCentimeters);
+
   private:
     device * dev;
 
