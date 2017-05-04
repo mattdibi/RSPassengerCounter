@@ -112,7 +112,7 @@ void RSPCN::count()
     // Videos
     VideoWriter outputVideoColor;
     // VideoWriter outputVideoDepth;
-    // VideoWriter outputVideoFrame;
+    VideoWriter outputVideoFrame;
 
     // Contours variables
     vector<vector<Point> > contours;
@@ -150,9 +150,9 @@ void RSPCN::count()
     {
         Size S(ImageWidth,ImageHeight);
 
-        outputVideoColor.open((string)dev->get_name() +  threadID + "-color.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
-        //outputVideoDepth.open(fileName + "-depth.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
-        //outputVideoFrame.open(fileName + "-frame.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S);
+        outputVideoColor.open((string)dev->get_name() +  threadID + "-color.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S, true);
+        // outputVideoDepth.open((string)dev->get_name() +  threadID + "-depth.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S, true);
+        outputVideoFrame.open((string)dev->get_name() +  threadID + "-frame.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S, true);
     }
 
     // --GRAB AND WRITE LOOP
@@ -435,19 +435,23 @@ void RSPCN::count()
             imshow("Color threadID: " + threadID, color);
 
         if(displayFrame)
-            imshow("Frame threadID: " + threadID,frame);
+            imshow("Frame threadID: " + threadID, frame);
             
         if(displayRawDepth)
-            imshow("RawDepth threadID: " + threadID,rawDepth);
+            imshow("RawDepth threadID: " + threadID, rawDepth);
 
         if(displayDepth)
-            imshow("Distance threadID: " + threadID,depthColorMap);
+            imshow("Distance threadID: " + threadID, depthColorMap);
 
         // -- SAVING VIDEOS
         if(saveVideo)
         {
-            //outputVideoFrame.write(frame);
-            //outputVideoDepth.write(depthColorMap);
+            cvtColor(frame, frame, CV_GRAY2BGR);
+            // rawDepth.convertTo(rawDepth, CV_8UC1);
+            // cvtColor(rawDepth, rawDepth, CV_GRAY2BGR);
+
+            outputVideoFrame.write(frame);
+            // outputVideoDepth.write(depthColorMap);
             outputVideoColor.write(color);
         }
 
@@ -482,6 +486,12 @@ void RSPCN::count()
 
     if(displayDepth)
         destroyWindow("Distance threadID: " + threadID);
+
+    if(saveVideo) {
+        outputVideoFrame.release();
+        // outputVideoDepth.release();
+        outputVideoColor.release();
+    }
 
     // Disable streams
     dev->stop();
