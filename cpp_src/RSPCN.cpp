@@ -111,7 +111,7 @@ void RSPCN::count()
 
     // Videos
     VideoWriter outputVideoColor;
-    // VideoWriter outputVideoDepth;
+    VideoWriter outputVideoDepth;
     VideoWriter outputVideoFrame;
 
     // Contours variables
@@ -151,7 +151,7 @@ void RSPCN::count()
         Size S(ImageWidth,ImageHeight);
 
         outputVideoColor.open((string)dev->get_name() +  threadID + "-color.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S, true);
-        // outputVideoDepth.open((string)dev->get_name() +  threadID + "-depth.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S, true);
+        outputVideoDepth.open((string)dev->get_name() +  threadID + "-depth.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S, true);
         outputVideoFrame.open((string)dev->get_name() +  threadID + "-frame.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S, true);
     }
 
@@ -196,7 +196,7 @@ void RSPCN::count()
         if(displayRawDepth)
             rawDepth = depth.clone();
 
-        if(displayDepth) 
+        if(displayDepth || saveVideo) 
             depthColorMap = getColorMap(depth);
         
         // -- CONVERTING DEPTH IMAGE AND THRESHOLDING
@@ -378,11 +378,9 @@ void RSPCN::count()
         if(saveVideo)
         {
             cvtColor(frame, frame, CV_GRAY2BGR);
-            // rawDepth.convertTo(rawDepth, CV_8UC1);
-            // cvtColor(rawDepth, rawDepth, CV_GRAY2BGR);
-
+            
             outputVideoFrame.write(frame);
-            // outputVideoDepth.write(depthColorMap);
+            outputVideoDepth.write(depthColorMap);
             outputVideoColor.write(color);
         }
 
@@ -420,7 +418,7 @@ void RSPCN::count()
 
     if(saveVideo) {
         outputVideoFrame.release();
-        // outputVideoDepth.release();
+        outputVideoDepth.release();
         outputVideoColor.release();
     }
 
