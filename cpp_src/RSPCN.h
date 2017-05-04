@@ -97,18 +97,19 @@ class RSPCN {
     // Methods
     void start();
     void count();
-    void resetCounters(){cnt_in = 0; cnt_out = 0; return;};
     void stop(){halt = true;};
 
+    void resetCounters(){cnt_in = 0; cnt_out = 0; return;};
+
+    Mat getColorMap(Mat depthImage);
+    Mat getFrame(Mat depthImage, int thresholdCentimeters);
+    
     void toggleCalibration();
     void toggleDisplayColor();
     void toggleDisplayDepth();
     void toggleDisplayRawDepth();
     void toggleDisplayFrame();
     void toggleFrameRateStabilization(){framerateStabilizationOn = !framerateStabilizationOn; return;};
-
-    Mat getColorMap(Mat depthImage);
-    Mat getFrame(Mat depthImage, int thresholdCentimeters);
 
   private:
     device * dev;

@@ -446,7 +446,7 @@ void RSPCN::count()
 **************************************************************************************************************** */
 Mat RSPCN::getColorMap(Mat depthImage) {
 
-    Mat depthColorMap = depthImage;//.clone(); //Deep copy (depthColorMap has its own copy of the pixels of depth)
+    Mat depthColorMap = depthImage;
 
     double min;
     double max;
