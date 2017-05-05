@@ -442,10 +442,7 @@ void RSPCN::count()
     Furthermore, while displaying the depth data, I want to have the farthest object in black and the nearest in white
     this took some mental gymnastic to be implemented
 **************************************************************************************************************** */
-Mat RSPCN::getColorMap(Mat depthImage) {
-
-    Mat depthColorMap = depthImage;
-
+Mat RSPCN::getColorMap(Mat depthColorMap) {
     double min;
     double max;
     Point tmpMinLoc;
