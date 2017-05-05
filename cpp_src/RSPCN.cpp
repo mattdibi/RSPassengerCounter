@@ -442,7 +442,9 @@ void RSPCN::count()
     Furthermore, while displaying the depth data, I want to have the farthest object in black and the nearest in white
     this took some mental gymnastic to be implemented
 **************************************************************************************************************** */
-Mat RSPCN::getColorMap(Mat depthColorMap) {
+Mat RSPCN::getColorMap(Mat depthImage) {
+    Mat depthColorMap;
+
     double min;
     double max;
     Point tmpMinLoc;
@@ -455,28 +457,28 @@ Mat RSPCN::getColorMap(Mat depthColorMap) {
     Point farthestLoc;
 
     // Saving farthest point
-    minMaxLoc(depthColorMap, &min, &max, &tmpMinLoc, &tmpMaxLoc);
+    minMaxLoc(depthImage, &min, &max, &tmpMinLoc, &tmpMaxLoc);
     farthestVal = max;
     farthestLoc = tmpMaxLoc;
 
     // If pixelValue == 0 set it to 65535( = 2^16 - 1)
-    depthColorMap.setTo(65535, depthColorMap == NODATA);
+    depthImage.setTo(65535, depthImage == NODATA);
 
     // Saving nearest point
-    minMaxLoc(depthColorMap, &min, &max, &tmpMinLoc, &tmpMaxLoc);
+    minMaxLoc(depthImage, &min, &max, &tmpMinLoc, &tmpMaxLoc);
     nearestVal = min;
     nearestLoc = tmpMinLoc;
 
     // Converts CV_16U to CV_8U using a scale factor of 255.0/ 65535
-    depthColorMap.convertTo(depthColorMap, CV_8UC1, 255.0 / 65535);
+    depthImage.convertTo(depthImage, CV_8UC1, 255.0 / 65535);
 
     // Current situation: Nearest object => Black, Farthest object => White
     // We want to have  : Nearest object => White, Farthest object => Black
-    depthColorMap = cv::Scalar::all(255) - depthColorMap;
+    depthImage = cv::Scalar::all(255) - depthImage;
 
     // Color map: Nearest object => Red, Farthest object => Blue
-    equalizeHist( depthColorMap, depthColorMap );
-    applyColorMap(depthColorMap, depthColorMap, COLORMAP_JET);
+    equalizeHist( depthImage, depthImage );
+    applyColorMap(depthImage, depthColorMap, COLORMAP_JET);
 
     // Highlight nearest and farthest pixel
     circle( depthColorMap, nearestLoc, 5, WHITE, 2, 8, 0 );
