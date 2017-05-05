@@ -491,6 +491,7 @@ Mat RSPCN::getColorMap(Mat depthImage) {
 }
 
 Mat RSPCN::getFrame(Mat depthImage, int thresholdCentimeters) {
+    Mat frame;
 
     // If depthImage(x,y) == NODATA, set it to 65535
     depthImage.setTo(65535, depthImage == NODATA);
@@ -506,9 +507,9 @@ Mat RSPCN::getFrame(Mat depthImage, int thresholdCentimeters) {
     depthImage.convertTo(depthImage, CV_8UC1, 255.0 / 65535);
 
     // Invert b&w: white = foreground, black= background.
-    depthImage = cv::Scalar::all(255) - depthImage;
+    frame = cv::Scalar::all(255) - depthImage;
 
-    return depthImage;
+    return frame;
 }
 
 #endif
