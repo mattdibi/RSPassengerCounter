@@ -70,7 +70,6 @@ class RSPCN {
   public:
 
     // Constructor
-    RSPCN();
     RSPCN(device *assignedDevice);
     ~RSPCN() { thread_.join(); }
 
