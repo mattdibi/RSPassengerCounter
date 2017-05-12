@@ -3,23 +3,20 @@
 
 #include "RSPCN.h"
 
-RSPCN::RSPCN(device *assignedDevice)
-{
+RSPCN::RSPCN(device *assignedDevice) {
     dev = assignedDevice;
 
     string devName = dev->get_name();
 
     // Camera settings
-    if(devName.compare("Intel RealSense R200") == 0)
-    {
+    if(devName.compare("Intel RealSense R200") == 0) {
         cameraDevice = R200;
 
         ImageWidth = IMAGE_WIDTH_R200;
         ImageHeight = IMAGE_HEIGHT_R200;
         CameraFramerate = FRAMERATE_R200;
     }
-    else if(devName.compare("Intel RealSense SR300") == 0)
-    {
+    else if(devName.compare("Intel RealSense SR300") == 0) {
         cameraDevice = SR300;
 
         ImageWidth = IMAGE_WIDTH_SR300;
@@ -35,61 +32,53 @@ RSPCN::RSPCN(device *assignedDevice)
     scale = dev->get_depth_scale();
 }
 
-void RSPCN::setCameraPresets(int value)
-{
+void RSPCN::setCameraPresets(int value) {
     //-- CAMERA CONTROL
     if(cameraDevice == R200)
         apply_depth_control_preset(dev, value);
-    else
-    {
+    else {
         apply_ivcam_preset(dev, value);
     }
 
     return;
 }
 
-void RSPCN::toggleCalibration()
-{
+void RSPCN::toggleCalibration() {
     calibrationOn = !calibrationOn;
     destroyAllWindows();
 
     return;
 }
 
-void RSPCN::toggleDisplayColor()
-{
+void RSPCN::toggleDisplayColor() {
     displayColor = !displayColor;
     destroyAllWindows();
 
     return;
 }
 
-void RSPCN::toggleDisplayDepth()
-{
+void RSPCN::toggleDisplayDepth() {
     displayDepth = !displayDepth;
     destroyAllWindows();
 
     return;
 }
 
-void RSPCN::toggleDisplayRawDepth()
-{
+void RSPCN::toggleDisplayRawDepth() {
     displayRawDepth = !displayRawDepth;
     destroyAllWindows();
 
     return;
 }
 
-void RSPCN::toggleDisplayFrame()
-{
+void RSPCN::toggleDisplayFrame() {
     displayFrame = !displayFrame;
     destroyAllWindows();
 
     return;
 }
 
-void RSPCN::start()
-{
+void RSPCN::start() {
     thread_ = std::thread(&RSPCN::count, this);
     
     auto myid = thread_.get_id();
@@ -98,8 +87,7 @@ void RSPCN::start()
     threadID = ss.str();
 }
 
-void RSPCN::count()
-{
+void RSPCN::count() {
     // This is needed to avoid threading problems with GTK
     XInitThreads();
 
@@ -146,8 +134,7 @@ void RSPCN::count()
     if(displayDepth)
         namedWindow("Distance threadID: " + threadID, WINDOW_AUTOSIZE);
 
-    if(saveVideo)
-    {
+    if(saveVideo) {
         Size S(ImageWidth,ImageHeight);
 
         outputVideoColor.open((string)dev->get_name() +  threadID + "-color.avi", CV_FOURCC('M','J','P','G'), CameraFramerate, S, true);
@@ -162,14 +149,13 @@ void RSPCN::count()
     float time = 0, fps = 0;
     auto tf0 = std::chrono::high_resolution_clock::now();
 
-    while(!halt)
-    {
+    while(!halt) {
+
         //-- PERFORMANCE ESTMATION
         high_resolution_clock::time_point t1 = high_resolution_clock::now(); //START
 
         // Synchronization
-        if( dev->is_streaming( ) )
-        {
+        if( dev->is_streaming( ) ) {
             if(framerateStabilizationOn)
                 dev->wait_for_frames( );
             else
@@ -181,8 +167,7 @@ void RSPCN::count()
         time += std::chrono::duration<float>(tf1-tf0).count();
         tf0 = tf1;
         ++frames;
-        if(time > 0.5f)
-        {
+        if(time > 0.5f) {
             fps = frames / time;
             frames = 0;
             time = 0;
@@ -192,7 +177,7 @@ void RSPCN::count()
         Mat color(Size(ImageWidth, ImageHeight), CV_8UC3, (void*)dev->get_frame_data(rs::stream::color), Mat::AUTO_STEP);
         Mat depth(Size(ImageWidth, ImageHeight), CV_16U , (void*)dev->get_frame_data(rs::stream::depth), Mat::AUTO_STEP);
 
-        // Saving depth information
+        // Extracting depth information
         if(displayRawDepth)
             rawDepth = depth.clone();
 
@@ -202,16 +187,15 @@ void RSPCN::count()
         // -- CONVERTING DEPTH IMAGE AND THRESHOLDING
         frame = getFrame(depth, thresholdCentimeters);
 
-        // -- BLURRING
+        // -- DENOISING
         blur(frame, morphTrans, Size(blur_ksize,blur_ksize));
 
         // --FINDING CONTOURS
         findContours(morphTrans, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 
         // For every detected object
-        for(unsigned int idx = 0; idx < contours.size(); idx++)
-        {
-            // Draw contours for every detected object
+        for(unsigned int idx = 0; idx < contours.size(); idx++) {
+
             // drawContours( color, contours, idx, Scalar(0,255,0), 2, 8, hierarchy, 0, Point(0,0) );
 
             // -- AREA
@@ -219,92 +203,40 @@ void RSPCN::count()
             double areaCurrentObject = contourArea(contours[idx]);
 
             // If calculated area is big enough begin tracking the object
-            if(areaCurrentObject > areaMin)
-            {
+            if(areaCurrentObject > areaMin) {
                 // --TRACKING
                 // Getting mass center
                 // Moments M = moments(contours[idx]);
-                // Point2f mc = Point2f( M.m10/M.m00 , M.m01/M.m00 );
+                // Point2f objCenter = Point2f( M.m10/M.m00 , M.m01/M.m00 );
 
-                // Getting bounding rectangle
+                // Get bounding rectangle
                 Rect br = boundingRect(contours[idx]);
-                Point2f mc = Point2f((int)(br.x + br.width/2) ,(int)(br.y + br.height/2) );
+                Point2f objCenter = Point2f((int)(br.x + br.width/2) ,(int)(br.y + br.height/2) );
 
-                // Drawing mass center and bounding rectangle
+                // Draw mass center and bounding rectangle
                 rectangle( color, br.tl(), br.br(), GREEN, 2, 8, 0 );
-                circle( color, mc, 5, RED, 2, 8, 0 );
-
-                // Debugging multiple passenger count + calibration
-                // if(areaCurrentObject > MAX_1PASS_AREA && areaCurrentObject < MAX_2PASS_AREA)
-                //     putText(color, "Area: " + to_string(areaCurrentObject) + " = 2 PASSENGERS", mc, FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
-                // else if(areaCurrentObject > MAX_2PASS_AREA)
-                //     putText(color, "Area: " + to_string(areaCurrentObject) + " = 3 PASSENGERS", mc, FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
-                // else
-                //     putText(color, "Area: " + to_string(areaCurrentObject) + " = 1 PASSENGERS", mc, FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
+                circle( color, objCenter, 5, RED, 2, 8, 0 );
 
                 // --PASSENGERS DB UPDATE
                 bool newPassenger = true;
-                for(unsigned int i = 0; i < passengers.size(); i++)
-                {
+
+                for(unsigned int i = 0; i < passengers.size(); i++) {
+
                     // If the passenger is near a known passenger assume they are the same one
-                    if( abs(mc.x - passengers[i].getCurrentPoint().x) <= xNear &&
-                        abs(mc.y - passengers[i].getCurrentPoint().y) <= yNear )
-                    {
+                    if( abs(objCenter.x - passengers[i].getCurrentPoint().x) <= xNear &&
+                        abs(objCenter.y - passengers[i].getCurrentPoint().y) <= yNear ) {
+
                         // Update coordinates
                         newPassenger = false;
-                        passengers[i].updateCoords(mc);
-
-                        // --COUNTER
-                        if(passengers[i].getTracks().size() > 1)
-                        {
-                            // Up to down
-                            if( (passengers[i].getLastPoint().y < frame.rows/2 && passengers[i].getCurrentPoint().y >= frame.rows/2) ||
-                                (passengers[i].getLastPoint().y <= frame.rows/2 && passengers[i].getCurrentPoint().y > frame.rows/2) )
-                            {
-                                // Counting multiple passenger depending on area size
-                                if (areaCurrentObject > MAX_1PASS_AREA && areaCurrentObject < MAX_2PASS_AREA)
-                                    cnt_out += 2;
-                                else if (areaCurrentObject > MAX_2PASS_AREA)
-                                    cnt_out += 3;
-                                else
-                                    cnt_out++;
-
-                                // Logging count
-                                // cout << "ID: " << passengers[i].getPid() << " crossed going U to D.\n";
-
-                                // Visual feedback
-                                circle(color, Point(color.cols - 20, 20), 8, RED, CV_FILLED);
-                            }
-
-                            // Down to up
-                            if( (passengers[i].getLastPoint().y > frame.rows/2 && passengers[i].getCurrentPoint().y <= frame.rows/2) ||
-                                (passengers[i].getLastPoint().y >= frame.rows/2 && passengers[i].getCurrentPoint().y < frame.rows/2) )
-                            {
-                                // Counting multiple passenger depending on area size
-                                if (areaCurrentObject > MAX_1PASS_AREA && areaCurrentObject < MAX_2PASS_AREA)
-                                    cnt_in += 2;
-                                else if (areaCurrentObject > MAX_2PASS_AREA)
-                                    cnt_in += 3;
-                                else
-                                    cnt_in++;
-
-                                // Logging count
-                                // cout << "ID: " << passengers[i].getPid() << " crossed going D to U.\n";
-
-                                // Visual feedback
-                                circle(color, Point(color.cols - 20, 20), 8, GREEN, CV_FILLED);
-                            }
-
-                        }
+                        passengers[i].updateCoords(objCenter);
 
                         break;
                     }
                 }
 
                 // If wasn't near any known object is a new passenger
-                if(newPassenger)
-                {
-                    Passenger p(pid, mc);
+                if(newPassenger) {
+                    Passenger p(pid, objCenter);
                     passengers.push_back(p);
                     pid++;
                 }
@@ -312,13 +244,38 @@ void RSPCN::count()
         }
 
         // For every passenger in passengers DB
-        for(unsigned int i = 0; i < passengers.size(); i++)
-        {
-            // -- DRAWING PASSENGER TRAJECTORIES
-            if(passengers[i].getTracks().size() > 1)
-            {
+        for(unsigned int i = 0; i < passengers.size(); i++) {
+            
+            if(passengers[i].getTracks().size() > 1) {
+
+                // -- DRAWING PASSENGER TRAJECTORIES
                 polylines(color, passengers[i].getTracks(), false, passengers[i].getTrackColor(),2);
                 //putText(color, "Pid: " + to_string(passengers[i].getPid()), passengers[i].getCenter(), FONT_HERSHEY_SIMPLEX, 0.5, passengers[i].getTrackColor(), 2);
+
+                // -- COUNTING
+                if(passengers[i].getTracks().size() > 1) {
+                    // Up to down
+                    if( (passengers[i].getLastPoint().y < frame.rows/2 && passengers[i].getCurrentPoint().y >= frame.rows/2) ||
+                        (passengers[i].getLastPoint().y <= frame.rows/2 && passengers[i].getCurrentPoint().y > frame.rows/2) ) {
+
+                        cnt_out++;
+
+                        // Visual feedback
+                        circle(color, Point(color.cols - 20, 20), 8, RED, CV_FILLED);
+                    }
+
+                    // Down to up
+                    if( (passengers[i].getLastPoint().y > frame.rows/2 && passengers[i].getCurrentPoint().y <= frame.rows/2) ||
+                        (passengers[i].getLastPoint().y >= frame.rows/2 && passengers[i].getCurrentPoint().y < frame.rows/2) ) {
+
+                        cnt_in++;
+
+                        // Visual feedback
+                        circle(color, Point(color.cols - 20, 20), 8, GREEN, CV_FILLED);
+                    }
+
+                }
+                
             }
 
             // --UPDATE PASSENGER STATS
@@ -327,10 +284,9 @@ void RSPCN::count()
 
             // Removing older passengers
             // NB: The age depends on the FPS that the camera is capturing!
+            // TODO: IT'S A BUG!
             if(passengers[i].getAge() > (maxPassengerAge * fps) )
-            {
                 passengers.erase(passengers.begin() +i);
-            }
         }
 
         // Debugging
@@ -351,8 +307,7 @@ void RSPCN::count()
         putText(color, "Count OUT: " + to_string(cnt_out), Point(0, color.rows - 10) , FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
 
         // --CALIBRATION TRACKBARS
-        if(calibrationOn && displayColor)
-        {
+        if(calibrationOn && displayColor) {
             createTrackbar("Threshold [centimeters]", "Color threadID: " + threadID, &thresholdCentimeters, 400);
             createTrackbar("Blur [matrix size]", "Color threadID: " + threadID, &blur_ksize, 100);
             createTrackbar("xNear [pixels]", "Color threadID: " + threadID, &xNear, ImageWidth);
@@ -375,8 +330,7 @@ void RSPCN::count()
             imshow("Distance threadID: " + threadID, depthColorMap);
 
         // -- SAVING VIDEOS
-        if(saveVideo)
-        {
+        if(saveVideo) {
             cvtColor(frame, frame, CV_GRAY2BGR);
             
             outputVideoFrame.write(frame);
@@ -389,8 +343,7 @@ void RSPCN::count()
 
         if(firstLoop)
             loopTime = duration_cast<duration<double>>(t2 - t1);
-        else
-        {
+        else {
             loopTime += duration_cast<duration<double>>(t2 - t1);
             loopTime = loopTime/2;
         }

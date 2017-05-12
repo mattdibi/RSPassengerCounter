@@ -5,8 +5,7 @@
 
 using namespace std;
 
-void displayHelp()
-{
+void displayHelp() {
     cout << "*****************************************\n";
     cout << "* COMMAND HELP: \n";
     cout << "* 0 - 5: selecting camera presets\n";
@@ -25,8 +24,7 @@ void displayHelp()
     return;
 }
 
-int main(int argc, char * argv[])
-{
+int main(int argc, char * argv[]) {
     bool stop = false;
     bool displayHelpFlag = false;
     char choice;
@@ -44,8 +42,7 @@ int main(int argc, char * argv[])
         cout << "Device firmware: " << counters[i]->getDeviceFirmware() << endl;
     }
 
-    if(argc >= 2)
-    {
+    if(argc >= 2) {
         if(!strcmp(argv[1], "-s")) {
             for(int i = 0; i < deviceNumber; i++) {
                 counters[i]->setSaveVideo(true);
@@ -59,24 +56,20 @@ int main(int argc, char * argv[])
 
     displayHelp();
 
-    do
-    {
+    do {
         cout << "Please enter a valid command:\n>";
         choice = getchar();
         cout << "You entered: " << choice << endl;
 
         for(int i = 0; i < deviceNumber; i++) {
             
-            if(choice >= '0' && choice <= '5')
-            {
+            if(choice >= '0' && choice <= '5') {
                 cout << "Setting camera presets: " << choice << endl;
                 counters[i]->setCameraPresets((int)(choice - '0'));
             }
-            else
-            {
+            else {
                 cout << "Device : " << i << endl;
-                switch(choice)
-                {
+                switch(choice) {
                     case('p'):
                         cout << "Current count:\n";
                         cout << "Count in  = " << counters[i]->getCountIn() << endl;
