@@ -255,29 +255,25 @@ void RSPCN::count() {
                 //putText(color, "Pid: " + to_string(passengers[i].getPid()), passengers[i].getCenter(), FONT_HERSHEY_SIMPLEX, 0.5, passengers[i].getTrackColor(), 2);
 
                 // -- COUNTING
-                if(passengers[i].getTracks().size() > 1) {
-                    // Up to down
-                    if( (passengers[i].getLastPoint().y < frame.rows/2 && passengers[i].getCurrentPoint().y >= frame.rows/2) ||
-                        (passengers[i].getLastPoint().y <= frame.rows/2 && passengers[i].getCurrentPoint().y > frame.rows/2) ) {
+                // Up to down
+                if( (passengers[i].getLastPoint().y < frame.rows/2 && passengers[i].getCurrentPoint().y >= frame.rows/2) ||
+                    (passengers[i].getLastPoint().y <= frame.rows/2 && passengers[i].getCurrentPoint().y > frame.rows/2) ) {
 
-                        cnt_out++;
+                    cnt_out++;
 
-                        // Visual feedback
-                        circle(color, Point(color.cols - 20, 20), 8, RED, CV_FILLED);
-                    }
-
-                    // Down to up
-                    if( (passengers[i].getLastPoint().y > frame.rows/2 && passengers[i].getCurrentPoint().y <= frame.rows/2) ||
-                        (passengers[i].getLastPoint().y >= frame.rows/2 && passengers[i].getCurrentPoint().y < frame.rows/2) ) {
-
-                        cnt_in++;
-
-                        // Visual feedback
-                        circle(color, Point(color.cols - 20, 20), 8, GREEN, CV_FILLED);
-                    }
-
+                    // Visual feedback
+                    circle(color, Point(color.cols - 20, 20), 8, RED, CV_FILLED);
                 }
-                
+
+                // Down to up
+                if( (passengers[i].getLastPoint().y > frame.rows/2 && passengers[i].getCurrentPoint().y <= frame.rows/2) ||
+                    (passengers[i].getLastPoint().y >= frame.rows/2 && passengers[i].getCurrentPoint().y < frame.rows/2) ) {
+
+                    cnt_in++;
+
+                    // Visual feedback
+                    circle(color, Point(color.cols - 20, 20), 8, GREEN, CV_FILLED);
+                }
             }
 
             // --UPDATE PASSENGER STATS

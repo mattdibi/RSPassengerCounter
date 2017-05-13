@@ -253,27 +253,21 @@ public class RSPCN implements Runnable{
                     }
 
                     // -- COUNT
-                    if(passengers.elementAt(i).getTracks().size() > 1)
-                    {
-                       // Up to down 
-                       if( passengers.elementAt(i).getLastPoint().y() < frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() >= frameImage.height()/2  ||
-                           passengers.elementAt(i).getLastPoint().y() <= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() > frameImage.height()/2 ) {
+                   // Up to down 
+                   if( passengers.elementAt(i).getLastPoint().y() < frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() >= frameImage.height()/2  ||
+                       passengers.elementAt(i).getLastPoint().y() <= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() > frameImage.height()/2 ) {
 
-                            cnt_out++;
+                        cnt_out++;
 
-                       }
+                   }
 
-                       // Down to up
-                       if( passengers.elementAt(i).getLastPoint().y() > frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() <= frameImage.height()/2  ||
-                           passengers.elementAt(i).getLastPoint().y() >= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() < frameImage.height()/2 ) {
+                   // Down to up
+                   if( passengers.elementAt(i).getLastPoint().y() > frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() <= frameImage.height()/2  ||
+                       passengers.elementAt(i).getLastPoint().y() >= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() < frameImage.height()/2 ) {
 
-                            cnt_in++;
+                        cnt_in++;
 
-                       }
-
-
-                    }
-
+                   }
 
                     passengers.elementAt(i).updateAge();
 
