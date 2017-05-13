@@ -215,40 +215,7 @@ public class RSPCN implements Runnable{
 
                                     newPassenger = false;
                                     passengers.elementAt(i).updateCoords(rectCenter);
-
-                                    // -- COUNT
-                                    if(passengers.elementAt(i).getTracks().size() > 1)
-                                    {
-                                       // Up to down 
-                                       if( passengers.elementAt(i).getLastPoint().y() < frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() >= frameImage.height()/2  ||
-                                           passengers.elementAt(i).getLastPoint().y() <= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() > frameImage.height()/2 ) {
-
-                                            // Counting multiple passenger depending on area size
-                                            if (areaCurrentObject > max1PassArea && areaCurrentObject < max2PassArea)
-                                                cnt_out += 2;
-                                            else if (areaCurrentObject > max2PassArea)
-                                                cnt_out += 3;
-                                            else
-                                                cnt_out++;
-
-                                       }
-
-                                       // Down to up
-                                       if( passengers.elementAt(i).getLastPoint().y() > frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() <= frameImage.height()/2  ||
-                                           passengers.elementAt(i).getLastPoint().y() >= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() < frameImage.height()/2 ) {
-
-                                            // Counting multiple passenger depending on area size
-                                            if (areaCurrentObject > max1PassArea && areaCurrentObject < max2PassArea)
-                                                cnt_in += 2;
-                                            else if (areaCurrentObject > max2PassArea)
-                                                cnt_in += 3;
-                                            else
-                                                cnt_in++;
-
-                                       }
-
-
-                                    }
+                                    passengers.elementAt(i).resetAge();
 
                                     break;
                                 }
@@ -284,6 +251,29 @@ public class RSPCN implements Runnable{
                                    0);
                         }
                     }
+
+                    // -- COUNT
+                    if(passengers.elementAt(i).getTracks().size() > 1)
+                    {
+                       // Up to down 
+                       if( passengers.elementAt(i).getLastPoint().y() < frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() >= frameImage.height()/2  ||
+                           passengers.elementAt(i).getLastPoint().y() <= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() > frameImage.height()/2 ) {
+
+                            cnt_out++;
+
+                       }
+
+                       // Down to up
+                       if( passengers.elementAt(i).getLastPoint().y() > frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() <= frameImage.height()/2  ||
+                           passengers.elementAt(i).getLastPoint().y() >= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() < frameImage.height()/2 ) {
+
+                            cnt_in++;
+
+                       }
+
+
+                    }
+
 
                     passengers.elementAt(i).updateAge();
 

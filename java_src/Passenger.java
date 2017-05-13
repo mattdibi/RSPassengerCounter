@@ -48,8 +48,11 @@ public class Passenger {
             tracks.remove(0);
         }
 
-        age = 0;
+        return;
+    }
 
+    public void resetAge() {
+        age = 0;
         return;
     }
 
