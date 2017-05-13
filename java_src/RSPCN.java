@@ -243,31 +243,32 @@ public class RSPCN implements Runnable{
 
                         for(int j = 0; j < passengers.elementAt(i).getTracks().size() - 1 ; j++) {
                             cvLine(colorImage,
-                                   passengers.elementAt(i).getTracks().elementAt(j),
-                                   passengers.elementAt(i).getTracks().elementAt(j + 1),
-                                   passengers.elementAt(i).getTrackColor(),
-                                   2,
-                                   8,
-                                   0);
+                                passengers.elementAt(i).getTracks().elementAt(j),
+                                passengers.elementAt(i).getTracks().elementAt(j + 1),
+                                passengers.elementAt(i).getTrackColor(),
+                                2,
+                                8,
+                                0);
                         }
+
+                        // -- COUNT
+                        // Up to down 
+                        if( passengers.elementAt(i).getLastPoint().y() < frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() >= frameImage.height()/2  ||
+                        passengers.elementAt(i).getLastPoint().y() <= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() > frameImage.height()/2 ) {
+
+                            cnt_out++;
+
+                        }
+
+                        // Down to up
+                        if( passengers.elementAt(i).getLastPoint().y() > frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() <= frameImage.height()/2  ||
+                        passengers.elementAt(i).getLastPoint().y() >= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() < frameImage.height()/2 ) {
+
+                            cnt_in++;
+
+                        }
+
                     }
-
-                    // -- COUNT
-                   // Up to down 
-                   if( passengers.elementAt(i).getLastPoint().y() < frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() >= frameImage.height()/2  ||
-                       passengers.elementAt(i).getLastPoint().y() <= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() > frameImage.height()/2 ) {
-
-                        cnt_out++;
-
-                   }
-
-                   // Down to up
-                   if( passengers.elementAt(i).getLastPoint().y() > frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() <= frameImage.height()/2  ||
-                       passengers.elementAt(i).getLastPoint().y() >= frameImage.height()/2 &&  passengers.elementAt(i).getCurrentPoint().y() < frameImage.height()/2 ) {
-
-                        cnt_in++;
-
-                   }
 
                     passengers.elementAt(i).updateAge();
 
