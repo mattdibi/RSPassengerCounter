@@ -229,6 +229,8 @@ void RSPCN::count() {
                         // Update coordinates
                         newPassenger = false;
                         passengers[i].updateCoords(objCenter);
+                        // If the object is being tracked it means its active we don't want it to disappear
+                        passengers[i].resetAge();
 
                         break;
                     }
@@ -283,10 +285,8 @@ void RSPCN::count() {
             passengers[i].updateAge();
 
             // Removing older passengers
-            // NB: The age depends on the FPS that the camera is capturing!
-            // TODO: IT'S A BUG!
             if(passengers[i].getAge() > (maxPassengerAge * fps) )
-                passengers.erase(passengers.begin() +i);
+                passengers.erase(passengers.begin() + i);
         }
 
         // Debugging
