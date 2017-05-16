@@ -272,6 +272,11 @@ public class RSPCN implements Runnable{
 
                     passengers.elementAt(i).updateAge();
 
+                    // If passenger is outside field of view update coords with last known position.
+                    // This prevents false positive counts.
+                    if(passengers.elementAt(i).getAge() > 1)
+                        passengers.elementAt(i).updateCoords(passengers.elementAt(i).getCurrentPoint());
+
                     if(passengers.elementAt(i).getAge() > (maxPassengerAge * fps)) {
                         passengers.remove(i);
                     }
