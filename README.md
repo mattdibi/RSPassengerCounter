@@ -1,6 +1,10 @@
 # RealSense Passenger Counter (RSPCN)
 This is going to be my Electronics Engineering Master's Thesis.
 
+<p align="center">
+<a href="https://www.youtube.com/watch?v=onP6Qg3WmhU"><img src="docs/RSPCN.png" alt="Watch the video on Youtube.com!"/></a>
+</p>
+
 ### Goal
 Developing a Passenger Counter (PCN) in a transportation environment using OpenCV and its hardware acceleration capabilities on different hardware platforms. In this implementation I am using the Intel RealSense cameras.
 
@@ -29,12 +33,13 @@ To build the ReliGATE 20-25 image I've used:
 
 ### Performance
 Performance achived on Eurotech platform:
-* Intel RealSense SR300 @640x480 30FPS = [30; 400] cm range
-* Intel RealSense R200  @320x240 60FPS = [10; 150] cm range
+* Intel RealSense SR300 @640x480 30FPS = [10; 400] cm range
+* Intel RealSense R200  @320x240 60FPS = [30; 150] cm range
 
 ### Project structure
 Folder structure and their purpose:
 
+- **docs**: documentation.
 - **build_config**: here you will find the configuration files and instruction to build the Yocto project custom distro for the 20-25 platform. It will contain all the needed projects to run the code in this repository.
 - **cpp_src**: here you will find the C++ version of the code.
 - **java_wrap**: here you will find a java wrap of the an obsolete version of the C++ code. It uses SWIG to generate the Java wrapper.
@@ -42,23 +47,9 @@ Folder structure and their purpose:
 - **osgi_src**: WIP
 
 ### Software stack
-
-```
-  ──────────                  ────────────────   ==> (RSPCN ver. OSGi)
- │  OpenCV  │                │  librealsense  │ 
- │OSGi bund.│                │  OSGi bundle   │ 
-  ──────────   ────────────   ────────────────   ──────────────────   ==> (RSPCN ver. Java)
- │  OpenCV  │ │   OpenCV   │ │ Java interface │ │  OSGi Framework  │
- │ Java API │ │ Python API │ │                │ │    (Equinox)     │
-  ─────────────────────────   ────────────────   ──────────────────   ==> (RSPCN ver. C++ )
- │   OpenCV 3.1 Library    │ │  librealsense  │ │     JRE/JDK      │
- │     (native library)    │ │   (driver RS)  │ │    openjdk-8     │
-  ───────────────────────────────────────────────────────────────── 
- │        Custom linux distribution (Poky w/ Yocto Project)        │
-  ───────────────────────────────────────────────────────────────── 
- │                       ReliGate 20-25                            │
-  ───────────────────────────────────────────────────────────────── 
-```
+<p align="center">
+<img src="docs/SoftwareStackDiag.png" alt="Software stack diagram"/>
+</p>
 
 ### Roadmap
 
