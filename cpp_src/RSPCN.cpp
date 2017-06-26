@@ -487,17 +487,20 @@ void RSPCN::getAdaptiveFrame(Mat depthImage, int blockSize, double C) {
     // Convert to CV_8U (lossy conversion)
     depthImage.convertTo(depthImage, CV_8UC1, 255.0 / 65535);
 
-    // Adaptive thresholding
-    if(blockSize % 2 != 1)
-        blockSize = 3;
-
-    adaptiveThreshold(depthImage, depthImage, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, blockSize, C);
-
     // Invert b&w: white = foreground, black= background.
     frame = cv::Scalar::all(255) - depthImage;
 
-//    namedWindow("Adaptive frame threadID: " + threadID,WINDOW_AUTOSIZE);
-//    imshow("Adaptive frame threadID: " + threadID, frame);
+    // ...
+
+    equalizeHist(frame, frame);
+
+    if(blockSize % 2 != 1)
+    blockSize = 3;
+
+    adaptiveThreshold(frame, frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, blockSize, C);
+
+    namedWindow("Adaptive frame threadID: " + threadID,WINDOW_AUTOSIZE);
+    imshow("Adaptive frame threadID: " + threadID, frame);
 
     return;
 }
