@@ -322,7 +322,7 @@ void RSPCN::count() {
             createTrackbar("Area min [pixels^2]", "Color threadID: " + threadID, &areaMin, 100000);
             createTrackbar("Passenger age [seconds]", "Color threadID: " + threadID, &maxPassengerAge, 30);
             // Testing adaptive threshold
-            createTrackbar("blockSize", "Color threadID: " + threadID, &blockSize, 400);
+            createTrackbar("blockSize", "Color threadID: " + threadID, &blockSize, 800);
             createTrackbar("C", "Color threadID: " + threadID, &C_100, 1000);
         }
 
@@ -490,14 +490,12 @@ void RSPCN::getAdaptiveFrame(Mat depthImage, int blockSize, double C) {
     // Invert b&w: white = foreground, black= background.
     frame = cv::Scalar::all(255) - depthImage;
 
-    // ...
-
     equalizeHist(frame, frame);
 
     if(blockSize % 2 != 1)
     blockSize = 3;
 
-    adaptiveThreshold(frame, frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, blockSize, C);
+    adaptiveThreshold(frame, frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, blockSize, -1 * C);
 
     namedWindow("Adaptive frame threadID: " + threadID,WINDOW_AUTOSIZE);
     imshow("Adaptive frame threadID: " + threadID, frame);
