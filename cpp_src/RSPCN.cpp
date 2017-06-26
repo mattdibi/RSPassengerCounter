@@ -114,6 +114,10 @@ void RSPCN::count() {
     int yNear = Y_NEAR;
     int maxPassengerAge = MAX_PASSENGER_AGE;
 
+    // Testing adaptive thershold
+    int blockSize = 7;
+    int C_100 = 100;
+
     // Execution time
     duration<double> loopTime;
     bool firstLoop = true;
@@ -186,6 +190,8 @@ void RSPCN::count() {
         
         // -- CONVERTING DEPTH IMAGE AND THRESHOLDING
         frame = getFrame(depth, thresholdCentimeters);
+
+        getAdaptiveFrame(depth, blockSize, (double)( C_100/ 100 ));
 
         // -- DENOISING
         blur(frame, morphTrans, Size(blur_ksize,blur_ksize));
@@ -315,6 +321,9 @@ void RSPCN::count() {
             createTrackbar("yNear [pixels]", "Color threadID: " + threadID, &yNear, ImageHeight);
             createTrackbar("Area min [pixels^2]", "Color threadID: " + threadID, &areaMin, 100000);
             createTrackbar("Passenger age [seconds]", "Color threadID: " + threadID, &maxPassengerAge, 30);
+            // Testing adaptive threshold
+            createTrackbar("blockSize", "Color threadID: " + threadID, &blockSize, 400);
+            createTrackbar("C", "Color threadID: " + threadID, &C_100, 1000);
         }
 
         // Show streams
@@ -464,6 +473,33 @@ Mat RSPCN::getFrame(Mat depthImage, int thresholdCentimeters) {
     frame = cv::Scalar::all(255) - depthImage;
 
     return frame;
+}
+
+void RSPCN::getAdaptiveFrame(Mat depthImage, int blockSize, double C) {
+    Mat frame;
+
+    // If depthImage(x,y) == NODATA, set it to 65535
+    depthImage.setTo(65535, depthImage == NODATA);
+
+    // Threshold only accepts CV_8U or CV_32F types
+    depthImage.convertTo(depthImage, CV_32FC1);
+
+    // Convert to CV_8U (lossy conversion)
+    depthImage.convertTo(depthImage, CV_8UC1, 255.0 / 65535);
+
+    // Adaptive thresholding
+    if(blockSize % 2 != 1)
+        blockSize = 3;
+
+    adaptiveThreshold(depthImage, depthImage, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, blockSize, C);
+
+    // Invert b&w: white = foreground, black= background.
+    frame = cv::Scalar::all(255) - depthImage;
+
+//    namedWindow("Adaptive frame threadID: " + threadID,WINDOW_AUTOSIZE);
+//    imshow("Adaptive frame threadID: " + threadID, frame);
+
+    return;
 }
 
 #endif
