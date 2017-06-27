@@ -103,7 +103,7 @@ class RSPCN {
 
     Mat getColorMap(Mat depthImage);
     Mat getFrame(Mat depthImage, int thresholdCentimeters);
-    void getAdaptiveFrame(Mat depthImage, int blockSize, double C);
+    void getExperimentalFrame(Mat depthImage, int blockSize, double C);
     
     void toggleCalibration();
     void toggleDisplayColor();

@@ -191,7 +191,7 @@ void RSPCN::count() {
         // -- CONVERTING DEPTH IMAGE AND THRESHOLDING
         frame = getFrame(depth, thresholdCentimeters);
 
-        getAdaptiveFrame(depth, blockSize, (double)( C_100/ 100 ));
+        getExperimentalFrame(depth, blockSize, (double)( C_100/ 100 ));
 
         // -- DENOISING
         blur(frame, morphTrans, Size(blur_ksize,blur_ksize));
@@ -475,7 +475,7 @@ Mat RSPCN::getFrame(Mat depthImage, int thresholdCentimeters) {
     return frame;
 }
 
-void RSPCN::getAdaptiveFrame(Mat depthImage, int blockSize, double C) {
+void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     Mat frame;
 
     // If depthImage(x,y) == NODATA, set it to 65535
@@ -490,12 +490,17 @@ void RSPCN::getAdaptiveFrame(Mat depthImage, int blockSize, double C) {
     // Invert b&w: white = foreground, black= background.
     frame = cv::Scalar::all(255) - depthImage;
 
-    equalizeHist(frame, frame);
+    // ADAPTIVE THREHSOLD ATTEMPT
+    /* ******************************************************************************************************************** */
+    // equalizeHist(frame, frame);
 
-    if(blockSize % 2 != 1)
-    blockSize = 3;
+    // if(blockSize % 2 != 1)
+    // blockSize = 3;
 
-    adaptiveThreshold(frame, frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, blockSize, -1 * C);
+    // adaptiveThreshold(frame, frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, blockSize, -1 * C);
+    /* ******************************************************************************************************************** */
+
+    // equalizeHist(frame, frame);
 
     namedWindow("Adaptive frame threadID: " + threadID,WINDOW_AUTOSIZE);
     imshow("Adaptive frame threadID: " + threadID, frame);
