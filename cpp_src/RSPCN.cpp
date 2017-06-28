@@ -89,7 +89,7 @@ void RSPCN::start() {
 
 void RSPCN::count() {
     // This is needed to avoid threading problems with GTK
-    XInitThreads();
+    // XInitThreads();
 
     // Streams
     Mat frame;
@@ -477,6 +477,8 @@ Mat RSPCN::getFrame(Mat depthImage, int thresholdCentimeters) {
 
 void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     Mat frame;
+    Mat imgLabels;
+    Mat stats, centroids;
 
     // If depthImage(x,y) == NODATA, set it to 65535
     depthImage.setTo(65535, depthImage == NODATA);
@@ -502,8 +504,16 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
 
     // equalizeHist(frame, frame);
 
-    namedWindow("Adaptive frame threadID: " + threadID,WINDOW_AUTOSIZE);
-    imshow("Adaptive frame threadID: " + threadID, frame);
+    int nLabels = connectedComponentsWithStats(frame, imgLabels, stats, centroids, 8, CV_16U);
+
+    for(int i = 0; i < nLabels; i++) {
+        circle( imgLabels, Point(centroids.at<float>(i, 0), centroids.at<float>(i, 1)), 5, RED, 2, 8, 0 );
+    }
+
+    putText(imgLabels, "nLabels: " + to_string(0), Point(0,  15) , FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
+
+    namedWindow("Experimental threadID: " + threadID,WINDOW_AUTOSIZE);
+    imshow("Experimental threadID: " + threadID, imgLabels);
 
     return;
 }
