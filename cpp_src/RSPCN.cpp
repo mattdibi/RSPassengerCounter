@@ -507,12 +507,13 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     int nLabels = connectedComponentsWithStats(frame, imgLabels, stats, centroids, 8, CV_16U);
     
     depthImage.convertTo(imgLabels, CV_8UC1);
+    equalizeHist(imgLabels, imgLabels);
     cvtColor(imgLabels, imgLabels, CV_GRAY2BGR);
-    // equalizeHist(imgLabels, imgLabels);
 
     for(int i = 0; i < nLabels; i++) {
         // circle( imgLabels, Point((int)centroids.at<float>(i, 0), (int)centroids.at<float>(i, 1)), 5, RED, 2, 8, 0 );
         circle( imgLabels, Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)) , 5, RED, 2, 8, 0 );
+        putText(imgLabels, "max: " + to_string(stats.at<int>(i, CC_STAT_MAX)), Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)) , FONT_HERSHEY_SIMPLEX, 0.5, BLACK, 2);
 
     }
 
