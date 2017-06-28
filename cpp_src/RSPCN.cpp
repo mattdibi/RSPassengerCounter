@@ -531,18 +531,19 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
 
     // for(int i = 2; i < nLabels; i++) {
 
-    //     bool is_regional_max = true;
+    //     bool is_regional_min = true;
 
     //     for(int j = 0; j < nLabels; j++) {
 
-    //         if( isContained() && max1 < max2) {
-    //             is_regional_max = false;
+    //         // Must not have a cc1 inside that have a max smaller than his
+    //         if( isContained(cc1,cc2) && max2 < max1) {
+    //             is_regional_min = false;
     //             break;
     //         }
     //         
     //     }
 
-    //     if(is_regional_max) {
+    //     if(is_regional_min) {
 
     //         rectangle( imgLabels,
     //                    (stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)),
