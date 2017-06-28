@@ -511,13 +511,43 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     cvtColor(imgLabels, imgLabels, CV_GRAY2BGR);
 
     // Ignore 0 (and 1?) location label because it's the background
+    // for(int i = 2; i < nLabels; i++) {
+
+    //     // Hard threshold: minimum a rectangle 10x10
+    //     if( stats.at<int>(i, CC_STAT_WIDTH) > 10 || stats.at<int>(i, CC_STAT_HEIGHT) > 10) {
+    //         
+    //         // circle( imgLabels, Point((int)centroids.at<float>(i, 0), (int)centroids.at<float>(i, 1)), 5, RED, 2, 8, 0 );
+    //         circle( imgLabels, Point(stats.at<int>(i, CC_STAT_LEFT) + (int)stats.at<int>(i, CC_STAT_WIDTH)/2, stats.at<int>(i, CC_STAT_TOP) + (int)stats.at<int>(i, CC_STAT_HEIGHT)/2), 5, RED, 2, 8, 0 );
+    //         putText(imgLabels, "max: " + to_string(stats.at<int>(i, CC_STAT_MAX)), Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
+
+    //         rectangle( imgLabels,
+    //                    Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)),
+    //                    Point(stats.at<int>(i, CC_STAT_LEFT) + stats.at<int>(i, CC_STAT_WIDTH), stats.at<int>(i, CC_STAT_TOP) + stats.at<int>(i, CC_STAT_HEIGHT)),
+    //                    GREEN,
+    //                    2,
+    //                    8,
+    //                    0 );
+    //     }
+    // }
+
     for(int i = 2; i < nLabels; i++) {
 
-        if( stats.at<int>(i, CC_STAT_WIDTH) > 10 || stats.at<int>(i, CC_STAT_HEIGHT) > 10) {
+        bool is_regional_min = true;
+
+        for(int j = 0; j < nLabels; j++) {
+
+            // Must not have a cc1 inside that have a max smaller than his
+            if( isContained(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP), stats.at<int>(i, CC_STAT_WIDTH), stats.at<int>(i, CC_STAT_HEIGHT), 
+                stats.at<int>(j, CC_STAT_LEFT), stats.at<int>(j, CC_STAT_TOP), stats.at<int>(j, CC_STAT_WIDTH), stats.at<int>(j, CC_STAT_HEIGHT) ) 
+                && stats.at<int>(j, CC_STAT_MAX) > stats.at<int>(i, CC_STAT_MAX)) {
+
+                is_regional_min = false;
+                break;
+            }
             
-            // circle( imgLabels, Point((int)centroids.at<float>(i, 0), (int)centroids.at<float>(i, 1)), 5, RED, 2, 8, 0 );
-            circle( imgLabels, Point(stats.at<int>(i, CC_STAT_LEFT) + (int)stats.at<int>(i, CC_STAT_WIDTH)/2, stats.at<int>(i, CC_STAT_TOP) + (int)stats.at<int>(i, CC_STAT_HEIGHT)/2), 5, RED, 2, 8, 0 );
-            putText(imgLabels, "max: " + to_string(stats.at<int>(i, CC_STAT_MAX)), Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
+        }
+
+        if(is_regional_min) {
 
             rectangle( imgLabels,
                        Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)),
@@ -526,36 +556,10 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
                        2,
                        8,
                        0 );
+
         }
+        
     }
-
-    // for(int i = 2; i < nLabels; i++) {
-
-    //     bool is_regional_min = true;
-
-    //     for(int j = 0; j < nLabels; j++) {
-
-    //         // Must not have a cc1 inside that have a max smaller than his
-    //         if( isContained(cc1,cc2) && max2 < max1) {
-    //             is_regional_min = false;
-    //             break;
-    //         }
-    //         
-    //     }
-
-    //     if(is_regional_min) {
-
-    //         rectangle( imgLabels,
-    //                    (stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)),
-    //                    (stats.at<int>(i, CC_STAT_LEFT) + stats.at<int>(i, CC_STAT_WIDTH), stats.at<int>(i, CC_STAT_TOP) + stats.at<int>(i, CC_STAT_HEIGHT)),
-    //                    GREEN,
-    //                    2,
-    //                    8,
-    //                    0 );
-
-    //     }
-    //     
-    // }
 
     putText(imgLabels, "nLabels: " + to_string(nLabels), Point(0,  15) , FONT_HERSHEY_SIMPLEX, 0.5, BLACK, 2);
 
