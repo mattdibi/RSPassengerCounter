@@ -505,12 +505,15 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     // equalizeHist(frame, frame);
 
     int nLabels = connectedComponentsWithStats(frame, imgLabels, stats, centroids, 8, CV_16U);
+    
+    depthImage.convertTo(imgLabels, CV_8UC1);
+    // equalizeHist(imgLabels, imgLabels);
 
     for(int i = 0; i < nLabels; i++) {
-        circle( imgLabels, Point(centroids.at<float>(i, 0), centroids.at<float>(i, 1)), 5, RED, 2, 8, 0 );
+        circle( imgLabels, Point((int)centroids.at<float>(i, 0), (int)centroids.at<float>(i, 1)), 5, RED, 2, 8, 0 );
     }
 
-    putText(imgLabels, "nLabels: " + to_string(0), Point(0,  15) , FONT_HERSHEY_SIMPLEX, 0.5, WHITE, 2);
+    putText(imgLabels, "nLabels: " + to_string(nLabels), Point(0,  15) , FONT_HERSHEY_SIMPLEX, 0.5, BLACK, 2);
 
     namedWindow("Experimental threadID: " + threadID,WINDOW_AUTOSIZE);
     imshow("Experimental threadID: " + threadID, imgLabels);
