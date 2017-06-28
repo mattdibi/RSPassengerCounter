@@ -516,7 +516,41 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
         circle( imgLabels, Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)) , 5, RED, 2, 8, 0 );
         putText(imgLabels, "max: " + to_string(stats.at<int>(i, CC_STAT_MAX)), Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)) , FONT_HERSHEY_SIMPLEX, 0.5, BLACK, 2);
 
+        rectangle( imgLabels,
+                   Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)),
+                   Point(stats.at<int>(i, CC_STAT_LEFT) + stats.at<int>(i, CC_STAT_WIDTH), stats.at<int>(i, CC_STAT_TOP) + stats.at<int>(i, CC_STAT_HEIGHT)),
+                   GREEN,
+                   2,
+                   8,
+                   0 );
     }
+
+    // for(int i = 2; i < nLabels; i++) {
+
+    //     bool is_regional_max = true;
+
+    //     for(int j = 0; j < nLabels; j++) {
+
+    //         if( isContained() && max1 < max2) {
+    //             is_regional_max = false;
+    //             break;
+    //         }
+    //         
+    //     }
+
+    //     if(is_regional_max) {
+
+    //         rectangle( imgLabels,
+    //                    (stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)),
+    //                    (stats.at<int>(i, CC_STAT_LEFT) + stats.at<int>(i, CC_STAT_WIDTH), stats.at<int>(i, CC_STAT_TOP) + stats.at<int>(i, CC_STAT_HEIGHT)),
+    //                    GREEN,
+    //                    2,
+    //                    8,
+    //                    0 );
+
+    //     }
+    //     
+    // }
 
     putText(imgLabels, "nLabels: " + to_string(nLabels), Point(0,  15) , FONT_HERSHEY_SIMPLEX, 0.5, BLACK, 2);
 
@@ -524,6 +558,15 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     imshow("Experimental threadID: " + threadID, imgLabels);
 
     return;
+}
+
+// Checks whether the ConnectedComponent2 is contained in the ConnectedComponent1
+bool RSPCN::isContained(int cc1_x, int cc1_y, int cc1_width, int cc1_height, int cc2_x, int cc2_y, int cc2_width, int cc2_height ) {
+
+    int cc2_center_x = cc2_x + cc2_width / 2;
+    int cc2_center_y = cc2_y + cc2_height / 2;
+
+    return (cc2_center_x < cc1_x + cc1_width && cc2_center_y < cc1_y + cc1_height);
 }
 
 #endif

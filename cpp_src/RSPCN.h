@@ -104,6 +104,7 @@ class RSPCN {
     Mat getColorMap(Mat depthImage);
     Mat getFrame(Mat depthImage, int thresholdCentimeters);
     void getExperimentalFrame(Mat depthImage, int blockSize, double C);
+    bool isContained(int cc1_x, int cc1_y, int cc1_width, int cc1_height, int cc2_x, int cc2_y, int cc2_width, int cc2_height);
     
     void toggleCalibration();
     void toggleDisplayColor();
