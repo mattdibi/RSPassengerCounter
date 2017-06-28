@@ -510,7 +510,8 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     equalizeHist(imgLabels, imgLabels);
     cvtColor(imgLabels, imgLabels, CV_GRAY2BGR);
 
-    for(int i = 0; i < nLabels; i++) {
+    // Ignore 0 (and 1?) location label because it's the background
+    for(int i = 2; i < nLabels; i++) {
         // circle( imgLabels, Point((int)centroids.at<float>(i, 0), (int)centroids.at<float>(i, 1)), 5, RED, 2, 8, 0 );
         circle( imgLabels, Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)) , 5, RED, 2, 8, 0 );
         putText(imgLabels, "max: " + to_string(stats.at<int>(i, CC_STAT_MAX)), Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)) , FONT_HERSHEY_SIMPLEX, 0.5, BLACK, 2);
