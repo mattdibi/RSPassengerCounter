@@ -504,21 +504,52 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
 
     // equalizeHist(frame, frame);
 
-    int nLabels = connectedComponentsWithStats(frame, imgLabels, stats, centroids, 8, CV_16U);
-    
-    depthImage.convertTo(imgLabels, CV_8UC1);
-    // equalizeHist(imgLabels, imgLabels);
-    cvtColor(imgLabels, imgLabels, CV_GRAY2BGR);
+    // CONNECTED COMPONENTS REGIONAL MAXIMA
+    /* ******************************************************************************************************************** */
+    // int nLabels = connectedComponentsWithStats(frame, imgLabels, stats, centroids, 8, CV_16U);
+    // 
+    // depthImage.convertTo(imgLabels, CV_8UC1);
+    // // equalizeHist(imgLabels, imgLabels);
+    // cvtColor(imgLabels, imgLabels, CV_GRAY2BGR);
 
-    // Ignore 0 (and 1?) location label because it's the background
+    // // Ignore 0 (and 1?) location label because it's the background
+    // // for(int i = 2; i < nLabels; i++) {
+
+    // //     // Hard threshold: minimum a rectangle 10x10
+    // //     if( stats.at<int>(i, CC_STAT_WIDTH) > 10 || stats.at<int>(i, CC_STAT_HEIGHT) > 10) {
+    // //         
+    // //         // circle( imgLabels, Point((int)centroids.at<float>(i, 0), (int)centroids.at<float>(i, 1)), 5, RED, 2, 8, 0 );
+    // //         circle( imgLabels, Point(stats.at<int>(i, CC_STAT_LEFT) + (int)stats.at<int>(i, CC_STAT_WIDTH)/2, stats.at<int>(i, CC_STAT_TOP) + (int)stats.at<int>(i, CC_STAT_HEIGHT)/2), 5, RED, 2, 8, 0 );
+    // //         putText(imgLabels, "max: " + to_string(stats.at<int>(i, CC_STAT_MAX)), Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
+
+    // //         rectangle( imgLabels,
+    // //                    Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)),
+    // //                    Point(stats.at<int>(i, CC_STAT_LEFT) + stats.at<int>(i, CC_STAT_WIDTH), stats.at<int>(i, CC_STAT_TOP) + stats.at<int>(i, CC_STAT_HEIGHT)),
+    // //                    GREEN,
+    // //                    2,
+    // //                    8,
+    // //                    0 );
+    // //     }
+    // // }
+
     // for(int i = 2; i < nLabels; i++) {
 
-    //     // Hard threshold: minimum a rectangle 10x10
-    //     if( stats.at<int>(i, CC_STAT_WIDTH) > 10 || stats.at<int>(i, CC_STAT_HEIGHT) > 10) {
+    //     bool is_regional_min = true;
+
+    //     for(int j = 0; j < nLabels; j++) {
+
+    //         // Must not have a cc1 inside that have a max smaller than his
+    //         if( isContained(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP), stats.at<int>(i, CC_STAT_WIDTH), stats.at<int>(i, CC_STAT_HEIGHT), 
+    //             stats.at<int>(j, CC_STAT_LEFT), stats.at<int>(j, CC_STAT_TOP), stats.at<int>(j, CC_STAT_WIDTH), stats.at<int>(j, CC_STAT_HEIGHT) ) 
+    //             && stats.at<int>(j, CC_STAT_MAX) > stats.at<int>(i, CC_STAT_MAX)) {
+
+    //             is_regional_min = false;
+    //             break;
+    //         }
     //         
-    //         // circle( imgLabels, Point((int)centroids.at<float>(i, 0), (int)centroids.at<float>(i, 1)), 5, RED, 2, 8, 0 );
-    //         circle( imgLabels, Point(stats.at<int>(i, CC_STAT_LEFT) + (int)stats.at<int>(i, CC_STAT_WIDTH)/2, stats.at<int>(i, CC_STAT_TOP) + (int)stats.at<int>(i, CC_STAT_HEIGHT)/2), 5, RED, 2, 8, 0 );
-    //         putText(imgLabels, "max: " + to_string(stats.at<int>(i, CC_STAT_MAX)), Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
+    //     }
+
+    //     if(is_regional_min) {
 
     //         rectangle( imgLabels,
     //                    Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)),
@@ -527,44 +558,51 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     //                    2,
     //                    8,
     //                    0 );
+
     //     }
+    //     
     // }
+    //
+    // putText(imgLabels, "nLabels: " + to_string(nLabels), Point(0,  15) , FONT_HERSHEY_SIMPLEX, 0.5, BLACK, 2);
+    //
+    /* ******************************************************************************************************************** */
 
-    for(int i = 2; i < nLabels; i++) {
+    int levels = 8; 
+    Scalar colorLevels[8] = { Scalar(255, 0, 0), Scalar(240, 10, 10), Scalar(150, 100, 100), Scalar(200, 100, 100) , Scalar(100, 100, 150), Scalar(100, 100, 200), Scalar(10, 10, 240), Scalar(0, 0, 255) };
+    Mat original = frame.clone();
 
-        bool is_regional_min = true;
+    equalizeHist(frame, frame);
 
-        for(int j = 0; j < nLabels; j++) {
+    cvtColor(original, original, CV_GRAY2BGR);
 
-            // Must not have a cc1 inside that have a max smaller than his
-            if( isContained(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP), stats.at<int>(i, CC_STAT_WIDTH), stats.at<int>(i, CC_STAT_HEIGHT), 
-                stats.at<int>(j, CC_STAT_LEFT), stats.at<int>(j, CC_STAT_TOP), stats.at<int>(j, CC_STAT_WIDTH), stats.at<int>(j, CC_STAT_HEIGHT) ) 
-                && stats.at<int>(j, CC_STAT_MAX) > stats.at<int>(i, CC_STAT_MAX)) {
+    for(int i = 1; i < levels; i++) {
 
-                is_regional_min = false;
-                break;
-            }
-            
-        }
+        vector<vector<Point>> contours;
+        vector<Vec4i> hierarchy;
 
-        if(is_regional_min) {
+        int thresh_level = (int)( 255 / levels ) * i;
 
-            rectangle( imgLabels,
-                       Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)),
-                       Point(stats.at<int>(i, CC_STAT_LEFT) + stats.at<int>(i, CC_STAT_WIDTH), stats.at<int>(i, CC_STAT_TOP) + stats.at<int>(i, CC_STAT_HEIGHT)),
-                       GREEN,
-                       2,
-                       8,
-                       0 );
+        threshold(frame, frame, thresh_level, 255, THRESH_TOZERO);
+
+        if(i == levels - 1) {
+            namedWindow("Tesing",WINDOW_AUTOSIZE);
+            imshow("Tesing", frame);
 
         }
-        
+
+        findContours(frame, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_NONE);
+
+        // For every detected object
+        for(unsigned int idx = 0; idx < contours.size(); idx++) {
+            drawContours( original, contours, idx, colorLevels[i], 2, 8, hierarchy, 0, Point(0,0) );
+        }
+
+        contours.clear();
+        hierarchy.clear();
     }
 
-    putText(imgLabels, "nLabels: " + to_string(nLabels), Point(0,  15) , FONT_HERSHEY_SIMPLEX, 0.5, BLACK, 2);
-
     namedWindow("Experimental threadID: " + threadID,WINDOW_AUTOSIZE);
-    imshow("Experimental threadID: " + threadID, imgLabels);
+    imshow("Experimental threadID: " + threadID, original);
 
     return;
 }
