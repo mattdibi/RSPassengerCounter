@@ -568,7 +568,8 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     /* ******************************************************************************************************************** */
 
     int levels = 8; 
-    Scalar colorLevels[8] = { Scalar(255, 0, 0), Scalar(240, 10, 10), Scalar(150, 100, 100), Scalar(200, 100, 100) , Scalar(100, 100, 150), Scalar(100, 100, 200), Scalar(10, 10, 240), Scalar(0, 0, 255) };
+    vector<Point> centers[8];
+
     Mat original = frame.clone();
 
     equalizeHist(frame, frame);
@@ -592,9 +593,13 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
 
         findContours(frame, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 
-        // For every detected object
         for(unsigned int idx = 0; idx < contours.size(); idx++) {
-            drawContours( original, contours, idx, colorLevels[i], 2, 8, hierarchy, 0, Point(0,0) );
+            drawContours( original, contours, idx, Scalar(0,(int)( 255/levels) * i, 0), 2, 8, hierarchy, 0, Point(0,0) );
+
+            Rect br = boundingRect(contours[idx]);
+            Point objCenter = Point( (int)(br.x + br.width/2) ,(int)(br.y + br.height/2) );
+
+            centers[i].push_back(objCenter);
         }
 
         contours.clear();
