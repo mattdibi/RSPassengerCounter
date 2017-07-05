@@ -478,8 +478,13 @@ Mat RSPCN::getFrame(Mat depthImage, int thresholdCentimeters) {
 void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     Mat frame;
     
-    // 65535 - 8000 = 57535;
-    // 8000 ~= 100 cm from the camera
+    /* **************************** PART I: Input processing ************************************** */
+    // Objective: map input values [57535 ; 65535] to [0; 255]
+    // Purpose: The camera can achieve maximum 1 meter of tracking but its output is 16 bit (max 8 meters)
+    //          I'm removing useless data and map the to a broader space than before.
+    // Note: tested only with Intel RealSense SR300
+
+    // 65535 - 8000 = 57535; 8000 ~= 100 cm from the camera
     unsigned short thresholdPixel = 57535;
 
     // If depthImage(x,y) == NODATA, set it to 65535
@@ -507,7 +512,10 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     cout << "Bitwised : " << static_cast<unsigned>(frame.at<unsigned char>(320,240)) << endl;
     cout << endl;
 
-    /* ********************************************* ISOMETRIC APPROACH ************************************************ */
+    /* **************************** PART II: Isometric Approach ************************************** */
+    // Objective: divide input into 16 levels of distance from the cameras whose contours will be saved.
+    // These contours will be considered connected components and I'll try to find the regional maxima.
+    
     int levels = 16; 
     vector<isometrics> detectedObjects[16];
 
@@ -530,7 +538,7 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
 
             drawContours( original, contours, idx, Scalar(0,(int)( 255/levels) * i, 0), 2, 8, hierarchy, 0, Point(0,0) );
 
-            // TODO: Rivedere da qui in giù
+            // TODO: Fix from here
             Rect br = boundingRect(contours[idx]);
             Point objCenter = Point( (int)(br.x + br.width/2) ,(int)(br.y + br.height/2) );
 
