@@ -492,8 +492,7 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     
     // Invert b&w: white = foreground, black= background.
     bitwise_not(depthImage, depthImage);
-
-    Mat tmp = depthImage.clone(); // Debugging
+    // Mat tmp = depthImage.clone(); // Debugging
     
     // Threshold only accepts CV_8U or CV_32F types
     depthImage.convertTo(depthImage, CV_32FC1);
@@ -501,23 +500,22 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     // Converting threshold from cm to pixel value
     threshold(depthImage, depthImage, thresholdPixel, 65535, THRESH_TOZERO);
 
-    // Convert to CV_8U (lossy conversion)
-    // dst = (src - threhsoldPixel)*255/(65535 - thersholdPixel);
+    // Convert to CV_8U (lossy conversion); dst = (src - threhsoldPixel)*255/(65535 - thersholdPixel);
     depthImage = depthImage - cv::Scalar::all(57535);
     depthImage.convertTo(frame, CV_8UC1, 255.0 / (65535 - thresholdPixel));
 
-
-    cout << "Original : " << tmp.at<unsigned short>(320,240) << endl;
+    // Debugging
+    // cout << "Original : " << tmp.at<unsigned short>(320,240) << endl;
     // cout << "Elaborat : " << static_cast<unsigned>(depthImage.at<unsigned char>(320,240)) << endl;
-    cout << "Bitwised : " << static_cast<unsigned>(frame.at<unsigned char>(320,240)) << endl;
-    cout << endl;
+    // cout << "Bitwised : " << static_cast<unsigned>(frame.at<unsigned char>(320,240)) << endl;
+    // cout << endl;
 
     /* **************************** PART II: Isometric Approach ************************************** */
     // Objective: divide input into 16 levels of distance from the cameras whose contours will be saved.
     // These contours will be considered connected components and I'll try to find the regional maxima.
     
     int levels = 16; 
-    vector<isometrics> detectedObjects[16];
+    vector<Rect> detectedObjects[16];
 
     Mat original = frame.clone();
 
@@ -538,71 +536,16 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
 
             drawContours( original, contours, idx, Scalar(0,(int)( 255/levels) * i, 0), 2, 8, hierarchy, 0, Point(0,0) );
 
-            // TODO: Fix from here
-            Rect br = boundingRect(contours[idx]);
-            Point objCenter = Point( (int)(br.x + br.width/2) ,(int)(br.y + br.height/2) );
-
-            isometrics tmp;
-
-            tmp.center = objCenter;
-            tmp.boundingRectangle = br;
-
-            detectedObjects[i].push_back(tmp);
         }
 
         contours.clear();
         hierarchy.clear();
     }
 
-    for(int i = 1; i < levels; i++) {
-        for(unsigned j = 0; j < detectedObjects[i].size(); j++) {
-            // circle( original, detectedObjects[i][j].center, 5, RED, 2, 8, 0 );
-            // rectangle( original, detectedObjects[i][j].boundingRectangle.tl(), detectedObjects[i][j].boundingRectangle.br(), RED, 2, 8, 0 );
-            
-            bool isRegionalMaxima = true;
-
-            for(int k = i; k < levels; k++) {
-                for(unsigned l = 0; l < detectedObjects[k].size(); l++) {
-                    if( isContained( detectedObjects[i][j].center.x, detectedObjects[i][j].center.y, detectedObjects[i][j].boundingRectangle.width, detectedObjects[i][j].boundingRectangle.height,
-                                     detectedObjects[k][l].center.x, detectedObjects[k][l].center.y, detectedObjects[k][l].boundingRectangle.width, detectedObjects[k][l].boundingRectangle.height) ){
-                        isRegionalMaxima = false;
-                        break;
-                    }
-                }
-            }
-
-            if(isRegionalMaxima){
-                circle( original, detectedObjects[i][j].center, 5, RED, 2, 8, 0 );
-            }
-            else
-                break;
-        }
-    }
-
     namedWindow("Experimental threadID: " + threadID,WINDOW_AUTOSIZE);
     imshow("Experimental threadID: " + threadID, original);
 
     return;
-}
-
-// Checks whether the ConnectedComponent2 is contained in the ConnectedComponent1
-bool RSPCN::isContained(int cc1_x, int cc1_y, int cc1_width, int cc1_height, int cc2_x, int cc2_y, int cc2_width, int cc2_height ) {
-
-    if( cc1_x == cc2_x && cc1_y == cc2_y && cc1_width == cc2_width && cc1_height == cc2_height )
-        return false;
-
-    // cout << "Test" << endl;
-    // cout << "cc1_x: "<< cc1_x << endl;
-    // cout << "cc1_y: "<< cc1_y << endl;
-    // cout << "cc1_width: "<< cc1_width << endl;
-    // cout << "cc1_height: "<< cc1_height << endl;
-    // cout << "cc2_x: "<< cc2_x << endl;
-    // cout << "cc2_y: "<< cc2_y << endl;
-    // cout << "Result: " << (cc2_x < cc1_x + (int)(cc1_width/2) && cc2_y < cc1_y + (int)(cc1_height/2)) << endl;
-    // cout << endl;
-
-
-    return (cc2_x < cc1_x + (int)(cc1_width/2) && cc2_y < cc1_y + (int)(cc1_height/2));
 }
 
 #endif
