@@ -483,9 +483,6 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     // If depthImage(x,y) == NODATA, set it to 65535
     depthImage.setTo(65535, depthImage == NODATA);
 
-    // Threshold only accepts CV_8U or CV_32F types
-    depthImage.convertTo(depthImage, CV_32FC1);
-
     // Convert to CV_8U (lossy conversion)
     depthImage.convertTo(depthImage, CV_8UC1, 255.0 / 65535);
 
@@ -568,7 +565,7 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     /* ******************************************************************************************************************** */
 
     int levels = 8; 
-    vector<Point> centers[8];
+    vector<isometrics> detectedObjects[8];
 
     Mat original = frame.clone();
 
@@ -599,11 +596,38 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
             Rect br = boundingRect(contours[idx]);
             Point objCenter = Point( (int)(br.x + br.width/2) ,(int)(br.y + br.height/2) );
 
-            centers[i].push_back(objCenter);
+            isometrics tmp;
+
+            tmp.center = objCenter;
+            tmp.boundingRectangle = br;
+
+            detectedObjects[i].push_back(tmp);
         }
 
         contours.clear();
         hierarchy.clear();
+    }
+
+    for(int i = 0; i < levels; i++) {
+        for(unsigned j = 0; j < detectedObjects[i].size(); j++) {
+            // circle( original, detectedObjects[i][j].center, 5, RED, 2, 8, 0 );
+            
+            bool isRegionalMaxima = true;
+
+            for(int k = i; k < levels; k++) {
+                for(unsigned l = 0; l < detectedObjects[k].size(); l++) {
+                    if( isContained( detectedObjects[i][j].center.x, detectedObjects[i][j].center.y, detectedObjects[i][j].boundingRectangle.width, detectedObjects[i][j].boundingRectangle.height,
+                                     detectedObjects[k][l].center.x, detectedObjects[k][l].center.y, detectedObjects[k][l].boundingRectangle.width, detectedObjects[k][l].boundingRectangle.height) ){
+                        isRegionalMaxima = false;
+                        break;
+                    }
+                }
+            }
+
+            if(isRegionalMaxima){
+                circle( original, detectedObjects[i][j].center, 5, RED, 2, 8, 0 );
+            }
+        }
     }
 
     namedWindow("Experimental threadID: " + threadID,WINDOW_AUTOSIZE);
@@ -615,10 +639,10 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
 // Checks whether the ConnectedComponent2 is contained in the ConnectedComponent1
 bool RSPCN::isContained(int cc1_x, int cc1_y, int cc1_width, int cc1_height, int cc2_x, int cc2_y, int cc2_width, int cc2_height ) {
 
-    int cc2_center_x = cc2_x + cc2_width / 2;
-    int cc2_center_y = cc2_y + cc2_height / 2;
+    if( cc1_x == cc2_x && cc1_y == cc2_y && cc1_width == cc2_width && cc1_height == cc2_height )
+        return false;
 
-    return (cc2_center_x < cc1_x + cc1_width && cc2_center_y < cc1_y + cc1_height);
+    return (cc2_x < cc1_x + (int)(cc1_width/2) && cc2_y < cc1_y + (int)(cc1_height/2));
 }
 
 #endif

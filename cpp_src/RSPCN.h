@@ -65,6 +65,11 @@ using namespace std::chrono;
 #define MAX_1PASS_AREA 60000    // [pixels^2]
 #define MAX_2PASS_AREA 90000    // [pixels^2]
 
+struct isometrics {
+    Point center;
+    Rect boundingRectangle;
+};
+
 class RSPCN {
 
   public:
