@@ -570,6 +570,7 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     Mat original = frame.clone();
 
     equalizeHist(frame, frame);
+    // dilate(frame,frame, Mat(Size(6,6), CV_8UC1));
 
     cvtColor(original, original, CV_GRAY2BGR);
 
@@ -582,15 +583,10 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
 
         threshold(frame, frame, thresh_level, 255, THRESH_TOZERO);
 
-        if(i == levels - 1) {
-            namedWindow("Tesing",WINDOW_AUTOSIZE);
-            imshow("Tesing", frame);
-
-        }
-
         findContours(frame, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 
         for(unsigned int idx = 0; idx < contours.size(); idx++) {
+
             drawContours( original, contours, idx, Scalar(0,(int)( 255/levels) * i, 0), 2, 8, hierarchy, 0, Point(0,0) );
 
             Rect br = boundingRect(contours[idx]);
@@ -608,9 +604,10 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
         hierarchy.clear();
     }
 
-    for(int i = 0; i < levels; i++) {
+    for(int i = 1; i < levels; i++) {
         for(unsigned j = 0; j < detectedObjects[i].size(); j++) {
             // circle( original, detectedObjects[i][j].center, 5, RED, 2, 8, 0 );
+            // rectangle( original, detectedObjects[i][j].boundingRectangle.tl(), detectedObjects[i][j].boundingRectangle.br(), RED, 2, 8, 0 );
             
             bool isRegionalMaxima = true;
 
@@ -627,6 +624,8 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
             if(isRegionalMaxima){
                 circle( original, detectedObjects[i][j].center, 5, RED, 2, 8, 0 );
             }
+            else
+                break;
         }
     }
 
@@ -641,6 +640,17 @@ bool RSPCN::isContained(int cc1_x, int cc1_y, int cc1_width, int cc1_height, int
 
     if( cc1_x == cc2_x && cc1_y == cc2_y && cc1_width == cc2_width && cc1_height == cc2_height )
         return false;
+
+    cout << "Test" << endl;
+    cout << "cc1_x: "<< cc1_x << endl;
+    cout << "cc1_y: "<< cc1_y << endl;
+    cout << "cc1_width: "<< cc1_width << endl;
+    cout << "cc1_height: "<< cc1_height << endl;
+    cout << "cc2_x: "<< cc2_x << endl;
+    cout << "cc2_y: "<< cc2_y << endl;
+    cout << "Result: " << (cc2_x < cc1_x + (int)(cc1_width/2) && cc2_y < cc1_y + (int)(cc1_height/2)) << endl;
+    cout << endl;
+
 
     return (cc2_x < cc1_x + (int)(cc1_width/2) && cc2_y < cc1_y + (int)(cc1_height/2));
 }
