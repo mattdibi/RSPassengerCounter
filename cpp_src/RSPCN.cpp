@@ -514,12 +514,14 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     // Objective: divide input into 16 levels of distance from the cameras whose contours will be saved.
     // These contours will be considered connected components and I'll try to find the regional maxima.
     
-    int levels = 16; 
-    vector<Rect> detectedObjects[16];
+    int levels = 32; 
+    vector<Rect> detectedContours[32];
 
-    Mat original = frame.clone();
+    // Mat original = frame.clone();
+    // cvtColor(original, original, CV_GRAY2BGR);
 
-    cvtColor(original, original, CV_GRAY2BGR);
+    Mat original(frame.rows, frame.cols, CV_8UC3, Scalar(0,0,0));
+
 
     for(int i = 1; i < levels; i++) {
 
@@ -530,7 +532,7 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
 
         threshold(frame, frame, thresh_level, 255, THRESH_TOZERO);
 
-        findContours(frame, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_NONE);
+        findContours(frame, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
         for(unsigned int idx = 0; idx < contours.size(); idx++) {
 
