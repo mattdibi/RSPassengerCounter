@@ -477,100 +477,41 @@ Mat RSPCN::getFrame(Mat depthImage, int thresholdCentimeters) {
 
 void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
     Mat frame;
-    Mat imgLabels;
-    Mat stats, centroids;
+    
+    // 65535 - 8000 = 57535;
+    // 8000 ~= 100 cm from the camera
+    unsigned short thresholdPixel = 57535;
 
     // If depthImage(x,y) == NODATA, set it to 65535
     depthImage.setTo(65535, depthImage == NODATA);
+    
+    // Invert b&w: white = foreground, black= background.
+    bitwise_not(depthImage, depthImage);
+
+    Mat tmp = depthImage.clone(); // Debugging
+    
+    // Threshold only accepts CV_8U or CV_32F types
+    depthImage.convertTo(depthImage, CV_32FC1);
+
+    // Converting threshold from cm to pixel value
+    threshold(depthImage, depthImage, thresholdPixel, 65535, THRESH_TOZERO);
 
     // Convert to CV_8U (lossy conversion)
-    depthImage.convertTo(depthImage, CV_8UC1, 255.0 / 65535);
+    // dst = (src - threhsoldPixel)*255/(65535 - thersholdPixel);
+    depthImage = depthImage - cv::Scalar::all(57535);
+    depthImage.convertTo(frame, CV_8UC1, 255.0 / (65535 - thresholdPixel));
 
-    // Invert b&w: white = foreground, black= background.
-    frame = cv::Scalar::all(255) - depthImage;
 
-    // ADAPTIVE THREHSOLD ATTEMPT
-    /* ******************************************************************************************************************** */
-    // equalizeHist(frame, frame);
+    cout << "Original : " << tmp.at<unsigned short>(320,240) << endl;
+    // cout << "Elaborat : " << static_cast<unsigned>(depthImage.at<unsigned char>(320,240)) << endl;
+    cout << "Bitwised : " << static_cast<unsigned>(frame.at<unsigned char>(320,240)) << endl;
+    cout << endl;
 
-    // if(blockSize % 2 != 1)
-    // blockSize = 3;
-
-    // adaptiveThreshold(frame, frame, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, blockSize, -1 * C);
-    /* ******************************************************************************************************************** */
-
-    // equalizeHist(frame, frame);
-
-    // CONNECTED COMPONENTS REGIONAL MAXIMA
-    /* ******************************************************************************************************************** */
-    // int nLabels = connectedComponentsWithStats(frame, imgLabels, stats, centroids, 8, CV_16U);
-    // 
-    // depthImage.convertTo(imgLabels, CV_8UC1);
-    // // equalizeHist(imgLabels, imgLabels);
-    // cvtColor(imgLabels, imgLabels, CV_GRAY2BGR);
-
-    // // Ignore 0 (and 1?) location label because it's the background
-    // // for(int i = 2; i < nLabels; i++) {
-
-    // //     // Hard threshold: minimum a rectangle 10x10
-    // //     if( stats.at<int>(i, CC_STAT_WIDTH) > 10 || stats.at<int>(i, CC_STAT_HEIGHT) > 10) {
-    // //         
-    // //         // circle( imgLabels, Point((int)centroids.at<float>(i, 0), (int)centroids.at<float>(i, 1)), 5, RED, 2, 8, 0 );
-    // //         circle( imgLabels, Point(stats.at<int>(i, CC_STAT_LEFT) + (int)stats.at<int>(i, CC_STAT_WIDTH)/2, stats.at<int>(i, CC_STAT_TOP) + (int)stats.at<int>(i, CC_STAT_HEIGHT)/2), 5, RED, 2, 8, 0 );
-    // //         putText(imgLabels, "max: " + to_string(stats.at<int>(i, CC_STAT_MAX)), Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)) , FONT_HERSHEY_SIMPLEX, 0.5, RED, 2);
-
-    // //         rectangle( imgLabels,
-    // //                    Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)),
-    // //                    Point(stats.at<int>(i, CC_STAT_LEFT) + stats.at<int>(i, CC_STAT_WIDTH), stats.at<int>(i, CC_STAT_TOP) + stats.at<int>(i, CC_STAT_HEIGHT)),
-    // //                    GREEN,
-    // //                    2,
-    // //                    8,
-    // //                    0 );
-    // //     }
-    // // }
-
-    // for(int i = 2; i < nLabels; i++) {
-
-    //     bool is_regional_min = true;
-
-    //     for(int j = 0; j < nLabels; j++) {
-
-    //         // Must not have a cc1 inside that have a max smaller than his
-    //         if( isContained(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP), stats.at<int>(i, CC_STAT_WIDTH), stats.at<int>(i, CC_STAT_HEIGHT), 
-    //             stats.at<int>(j, CC_STAT_LEFT), stats.at<int>(j, CC_STAT_TOP), stats.at<int>(j, CC_STAT_WIDTH), stats.at<int>(j, CC_STAT_HEIGHT) ) 
-    //             && stats.at<int>(j, CC_STAT_MAX) > stats.at<int>(i, CC_STAT_MAX)) {
-
-    //             is_regional_min = false;
-    //             break;
-    //         }
-    //         
-    //     }
-
-    //     if(is_regional_min) {
-
-    //         rectangle( imgLabels,
-    //                    Point(stats.at<int>(i, CC_STAT_LEFT), stats.at<int>(i, CC_STAT_TOP)),
-    //                    Point(stats.at<int>(i, CC_STAT_LEFT) + stats.at<int>(i, CC_STAT_WIDTH), stats.at<int>(i, CC_STAT_TOP) + stats.at<int>(i, CC_STAT_HEIGHT)),
-    //                    GREEN,
-    //                    2,
-    //                    8,
-    //                    0 );
-
-    //     }
-    //     
-    // }
-    //
-    // putText(imgLabels, "nLabels: " + to_string(nLabels), Point(0,  15) , FONT_HERSHEY_SIMPLEX, 0.5, BLACK, 2);
-    //
-    /* ******************************************************************************************************************** */
-
-    int levels = 8; 
-    vector<isometrics> detectedObjects[8];
+    /* ********************************************* ISOMETRIC APPROACH ************************************************ */
+    int levels = 16; 
+    vector<isometrics> detectedObjects[16];
 
     Mat original = frame.clone();
-
-    equalizeHist(frame, frame);
-    // dilate(frame,frame, Mat(Size(6,6), CV_8UC1));
 
     cvtColor(original, original, CV_GRAY2BGR);
 
@@ -589,6 +530,7 @@ void RSPCN::getExperimentalFrame(Mat depthImage, int blockSize, double C) {
 
             drawContours( original, contours, idx, Scalar(0,(int)( 255/levels) * i, 0), 2, 8, hierarchy, 0, Point(0,0) );
 
+            // TODO: Rivedere da qui in giù
             Rect br = boundingRect(contours[idx]);
             Point objCenter = Point( (int)(br.x + br.width/2) ,(int)(br.y + br.height/2) );
 
@@ -641,15 +583,15 @@ bool RSPCN::isContained(int cc1_x, int cc1_y, int cc1_width, int cc1_height, int
     if( cc1_x == cc2_x && cc1_y == cc2_y && cc1_width == cc2_width && cc1_height == cc2_height )
         return false;
 
-    cout << "Test" << endl;
-    cout << "cc1_x: "<< cc1_x << endl;
-    cout << "cc1_y: "<< cc1_y << endl;
-    cout << "cc1_width: "<< cc1_width << endl;
-    cout << "cc1_height: "<< cc1_height << endl;
-    cout << "cc2_x: "<< cc2_x << endl;
-    cout << "cc2_y: "<< cc2_y << endl;
-    cout << "Result: " << (cc2_x < cc1_x + (int)(cc1_width/2) && cc2_y < cc1_y + (int)(cc1_height/2)) << endl;
-    cout << endl;
+    // cout << "Test" << endl;
+    // cout << "cc1_x: "<< cc1_x << endl;
+    // cout << "cc1_y: "<< cc1_y << endl;
+    // cout << "cc1_width: "<< cc1_width << endl;
+    // cout << "cc1_height: "<< cc1_height << endl;
+    // cout << "cc2_x: "<< cc2_x << endl;
+    // cout << "cc2_y: "<< cc2_y << endl;
+    // cout << "Result: " << (cc2_x < cc1_x + (int)(cc1_width/2) && cc2_y < cc1_y + (int)(cc1_height/2)) << endl;
+    // cout << endl;
 
 
     return (cc2_x < cc1_x + (int)(cc1_width/2) && cc2_y < cc1_y + (int)(cc1_height/2));
