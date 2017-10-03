@@ -256,8 +256,7 @@ void RSPCN::count() {
 
                 // -- COUNTING
                 // Up to down
-                if( (passengers[i].getLastPoint().y < frame.rows/2 && passengers[i].getCurrentPoint().y > frame.rows/2) ||
-                    (passengers[i].getLastPoint().y == frame.rows/2 && passengers[i].getCurrentPoint().y > frame.rows/2) ) {
+                if( passengers[i].getLastPoint().y <= frame.rows/2 && passengers[i].getCurrentPoint().y > frame.rows/2 ) {
 
                     cnt_out++;
 
@@ -266,8 +265,7 @@ void RSPCN::count() {
                 }
 
                 // Down to up
-                if( (passengers[i].getLastPoint().y > frame.rows/2 && passengers[i].getCurrentPoint().y < frame.rows/2) ||
-                    (passengers[i].getLastPoint().y == frame.rows/2 && passengers[i].getCurrentPoint().y < frame.rows/2) ) {
+                if( passengers[i].getLastPoint().y >= frame.rows/2 && passengers[i].getCurrentPoint().y < frame.rows/2 ) {
 
                     cnt_in++;
 
