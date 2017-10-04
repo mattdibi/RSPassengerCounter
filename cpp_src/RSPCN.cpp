@@ -280,7 +280,7 @@ void RSPCN::count() {
 
             // If passenger is outside field of view update coords with last known position.
             // This prevents false positive counts.
-            if(passengers[i].getAge() > 1)
+            if(passengers[i].getAge() > 0)
                 passengers[i].updateCoords(passengers[i].getCurrentPoint());
 
             // Removing older passengers
